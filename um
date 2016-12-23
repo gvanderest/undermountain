@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+"""Undermountain Startup Script."""
+import asyncio
+import logging
+import sys
+from logging.handlers import RotatingFileHandler
+from mud.game import Game
+from settings import MODULES
+
+# TODO Check if this is faster and a good idea
+# import uvloop
+# asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+
+def setup_logging():
+    """Set up the format and output of the logging module."""
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+
+    log_format = "%(asctime)-15s  %(message)s"
+    formatter = logging.Formatter(log_format)
+
+    log_file = RotatingFileHandler("log/undermountain.log")
+    log_file.setFormatter(formatter)
+    root_logger.addHandler(log_file)
+
+    log_console = logging.StreamHandler()
+    log_console.setFormatter(formatter)
+    root_logger.addHandler(log_console)
+
+
+setup_logging()
+
+print("""\
+
+  __ _______
+ /  /       \ -----------------------------------------------------------------
+/  /  /  /  /            Undermountain Python MUD Server v{}
+\____/__/__/ ------------------------------------------------------------------
+
+""".format(Game.get_version()))
+
+
+def print_argument_help():
+    """Output the valid arguments for the user."""
+    print()
+    print("Usage: ./um <command>")
+    print()
+    print("Valid commands:")
+    print("* start - Start the MUD")
+    print()
+    print("Not Yet Implemented:")
+    print("* backup [identifier] - Backup the MUD")
+    print("* restore <identifier> - Restore the MUD")
+    print()
+
+
+if len(sys.argv) == 1:
+    print("No arguments provided.")
+    print_argument_help()
+    sys.exit(0)
+
+arg = sys.argv[1]
+
+if arg == "start":
+    loop = asyncio.get_event_loop()
+    game = Game(modules=MODULES, logging=True)
+    loop.create_task(game.start())
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        print()
+        logging.info("Attempting a clean shutdown.")
+        logging.info("Type CTRL+C to kill the process immediately.")
+        try:
+            game.shutdown()
+            logging.info("Clean shutdown complete.")
+        except KeyboardInterrupt:
+            print()
+            logging.info("The process has been killed.")
+    finally:
+        loop.close()
+
+else:
+    print("Invalid argument '{}'".format(arg))
+    print_argument_help()
