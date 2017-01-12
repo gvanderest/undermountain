@@ -2,7 +2,6 @@
 COLLECTION
 """
 from utils.hash import get_random_hash
-from mud.injector import Injector
 
 
 class RequiredField(Exception):
@@ -90,23 +89,16 @@ class Index(object):
         return self.field == field
 
 
-# TODO Break this into being a GameCollection, which is an Injector, while
-# being able to keep the Collection class pristine and untainted with Game-
-# related logic.
-class Collection(Injector):
+class Collection(object):
     NAME = None
-    WRAPPER_CLASS = None
 
     PRIMARY_KEY_FIELD = "id"
     INDEXES = []
 
-    def __init__(self, *args, **kwargs):
-        super(Collection, self).__init__(*args, **kwargs)
-
-        state = self.game.get_state()
-        self.records = state.get(self.NAME, {})
-        state[self.NAME] = self.records
-        self.game.set_state(state)
+    def __init__(self, records=None):
+        self.records = records
+        if self.records is None:
+            self.records = {}
 
         self.indexes = {}
 
@@ -115,17 +107,29 @@ class Collection(Injector):
                 record[self.PRIMARY_KEY_FIELD] = key
             self.index(record)
 
+    def wrap_record(self, record):
+        """Wrap the Record in some fashion."""
+        return record
+
     def get(self, id):
-        """Get a specific record by its ID."""
-        return self.records.get(id, None)
+        """Get a specific record by its ID as a dictionary."""
+        record = self.records.get(id, None)
+
+        # Not found
+        if record is None:
+            return None
+
+        return record
 
     def find(self, spec=None):
         """Find a Record with a specification."""
         if isinstance(spec, str):
-            return self.get(spec)
+            return self.wrap_record(self.get(spec))
 
         for record in self.query(spec=spec, limit=1):
-            return record
+            return self.wrap_record(record)
+
+        return None
 
     def query(self, spec=None, limit=None):
         """Generate a list of Records with a specification."""
@@ -154,7 +158,7 @@ class Collection(Injector):
                 break
 
         for id in ids:
-            yield dict(self.get(id))
+            yield self.wrap_record(self.get(id))
 
     def generate_hash(self):
         """Generate a unique random hash identifier."""
@@ -171,7 +175,8 @@ class Collection(Injector):
         """Save the record to the Collection."""
         if hasattr(record, "__dict__"):
             record = record.__dict__()
-        record = dict(record)
+        else:
+            record = dict(record)
 
         record, primary_key = self.hydrate_primary_key(record)
 
@@ -208,3 +213,64 @@ class Collection(Injector):
         for indexer in self.INDEXES:
             record, primary_key = self.hydrate_primary_key(record)
             self.indexes = indexer.index(self.indexes, primary_key, record)
+
+    def wrap(self, record):
+        """Wrap the Record in its."""
+        return self.WRAPPER_CLASS(record, self)
+
+
+class EntityCollection(Collection):
+    WRAPPER_CLASS = None
+
+    def wrap_record(self, record):
+        """Return a Record with a link back to the Collection."""
+        return self.WRAPPER_CLASS(record, self)
+
+
+class GameCollection(EntityCollection):
+    def __init__(self, game):
+        self.game = game
+
+        state = self.game.get_state()
+        records = state.get(self.NAME, {})
+        state[self.NAME] = records
+        self.game.set_state(state)
+
+        super(GameCollection, self).__init__(records)
+
+
+class Entity(object):
+    def __init__(self, data):
+        self._data = data
+
+    def __getattr__(self, key):
+        return self._data.get(key, None)
+
+    def __setattr__(self, key, value):
+        if key.startswith("_"):
+            super(Entity, self).__setattr__(key, value)
+        else:
+            self._data[key] = value
+
+    def __getitem__(self, key):
+        return self.__getattr__(key)
+
+    def __setitem__(self, key, value):
+        self.__setattr__(key, value)
+
+    def get(self, *args, **kwargs):
+        return self._data.get(*args, **kwargs)
+
+
+class CollectionEntity(Entity):
+    def __init__(self, data, collection):
+        super(CollectionEntity, self).__init__(data)
+        self._collection = collection
+
+    def save(self):
+        """Save the Entity to the Collection."""
+        self._collection.save(self._data)
+
+    def remove(self):
+        """Remove the Entity from the Collection."""
+        self._collection.remove(self._data)

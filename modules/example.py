@@ -1,13 +1,19 @@
 """
 EXAMPLE MODULE
 """
-from utils.collection import Collection, Index
+from utils.collection import GameCollection, Index, CollectionEntity
 from mud.module import Module
 from mud.manager import Manager
 import logging
 
 
-class Characters(Collection):
+class Character(CollectionEntity):
+    pass
+
+
+class Characters(GameCollection):
+    WRAPPER_CLASS = Character
+
     NAME = "characters"
     INDEXES = [
         Index("id", required=True, unique=True),
@@ -22,8 +28,7 @@ class ExampleManager(Manager):
     ]
 
     def handle_event(self, event):
-        Characters, Entities = \
-                self.game.get_injectors('Characters', 'Entities')
+        Characters = self.game.get_injector('Characters')
 
         chars = Characters.query({
             "room_id": "market_square",
@@ -33,14 +38,18 @@ class ExampleManager(Manager):
         print("Characters in room market_square:")
         if chars:
             for char in chars:
-                print("* {}".format(char["name"]))
+                count = char.get("count", 0)
+                count += 1
+                char.count = count
+                char.save()
+                print("* {} - {}".format(char.name, char.count))
         else:
             print("No characters")
 
         return event
 
 
-class Entities(Collection):
+class Entities(GameCollection):
     pass
 
 
@@ -50,7 +59,6 @@ class ExampleModule(Module):
 
     INJECTORS = {
         "Characters": Characters,
-        "Entities": Entities,
     }
 
     MANAGERS = [
