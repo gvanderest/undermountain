@@ -7,6 +7,9 @@ from mud.injector import Injector
 
 class Module(Injector):
     """An extension of the Game."""
+    INJECTORS = {}
+    MANAGERS = []
+
     def handle_event(self, event):
         return event
 

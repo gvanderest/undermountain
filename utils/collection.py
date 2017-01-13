@@ -111,7 +111,7 @@ class Collection(object):
         """Wrap the Record in some fashion."""
         return record
 
-    def get(self, id):
+    def get(self, id, skip_wrap=False):
         """Get a specific record by its ID as a dictionary."""
         record = self.records.get(id, None)
 
@@ -119,12 +119,15 @@ class Collection(object):
         if record is None:
             return None
 
-        return record
+        if skip_wrap:
+            return record
+
+        return self.wrap(record)
 
     def find(self, spec=None):
         """Find a Record with a specification."""
         if isinstance(spec, str):
-            return self.wrap_record(self.get(spec))
+            return self.get(spec)
 
         for record in self.query(spec=spec, limit=1):
             return self.wrap_record(record)
@@ -158,7 +161,7 @@ class Collection(object):
                 break
 
         for id in ids:
-            yield self.wrap_record(self.get(id))
+            yield self.get(id)
 
     def generate_hash(self):
         """Generate a unique random hash identifier."""
@@ -182,7 +185,7 @@ class Collection(object):
 
         # TODO Handle diffing the content and only deindexing/reindexing fields
         # that have actually changed.
-        previous_record = self.get(primary_key)
+        previous_record = self.get(primary_key, skip_wrap=True)
         if previous_record:
             self.deindex(previous_record)
 
@@ -266,6 +269,12 @@ class CollectionEntity(Entity):
     def __init__(self, data, collection):
         super(CollectionEntity, self).__init__(data)
         self._collection = collection
+
+    def get_injector(self, *args, **kwargs):
+        return self._collection.game.get_injector(*args, **kwargs)
+
+    def get_injectors(self, *args, **kwargs):
+        return self._collection.game.get_injectors(*args, **kwargs)
 
     def save(self):
         """Save the Entity to the Collection."""

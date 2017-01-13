@@ -24,7 +24,36 @@ class Game(object):
         return cls.VERSION
 
     def __init__(self, modules=None, injectors=None, logging=False):
+        ms_desc = [
+            "This is the interior of a large white marble temple.  A pipe "
+            "organ",
+            "plays in the background as people sing a hymn of peacefulness.  "
+            "A",
+            "priest up front tells the story of the forces of the realms, be "
+            "it Life,",
+            "the force that gives breath and a heartbeat, and Death, the "
+            "force that",
+            "steals these gifts away.  There is a guard standing watch, "
+            "keeping the",
+            "peace.  To the south is the Temple Square and to the west is "
+            "the donation",
+            "room.  To the east is the City Morgue and a newer section of "
+            "Main Street",
+            "heads off to the north.",
+        ]
         self.state = {
+            "areas": {
+                "westbridge": {
+                    "name": "Westbridge City",
+                },
+            },
+            "rooms": {
+                "market_square": {
+                    "name": "Market Square",
+                    "description": ms_desc,
+                    "area_id": "westbridge",
+                }
+            },
             "characters": {
                 "xyz321": {
                     "name": "Torog",
