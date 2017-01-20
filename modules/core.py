@@ -94,9 +94,7 @@ class ExampleManager(Manager):
         "GAME_TICK",
     ]
 
-    def handle_event(self, event):
-        Characters, Rooms, Areas = self.game.get_injectors('Characters', 'Rooms', 'Areas')
-
+    def handle_event(self, event, Characters, Rooms, Areas):
         chars = Characters.query({
             "room_id": "market_square",
         })

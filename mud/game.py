@@ -3,6 +3,7 @@ GAME
 The World in which we play.
 """
 import asyncio
+import inspect
 from utils.event import Event
 
 
@@ -114,6 +115,34 @@ class Game(object):
         """Stop any processes/modules that are running."""
         self.running = False
 
+    def inject(self, method, overrides=None):
+        """
+        Call a function with injectors hydrated.  Additional injectors can be
+        provided as a dictionary.
+
+        Method args such as self, args, and kwargs, are completely ignored.
+
+        @param {function} method to be called
+        @param {dict} [overrides=None] to add/override existing game injectors
+        @returns {*} result of the method call
+        """
+        injectors = dict(self.injectors)
+        injectors.update(overrides)
+
+        arg_names = inspect.getargspec(method)[0]
+        if arg_names and arg_names[0] in ["self"]:
+            arg_names.pop(0)
+
+        values = []
+        for name in arg_names:
+            try:
+                values.append(injectors[name])
+            except KeyError as e:
+                # TODO use a better exception type?
+                raise Exception("Injector '{}' not found".format(name))
+
+        return method(*values)
+
     def dispatch(self, event_type, data=None):
         if data is None:
             data = {}
@@ -124,7 +153,7 @@ class Game(object):
             if event.type not in manager.HANDLE_EVENTS:
                 continue
 
-            event = manager.handle_event(event)
+            event = self.inject(manager.handle_event, {"event": event})
             if event.is_blocked():
                 break
 
