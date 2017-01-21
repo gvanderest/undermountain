@@ -22,8 +22,8 @@ REBOOT_FILE = 'REBOOT'
 
 
 TELNET_PORTS = (
-    4200,
-    4201,
+    {"host": "0.0.0.0", "port": 4200},
+    {"host": "0.0.0.0", "port": 4201},
 )
 
 

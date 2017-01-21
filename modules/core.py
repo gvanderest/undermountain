@@ -82,11 +82,6 @@ class Characters(Actors):
     WRAPPER_CLASS = Character
 
     NAME = "characters"
-    # INDEXES = [
-    #     Index("id", required=True, unique=True),
-    #     Index("name", required=True, unique=True),
-    #     Index("room_id"),
-    # ]
 
 
 class ExampleManager(Manager):
@@ -99,19 +94,16 @@ class ExampleManager(Manager):
             "room_id": "market_square",
         })
 
-        logging.info("tick")
-        print("Characters in room market_square:")
+        logging.debug("Characters in room market_square:")
         if chars:
             for char in chars:
                 count = char.get("count", 0)
                 count += 1
                 char.count = count
                 char.save()
-                # room = Rooms.find(char.room_id)
-                # area = Areas.find(room.area_id)
                 room = char.get_room()
                 area = room.get_area()
-                print("* {} - {} - {} - {}".format(char.name, room.name, area.name, char.count))
+                logging.debug("* {} - {} - {} - {}".format(char.name, room.name, area.name, char.count))
         else:
             print("No characters")
 

@@ -2,7 +2,7 @@
 GAME
 The World in which we play.
 """
-import asyncio
+import gevent
 import inspect
 from utils.event import Event
 
@@ -150,8 +150,10 @@ class Game(object):
         event = Event(event_type, data)
 
         for manager in self.managers:
-            if event.type not in manager.HANDLE_EVENTS:
-                continue
+            # Skip past any unhandled events, if list provided
+            if manager.HANDLE_EVENTS is not None:
+                if event.type not in manager.HANDLE_EVENTS:
+                    continue
 
             event = self.inject(manager.handle_event, {"event": event})
             if event.is_blocked():
@@ -164,8 +166,17 @@ class Game(object):
         self.running = True
         self.dispatch("GAME_STARTED")
 
+        for manager in self.managers:
+            manager.start()
+
         while self.running:
             self.dispatch("GAME_TICK")
-            yield from asyncio.sleep(1.0)
+            gevent.sleep(1.0)
+
+        for manager in self.managers:
+            manager.stop()
 
         self.dispatch("GAME_STOPPED")
+
+    def stop(self):
+        self.running = False
