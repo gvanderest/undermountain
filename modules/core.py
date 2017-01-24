@@ -60,7 +60,17 @@ class Rooms(GameCollection):
 
 
 class Actor(RoomEntity):
-    pass
+    def set_connection(self, connection):
+        self._connection = connection
+
+    def get_connection(self):
+        return self._connection
+
+    def echo(self, message):
+        connection = self._connection
+        if connection is None:
+            return
+        connection.writeln(message)
 
 
 class Actors(GameCollection):

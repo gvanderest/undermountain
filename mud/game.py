@@ -4,6 +4,9 @@ The World in which we play.
 """
 import gevent
 import inspect
+import logging
+import sys
+import traceback
 from utils.event import Event
 
 
@@ -71,9 +74,37 @@ class Game(object):
         self.logging = False
         self.injectors = {}
         self.managers = []
+        self.connections = []
 
         self.set_modules(modules)
         self.set_logging(logging)
+
+    def handle_exception(self, e):
+        """Handle an Exception and report appropriately."""
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        formatted = "".join(traceback.format_exception(
+            exc_type,
+            exc_value,
+            exc_traceback
+        ))
+        logging.error("EXCEPTION: " + formatted)
+        self.wiznet("exception", formatted)
+
+    def wiznet(self, type, message):
+        """Display a wiznet message to Players."""
+        for connection in self.connections:
+            actor = connection.actor
+            if actor is None:
+                continue
+            actor.echo("{Y-->{x %s" % (message))
+
+    def add_connection(self, connection):
+        """Add a Connection to the Game."""
+        self.connections.append(connection)
+
+    def remove_connection(self, connection):
+        """Remove a Connection from the Game."""
+        self.connections.remove(connection)
 
     def get_state(self):
         return self.state

@@ -14,6 +14,11 @@ from modules.core import Actor
 gevent.monkey.patch_socket()
 
 
+def no_handler(self, arguments):
+    asfasdf()
+    self.writeln("Huh?")
+
+
 def quit_command(self, arguments):
     self.quit()
 
@@ -51,42 +56,57 @@ class TelnetClient(Client):
             self.writeln("Please pick a name, even if it's short.")
             self.write_login_username_prompt()
             return
-        self.state = "chatting"
-        self.connection.actor = Actor({
+        self.state = "playing"
+
+        actor = Actor({
             "name": message.lower().title()
         })
-        actor = self.connection.actor
+
+        self.connection.actor = actor
+        actor.set_connection(self.connection)
+
         self.writeln("Thanks for providing your name, {}!".format(actor.name))
         self.login()
-        self.write_chatting_prompt()
+        self.write_playing_prompt()
 
     def write_login_password_prompt(self):
         self.write("Password: ")
         self.hide_next_input()
 
-    def write_chatting_prompt(self):
+    def write_playing_prompt(self):
         self.write("> ")
 
     def no_handler(self, arguments):
         self.writeln("Invalid command.")
 
-    def handle_chatting(self, message):
+    def get_game(self):
+        return self.connection.server.game
+
+    def handle_playing(self, message):
         if not message:
-            self.writeln("Empty message not sent.")
-            self.write_chatting_prompt()
+            self.write_playing_prompt()
             return
 
-        if message[0] == "/":
+        if message.startswith("/"):
             parts = message.split(" ")
             first_part = parts.pop(0)
 
             command = first_part[1:]
             arguments = parts
 
-            handler = self.COMMAND_HANDLERS.get(command, self.no_handler)
-            handler(self, arguments)
+            handler = self.COMMAND_HANDLERS.get(command, no_handler)
 
-            self.write_chatting_prompt()
+            if handler is None:
+                self.writeln("Huh?")
+            else:
+                try:
+                    handler(self, arguments)
+                except Exception as e:
+                    game = self.get_game()
+                    game.handle_exception(e)
+                    self.writeln("Huh?!  (Code bug detected and reported.)")
+
+            self.write_playing_prompt()
         else:
             self.gecho(message)
 
@@ -108,7 +128,7 @@ class TelnetClient(Client):
         for connection in server.connections:
             client = connection.client
 
-            if client.state != "chatting":
+            if client.state != "playing":
                 continue
 
             connection.writeln(output)
@@ -184,11 +204,13 @@ class TelnetServer(Manager):
         """Add the Connection to the list."""
         # TODO register Connection with Game
         self.connections.append(connection)
+        self.game.add_connection(connection)
 
     def remove_connection(self, connection):
         """Remove the Connection from the list."""
         # TODO unregister Connection with Game
         self.connections.remove(connection)
+        self.game.remove_connection(connection)
 
     def handle_new_connection(self, sock, addr):
         logging.info("New telnet connection from {}:{}".format(*addr))
