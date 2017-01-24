@@ -27,14 +27,22 @@ def setup_logging():
 
 setup_logging()
 
+def get_python_version_string():
+    ver = sys.version_info
+    major, minor, micro, _, _ = sys.version_info
+    return '.'.join(map(str, [major, minor, micro]))
+
+engine_version = Game.get_version()
+python_version = get_python_version_string()
+
 print("""\
 
   __ _______
  /  /       \ -----------------------------------------------------------------
-/  /  /  /  /            Undermountain Python MUD Server v{}
+/  /  /  /  /    Undermountain Python MUD Server v{} - Python v{}
 \____/__/__/ ------------------------------------------------------------------
 
-""".format(Game.get_version()))
+""".format(engine_version, python_version))
 
 
 def print_argument_help():
