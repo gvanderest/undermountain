@@ -14,8 +14,22 @@ from modules.core import Actor
 gevent.monkey.patch_socket()
 
 
+def quit_command(self, arguments):
+    self.quit()
+
+
+def me_command(self, arguments):
+    message = " ".join(arguments)
+    self.gecho(message, emote=True)
+
+
 class TelnetClient(Client):
     """Wrapper for how our Game works."""
+
+    COMMAND_HANDLERS = {
+        "quit": quit_command,
+        "me": me_command,
+    }
 
     def hide_next_input(self):
         self.write("<TODO HIDE> ")
@@ -53,16 +67,28 @@ class TelnetClient(Client):
     def write_chatting_prompt(self):
         self.write("> ")
 
-    def handle_chatting(self, message):
-        if message == "/quit":
-            self.quit()
-            return
+    def no_handler(self, arguments):
+        self.writeln("Invalid command.")
 
+    def handle_chatting(self, message):
         if not message:
             self.writeln("Empty message not sent.")
+            self.write_chatting_prompt()
+            return
+
+        if message[0] == "/":
+            parts = message.split(" ")
+            first_part = parts.pop(0)
+
+            command = first_part[1:]
+            arguments = parts
+
+            handler = self.COMMAND_HANDLERS.get(command, self.no_handler)
+            handler(self, arguments)
+
+            self.write_chatting_prompt()
         else:
             self.gecho(message)
-        self.write_chatting_prompt()
 
     def gecho(self, message, emote=False):
         this_conn = self.connection
