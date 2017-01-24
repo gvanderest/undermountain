@@ -147,6 +147,11 @@ class TelnetManager(Manager):
             in payload["connections"]
         ]
 
+    def tick(self):
+        logging.info("Number of Telnet connections: {}".format(
+            len(self.connections))
+        )
+
 
 class Telnet(Module):
     MODULE_NAME = "Telnet"
