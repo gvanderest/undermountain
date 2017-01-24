@@ -266,7 +266,7 @@ class Entity(object):
 
 
 class CollectionEntity(Entity):
-    def __init__(self, data, collection):
+    def __init__(self, data, collection=None):
         super(CollectionEntity, self).__init__(data)
         self._collection = collection
 
