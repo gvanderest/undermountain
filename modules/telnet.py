@@ -310,7 +310,7 @@ class TelnetServer(Manager):
 
     def start(self):
         """Instantiate the servers/ports and sockets."""
-        super(TelnetManager, self).start()
+        super(TelnetServer, self).start()
 
         from settings import TELNET_PORTS
 
