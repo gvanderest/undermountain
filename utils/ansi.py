@@ -49,6 +49,10 @@ class Ansi(object):
         return cls.colorize(in_string, strip_colors=True)
 
     @classmethod
+    def escape(cls, message):
+        return message.replace("{", "{{")
+
+    @classmethod
     def colorize(cls, in_string, strip_colors=False):
         """Convert a color-coded string to ANSI-encoded."""
         out_string = in_string

@@ -4,6 +4,7 @@ EXAMPLE MODULE
 from utils.collection import GameCollection, Index, CollectionEntity
 from mud.module import Module
 from mud.manager import Manager
+from utils.listify import listify
 import logging
 
 
@@ -71,6 +72,27 @@ class Actor(RoomEntity):
         if connection is None:
             return
         connection.writeln(message)
+
+    def act_around(self, message, *args, **kwargs):
+        self.gecho(message, *args, **kwargs)
+
+    def gecho(self, message, exclude=None):
+        exclude = listify(exclude)
+
+        connection = self._connection
+        if connection is None:
+            return
+
+        connections = connection.server.game.connections
+        for conn in connections:
+            actor = conn.actor
+            if actor is None:
+                continue
+
+            if actor in exclude:
+                continue
+
+            actor.echo(message)
 
 
 class Actors(GameCollection):

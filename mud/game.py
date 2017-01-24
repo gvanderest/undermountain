@@ -8,6 +8,7 @@ import logging
 import sys
 import traceback
 from utils.event import Event
+from utils.ansi import Ansi
 
 
 class Game(object):
@@ -87,8 +88,9 @@ class Game(object):
             exc_value,
             exc_traceback
         ))
-        logging.error("EXCEPTION: " + formatted)
-        self.wiznet("exception", formatted)
+        escaped = Ansi.escape(formatted)
+        logging.error("EXCEPTION: " + escaped)
+        self.wiznet("exception", escaped)
 
     def wiznet(self, type, message):
         """Display a wiznet message to Players."""

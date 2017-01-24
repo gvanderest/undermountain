@@ -15,9 +15,19 @@ from utils.ansi import Ansi
 gevent.monkey.patch_socket()
 
 
+def say_command(self, arguments):
+    if not arguments:
+        self.echo("Say what?")
+        return
+
+    message = " ".join(arguments)
+
+    self.echo("{MYou say {x'{m%s{x'" % message)
+    self.act_around("{M%s says {x'{m%s{x'" % (self.name, message), exclude=self)
+
+
 def no_handler(self, arguments):
-    asfasdf()
-    self.writeln("Huh?")
+    self.echo("Huh?")
 
 
 def quit_command(self, arguments):
@@ -32,7 +42,14 @@ def me_command(self, arguments):
 class TelnetClient(Client):
     """Wrapper for how our Game works."""
 
+    ONE_CHAR_ALIASES = {
+        "'": "say",
+        "/": "recall",
+        "=": "cgossip",
+        "?": "help",
+    }
     COMMAND_HANDLERS = {
+        "say": say_command,
         "quit": quit_command,
         "me": me_command,
     }
@@ -84,32 +101,42 @@ class TelnetClient(Client):
         return self.connection.server.game
 
     def handle_playing(self, message):
+        message = message.rstrip()
+
         if not message:
             self.write_playing_prompt()
             return
 
-        if message.startswith("/"):
-            parts = message.split(" ")
-            first_part = parts.pop(0)
+        # Handle a one-character alias prefix
+        possible_aliases = "".join(self.ONE_CHAR_ALIASES.keys())
+        if message[0] in possible_aliases:
+            message = self.ONE_CHAR_ALIASES[message[0]] + " " + message[1:]
 
-            command = first_part[1:]
-            arguments = parts
+        parts = message.split(" ")
 
-            handler = self.COMMAND_HANDLERS.get(command, no_handler)
+        actor = self.connection.actor
+        command = parts.pop(0).lower()
+        arguments = tuple(parts)
 
-            if handler is None:
-                self.writeln("Huh?")
-            else:
-                try:
-                    handler(self, arguments)
-                except Exception as e:
-                    game = self.get_game()
-                    game.handle_exception(e)
-                    self.writeln("Huh?!  (Code bug detected and reported.)")
+        # Try to find a suitable command handler
+        handler = no_handler
+        for key, method in self.COMMAND_HANDLERS.items():
+            if key.startswith(command):
+                handler = method
+                break
 
-            self.write_playing_prompt()
+        # Execute the appropriate code
+        if handler is None:
+            self.writeln("Huh?")
         else:
-            self.gecho(message)
+            try:
+                handler(actor, arguments)
+            except Exception as e:
+                game = self.get_game()
+                game.handle_exception(e)
+                self.writeln("Huh?!  (Code bug detected and reported.)")
+
+        self.write_playing_prompt()
 
     def gecho(self, message, emote=False):
         this_conn = self.connection
