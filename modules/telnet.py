@@ -7,14 +7,109 @@ import socket
 import gevent.monkey
 from mud.module import Module
 from mud.manager import Manager
+from modules.core import Actor
 
 gevent.monkey.patch_socket()
 
 
-class TelnetClient(object):
-    """Wrapper for how our Game works."""
+class Client(object):
+    def __init__(self, connection):
+        self.connection = connection
+        self.write = connection.write
+        self.writeln = connection.writeln
+        self.state = "login_username"
+
     def handle_input(self, message):
-        pass
+        method_name = "handle_{}".format(self.state)
+
+        method = getattr(self, method_name)
+        method(message)
+
+class TelnetClient(Client):
+    """Wrapper for how our Game works."""
+
+    def hide_next_input(self):
+        self.write("<TODO HIDE> ")
+
+    def start(self):
+        self.write_login_banner()
+        self.write_login_username_prompt()
+
+    def write_login_banner(self):
+        self.writeln("Waterdeep: City of Splendors")
+        self.writeln()
+        self.writeln("So far, what's implemented is essentially a groupchat.")
+
+    def write_login_username_prompt(self):
+        self.write("What is your name, adventurer? ")
+
+    def handle_login_username(self, message):
+        if not message:
+            self.writeln("Please pick a name, even if it's short.")
+            self.write_login_username_prompt()
+            return
+        self.state = "chatting"
+        self.connection.actor = Actor({
+            "name": message.lower().title()
+        })
+        actor = self.connection.actor
+        self.writeln("Thanks for providing your name, {}!".format(actor.name))
+        self.login()
+        self.write_chatting_prompt()
+
+    def write_login_password_prompt(self):
+        self.write("Password: ")
+        self.hide_next_input()
+
+    def write_chatting_prompt(self):
+        self.write("> ")
+
+    def handle_chatting(self, message):
+        if message == "/quit":
+            self.quit()
+            return
+
+        if not message:
+            self.writeln("Empty message not sent.")
+        else:
+            self.gecho(message)
+        self.write_chatting_prompt()
+
+    def gecho(self, message, emote=False):
+        this_conn = self.connection
+        server = this_conn.server
+        actor = this_conn.actor
+
+        template = "{}<#{}>: {}"
+        if emote:
+            template = "{}<#{}> {}"
+
+        output = template.format(
+            actor.name,
+            this_conn.id,
+            message
+        )
+
+        for connection in server.connections:
+            client = connection.client
+
+            if client.state != "chatting":
+                continue
+
+            connection.writeln(output)
+
+    def disconnect(self):
+        self.gecho("disconnected from the chat", emote=True)
+
+    def reconnect(self):
+        self.gecho("reconnected to the chat", emote=True)
+
+    def quit(self):
+        self.gecho("quit the chat", emote=True)
+        self.connection.stop(clean=True)
+
+    def login(self):
+        self.gecho("joined the chat", emote=True)
 
 
 class Connection(object):
@@ -24,6 +119,8 @@ class Connection(object):
     UNIQUE_ID = 0
 
     def __init__(self, server):
+        self.clean_shutdown = False  # Are we in the middle of a clean shutdown
+
         self.id = self.get_unique_id()  # Connection-wide unique identifier
         self.server = server  # Which server is this Connection attached to?
         self.actor = None  # Who is the Player controlling?
@@ -63,29 +160,28 @@ class Connection(object):
         self.flush(self.output_buffer)
         self.output_buffer = ""
 
-    def get_next_command(self):
+    def get_next_input(self):
         """Return the line for the next command."""
         if self.NEWLINE not in self.input_buffer:
             return None
 
         # TODO Improve performance here with str-only operations
         parts = self.input_buffer.split(self.NEWLINE)
-        command = parts.pop(0)
+        message = parts.pop(0)
         self.input_buffer = self.NEWLINE.join(parts)
-        return command
+        return message
 
-    def handle_next_command(self):
+    def handle_next_input(self):
         """Handle the next message in the input_buffer."""
-        command = self.get_next_command()
-        if command is not None:
-            return self.handle_command(command)
+        message = self.get_next_input()
+        if message is not None:
+            return self.handle_input(message)
 
-    def handle_command(self, command):
-        """Handle a command being provided."""
-        logging.info("TELNET: " + command)
-        for connection in self.server.connections:
-            if connection is not self:
-                connection.writeln(command)
+    def handle_input(self, command):
+        """Handle an input being provided."""
+        if self.DEBUG:
+            logging.debug("DEBUG INPUT: " + command)
+        self.client.handle_input(command)
 
     def write(self, message):
         """Write to the output_buffer."""
@@ -93,7 +189,7 @@ class Connection(object):
             logging.debug("DEBUG WRITE: " + repr(message))
         self.output_buffer += message
 
-    def writeln(self, message):
+    def writeln(self, message=""):
         """Write a line to the output_buffer."""
         self.write(message + self.NEWLINE)
 
@@ -104,22 +200,21 @@ class Connection(object):
 
     def start(self):
         self.running = True
+        self.client.start()
         while self.running:
             message = self.read()
 
             if message is None:
-                self.destroy()
                 break
 
             self.receive(message)
             gevent.sleep(0.1)
 
-    def destroy(self):
-        self.stop()
-        self.server.remove_connection(self)
-
-    def stop(self):
+    def stop(self, clean=False):
         self.running = False
+        self.clean_shutdown = clean
+        self.close()
+        self.server.remove_connection(self)
 
     def clear_output_buffer(self):
         self.output_buffer = ""
@@ -139,14 +234,32 @@ class TelnetConnection(Connection):
         self.port = addr[1]  # Connection port
 
     def read(self):
-        message = self.socket.recv(self.READ_SIZE)
+        try:
+            message = self.socket.recv(self.READ_SIZE)
+        except Exception:
+            return None
+
         if not message:
             return None
+
         message = message.decode("utf-8").replace("\r\n", "\n")
         return message
 
+    def close(self):
+        try:
+            self.socket.shutdown(socket.SHUT_WR)
+        except Exception:
+            pass
+        try:
+            self.socket.close()
+        except Exception:
+            pass
+
     def flush(self, message):
-        self.socket.sendall(message)
+        try:
+            self.socket.sendall(message)
+        except Exception:
+            pass
 
 
 class TelnetManager(Manager):
@@ -210,7 +323,7 @@ class TelnetManager(Manager):
 
         while self.running:
             for connection in self.connections:
-                connection.handle_next_command()
+                connection.handle_next_input()
                 connection.handle_flushing_output()
             gevent.sleep(0.01)
 
