@@ -11,19 +11,37 @@ from mud.manager import Manager
 gevent.monkey.patch_socket()
 
 
+class TelnetClient(object):
+    """Wrapper for how our Game works."""
+    def handle_input(self, message):
+        pass
+
+
 class Connection(object):
     NEWLINE = "\n"
     NEWLINE_REPLACE = "\n\r"
+    DEBUG = False
+    UNIQUE_ID = 0
 
-    def __init__(self):
+    def __init__(self, server):
+        self.id = self.get_unique_id()  # Connection-wide unique identifier
+        self.server = server  # Which server is this Connection attached to?
         self.actor = None  # Who is the Player controlling?
 
         self.output_buffer = ""  # Output going to Player
         self.input_buffer = ""  # Commands from the Player
 
+        self.client = TelnetClient(self)
+
         self.ip = ""  # Connection IP
         self.hostname = ""  # Connection hostname
         self.port = -1  # Connection port
+
+    @classmethod
+    def get_unique_id(cls):
+        """Return a unique ID to identify this Connection."""
+        cls.UNIQUE_ID += 1
+        return str(cls.UNIQUE_ID)
 
     def read(self):
         """
@@ -34,40 +52,85 @@ class Connection(object):
 
     def receive(self, message):
         """Write a line to the input_buffer."""
+        if self.DEBUG:
+            logging.debug("DEBUG RECEIVE: " + repr(message))
         self.input_buffer += message
 
-    def handle_next(self, message):
+    def handle_flushing_output(self):
+        """Push output_buffer to socket if present."""
+        if not self.output_buffer:
+            return
+        self.flush(self.output_buffer)
+        self.output_buffer = ""
+
+    def get_next_command(self):
+        """Return the line for the next command."""
+        if self.NEWLINE not in self.input_buffer:
+            return None
+
+        # TODO Improve performance here with str-only operations
+        parts = self.input_buffer.split(self.NEWLINE)
+        command = parts.pop(0)
+        self.input_buffer = self.NEWLINE.join(parts)
+        return command
+
+    def handle_next_command(self):
         """Handle the next message in the input_buffer."""
-        raise Exception("Not yet implemented")
+        command = self.get_next_command()
+        if command is not None:
+            return self.handle_command(command)
+
+    def handle_command(self, command):
+        """Handle a command being provided."""
+        logging.info("TELNET: " + command)
+        for connection in self.server.connections:
+            if connection is not self:
+                connection.writeln(command)
 
     def write(self, message):
         """Write to the output_buffer."""
+        if self.DEBUG:
+            logging.debug("DEBUG WRITE: " + repr(message))
         self.output_buffer += message
 
     def writeln(self, message):
         """Write a line to the output_buffer."""
         self.write(message + self.NEWLINE)
 
-    def flush(self):
-        """Flush the output_buffer to the socket."""
+    def flush(self, message):
+        """Flush the message to the socket, clearing the buffer is handled
+           elsewhere."""
         raise Exception("Not yet implemented")
 
     def start(self):
         self.running = True
         while self.running:
             message = self.read()
-            print(message)
+
+            if message is None:
+                self.destroy()
+                break
+
             self.receive(message)
             gevent.sleep(0.1)
+
+    def destroy(self):
+        self.stop()
+        self.server.remove_connection(self)
 
     def stop(self):
         self.running = False
 
+    def clear_output_buffer(self):
+        self.output_buffer = ""
+
+
 class TelnetConnection(Connection):
     READ_SIZE = 1024
+    DEBUG = True
 
-    def __init__(self, socket, addr):
-        super(TelnetConnection, self).__init__()
+    def __init__(self, socket, addr, *args, **kwargs):
+        super(TelnetConnection, self).__init__(*args, **kwargs)
 
         self.socket = socket  # Raw socket
 
@@ -77,11 +140,13 @@ class TelnetConnection(Connection):
 
     def read(self):
         message = self.socket.recv(self.READ_SIZE)
-        return message.decode("utf-8")
+        if not message:
+            return None
+        message = message.decode("utf-8").replace("\r\n", "\n")
+        return message
 
-    def flush(self):
-        self.socket.sendall(self.output_buffer)
-        self.output_buffer = ""
+    def flush(self, message):
+        self.socket.sendall(message)
 
 
 class TelnetManager(Manager):
@@ -107,17 +172,26 @@ class TelnetManager(Manager):
 
         logging.info("Started telnet server: {}:{}".format(host, port))
 
-    def handle_new_connection(self, connection, address):
-        logging.info("New telnet connection from {}:{}".format(*address))
-        upgraded = TelnetConnection(connection, address)
-        self.connections.append(upgraded)
+    def add_connection(self, connection):
+        """Add the Connection to the list."""
         # TODO register Connection with Game
-        upgraded.start()
+        self.connections.append(connection)
+
+    def remove_connection(self, connection):
+        """Remove the Connection from the list."""
+        # TODO unregister Connection with Game
+        self.connections.remove(connection)
+
+    def handle_new_connection(self, sock, addr):
+        logging.info("New telnet connection from {}:{}".format(*addr))
+        connection = TelnetConnection(sock, addr, self)
+        self.add_connection(connection)
+        connection.start()
 
     def accept_port_connections(self, port):
         while self.running:
-            connection, address = port.accept()
-            gevent.spawn(self.handle_new_connection, connection, address)
+            sock, addr = port.accept()
+            gevent.spawn(self.handle_new_connection, sock, addr)
             gevent.sleep(0.1)
 
     def start(self):
@@ -133,6 +207,12 @@ class TelnetManager(Manager):
 
         for port in self.ports:
             gevent.spawn(self.accept_port_connections, port)
+
+        while self.running:
+            for connection in self.connections:
+                connection.handle_next_command()
+                connection.handle_flushing_output()
+            gevent.sleep(0.01)
 
     def dehydrate(self):
         """Convert this into the dumbest data possible."""
