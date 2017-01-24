@@ -10,6 +10,7 @@ from mud.connection import Connection
 from mud.module import Module
 from mud.manager import Manager
 from modules.core import Actor
+from utils.ansi import Ansi
 
 gevent.monkey.patch_socket()
 
@@ -156,10 +157,17 @@ class TelnetConnection(Connection):
 
         self.socket = socket  # Raw socket
         self.client = TelnetClient(self)
+        self.color = True
 
         self.ip = addr[0]  # Connection IP
         self.hostname = addr[0]  # Connection hostname
         self.port = addr[1]  # Connection port
+
+    def enable_color(self):
+        self.color = True
+
+    def disable_color(self):
+        self.color = False
 
     def read(self):
         message = self.socket.recv(self.READ_SIZE)
@@ -175,7 +183,13 @@ class TelnetConnection(Connection):
         self.socket.close()
 
     def flush(self, message):
+        if self.color:
+            message = Ansi.colorize(message)
+        else:
+            message = Ansi.decolorize(message)
+
         self.socket.sendall(message.encode())
+
 
 class TelnetServer(Manager):
     HANDLE_EVENTS = [
