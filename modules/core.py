@@ -94,6 +94,9 @@ class Actor(RoomEntity):
 
             actor.echo(message)
 
+    def get_aliases(self):
+        return {}
+
 
 class Actors(GameCollection):
     WRAPPER_CLASS = Actor

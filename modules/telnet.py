@@ -112,9 +112,14 @@ class TelnetClient(Client):
         if message[0] in possible_aliases:
             message = self.ONE_CHAR_ALIASES[message[0]] + " " + message[1:]
 
-        parts = message.split(" ")
-
         actor = self.connection.actor
+
+        # Handle player aliases
+        aliases = actor.get_aliases()
+        parts = message.split(" ")
+        if parts[0] in aliases:
+            parts = aliases[parts[0]].split(" ") + parts[1:]
+
         command = parts.pop(0).lower()
         arguments = tuple(parts)
 
