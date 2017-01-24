@@ -25,6 +25,7 @@ class Client(object):
         method = getattr(self, method_name)
         method(message)
 
+
 class TelnetClient(Client):
     """Wrapper for how our Game works."""
 
@@ -262,7 +263,7 @@ class TelnetConnection(Connection):
             pass
 
 
-class TelnetManager(Manager):
+class TelnetServer(Manager):
     HANDLE_EVENTS = [
         "GAME_TICK"
     ]
@@ -351,5 +352,5 @@ class Telnet(Module):
     VERSION = "0.1.0"
 
     MANAGERS = [
-        TelnetManager,
+        TelnetServer,
     ]
