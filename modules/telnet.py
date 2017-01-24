@@ -116,33 +116,20 @@ class TelnetConnection(Connection):
         self.port = addr[1]  # Connection port
 
     def read(self):
-        try:
-            message = self.socket.recv(self.READ_SIZE)
-        except Exception:
-            return None
+        message = self.socket.recv(self.READ_SIZE)
 
-        if not message:
+        if message is None or not message:
             return None
 
         message = message.decode("utf-8").replace("\r\n", "\n")
         return message
 
     def close(self):
-        try:
-            self.socket.shutdown(socket.SHUT_WR)
-        except Exception:
-            pass
-        try:
-            self.socket.close()
-        except Exception:
-            pass
+        self.socket.shutdown(socket.SHUT_WR)
+        self.socket.close()
 
     def flush(self, message):
-        try:
-            self.socket.sendall(message)
-        except Exception:
-            pass
-
+        self.socket.sendall(message.encode())
 
 class TelnetServer(Manager):
     HANDLE_EVENTS = [
