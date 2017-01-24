@@ -89,7 +89,7 @@ class ExampleManager(Manager):
         "GAME_TICK",
     ]
 
-    def handle_event(self, event, Characters, Rooms, Areas):
+    def tick(self, Characters, Rooms, Areas):
         chars = Characters.query({
             "room_id": "market_square",
         })
@@ -103,11 +103,14 @@ class ExampleManager(Manager):
                 char.save()
                 room = char.get_room()
                 area = room.get_area()
-                logging.debug("* {} - {} - {} - {}".format(char.name, room.name, area.name, char.count))
+                logging.debug("* {} - {} - {} - {}".format(
+                    char.name,
+                    room.name,
+                    area.name,
+                    char.count
+                ))
         else:
             print("No characters")
-
-        return event
 
 
 class Entities(GameCollection):

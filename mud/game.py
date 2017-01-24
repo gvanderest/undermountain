@@ -115,7 +115,7 @@ class Game(object):
         """Stop any processes/modules that are running."""
         self.running = False
 
-    def inject(self, method, overrides=None):
+    def inject(self, method, overrides=None, async=False):
         """
         Call a function with injectors hydrated.  Additional injectors can be
         provided as a dictionary.
@@ -127,7 +127,9 @@ class Game(object):
         @returns {*} result of the method call
         """
         injectors = dict(self.injectors)
-        injectors.update(overrides)
+
+        if overrides is not None:
+            injectors.update(overrides)
 
         arg_names = inspect.getargspec(method)[0]
         if arg_names and arg_names[0] in ["self"]:
@@ -141,6 +143,8 @@ class Game(object):
                 # TODO use a better exception type?
                 raise Exception("Injector '{}' not found".format(name))
 
+        if async:
+            return gevent.spawn(lambda: method(*values))
         return method(*values)
 
     def dispatch(self, event_type, data=None):
@@ -167,14 +171,17 @@ class Game(object):
         self.dispatch("GAME_STARTED")
 
         for manager in self.managers:
-            manager.start()
+            self.inject(manager.start, async=True)
 
         while self.running:
-            self.dispatch("GAME_TICK")
+            # FIXME Move this into unique threads for Managers, for now, this
+            # fits, but is not pretty.
+            for manager in self.managers:
+                self.inject(manager.tick)
             gevent.sleep(1.0)
 
         for manager in self.managers:
-            manager.stop()
+            self.inject(manager.stop, async=True)
 
         self.dispatch("GAME_STOPPED")
 
