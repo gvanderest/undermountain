@@ -1,10 +1,45 @@
 # Undermountain Python MUD Engine
 
+A modular MUD platform for flexibly creating worlds, written in Python.
+
+## Features
+
+### In Progress
+* Telnet Connection Server
+* WebSockets Connection Server
+* Module System for Extensibility
+* Flat-File Database Collections for Areas, Rooms, Actors, Objects, etc.
+
+### Future Features
+* Account System
+* Import from ROT - Waterdeep Specific at this time
+* Scripting Engine for Areas, Rooms, Actors, Objects, etc.
+* Random Dungeon Generators
+* Maps and Mapping (NYI)
+* Organizations (Clans, Factions, etc.)
+* Player Housing
+* Equipment System with Upgrading
+* Combat in PVE and PVP forms
+* Raiding and Encounter systems
+* Instancing of Areas for groups
+* In-Depth and Flexible Stats System with
+* Vehicles and Mounts
+* Pets and Henchmen
+* PVP Battlegrounds and Arenas
+* API Integrations for fetching data
+* Bandit Attacks!
+
+
 ## Installation
+1. Install Python3
 
-1. Install Python 3
+    See: https://www.python.org/downloads/
+
+    At this time, Python 2.7.X may still work, but with our target being
+    Python3, there may be conflicts that will not be resolved unless they
+    affect the newest versions of the Python3 interpreter.
+
 2. Download the code from this repository
-
     ```shell
     git clone git@bitbucket.org:wdmud/undermountain.git
     ```
