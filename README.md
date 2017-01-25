@@ -9,15 +9,30 @@
     git clone git@bitbucket.org:wdmud/undermountain.git
     ```
 
-3. Create a virtual environment
+3. Create a virtual environment (recommended)
+    If you wish to create a sandbox that prevents the Undermountain engine
+    from being affected by the rest of the system, it can be created via
+    the virtual environment system.
 
     ```shell
     python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+5. Install any dependencies
+    Using the built-in Python package manager `pip` you are able to read the
+    list of dependencies from a file and install them.
+
+    ```shell
+    pip install -r requirements.txt
     ```
 
 ## Interacting with the Engine
 
-This will always require that you load up the virtual environment.
+### Activate the virtual environment (see above)
+
+If you are using one, you will need to activate it each time you wish to start
+the engine.
 
 ```shell
 source venv/bin/activate
