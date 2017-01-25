@@ -8,6 +8,30 @@ from utils.listify import listify
 import logging
 
 
+def say_command(self, arguments):
+    if not arguments:
+        self.echo("Say what?")
+        return
+
+    message = " ".join(arguments)
+
+    self.echo("{MYou say {x'{m%s{x'" % message)
+    self.act_around("{M%s says {x'{m%s{x'" % (self.name, message), exclude=self)
+
+
+def no_handler(self, arguments):
+    self.echo("Huh?")
+
+
+def quit_command(self, arguments):
+    self.quit()
+
+
+def me_command(self, arguments):
+    message = " ".join(arguments)
+    self.gecho(message, emote=True)
+
+
 class RoomEntity(CollectionEntity):
     def get_room(self):
         Rooms = self.get_injector("Rooms")
@@ -61,6 +85,18 @@ class Rooms(GameCollection):
 
 
 class Actor(RoomEntity):
+    ONE_CHAR_ALIASES = {
+        "'": "say",
+        "/": "recall",
+        "=": "cgossip",
+        "?": "help",
+    }
+    COMMAND_HANDLERS = {
+        "say": say_command,
+        "quit": quit_command,
+        "me": me_command,
+    }
+
     def set_connection(self, connection):
         self._connection = connection
 
@@ -96,6 +132,49 @@ class Actor(RoomEntity):
 
     def get_aliases(self):
         return {}
+
+    def handle_command(self, message, ignore_aliases=False):
+        message = message.rstrip()
+
+        if not message:
+            self.write_playing_prompt()
+            return
+
+        if not ignore_aliases:
+            # Handle a one-character alias prefix
+            possible_aliases = "".join(self.ONE_CHAR_ALIASES.keys())
+            if message[0] in possible_aliases:
+                existing = message
+                message = self.ONE_CHAR_ALIASES[existing[0]]
+                if existing[1:]:
+                    message += " " + existing[1:]
+
+            # Handle player aliases
+            aliases = self.get_aliases()
+            parts = message.split(" ")
+            if parts[0] in aliases:
+                parts = aliases[parts[0]].split(" ") + parts[1:]
+
+        command = parts.pop(0).lower()
+        arguments = tuple(parts)
+
+        # Try to find a suitable command handler
+        handler = no_handler
+        for key, method in self.COMMAND_HANDLERS.items():
+            if key.startswith(command):
+                handler = method
+                break
+
+        # Execute the appropriate code
+        if handler is None:
+            self.echo("Huh?")
+        else:
+            try:
+                handler(self, arguments)
+            except Exception as e:
+                game = self.get_game()
+                game.handle_exception(e)
+                self.echo("Huh?!  (Code bug detected and reported.)")
 
 
 class Actors(GameCollection):
