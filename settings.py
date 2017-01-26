@@ -5,13 +5,13 @@ Provide options and flags for users to customize.
 import os.path
 from modules.core import Core
 from modules.telnet import Telnet
-from modules.websockets import Websockets
+from modules.websocket import Websocket
 
 
 MODULES = (
     Core,
     Telnet,
-    Websockets
+    Websocket
 )
 
 DATA_PATH = os.path.dirname(__file__) + "/data"
@@ -28,7 +28,7 @@ TELNET_PORTS = (
     {"host": "0.0.0.0", "port": 4201},
 )
 
-WEBSOCKETS_PORTS = (
+WEBSOCKET_PORTS = (
     {"host": "0.0.0.0", "port": 14200},
 )
 

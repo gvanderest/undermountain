@@ -1,8 +1,8 @@
 """
-WEBSOCKETS MODULE
+WEBSOCKET MODULE
 """
-import asyncio
-import websockets
+from gevent import pywsgi
+from geventwebsocket.handler import WebSocketHandler
 import logging
 import gevent
 import socket
@@ -12,11 +12,9 @@ from mud.server import Server
 from modules.telnet import TelnetConnection, TelnetClient
 from utils.ansi import Ansi
 
-gevent.monkey.patch_socket()
 
-
-class WebsocketsConnection(TelnetConnection):
-    """Wrapper for interfacing with raw Websockets connection."""
+class WebsocketConnection(TelnetConnection):
+    """Wrapper for interfacing with raw Websocket connection."""
     def __init__(self, websocket, path, server):
         super(TelnetConnection, self).__init__(server)
 
@@ -55,7 +53,7 @@ class WebsocketsConnection(TelnetConnection):
             pass
 
 
-class WebsocketsServer(Server):
+class WebsocketServer(Server):
     def init(self):
         self.ports = []
 
@@ -64,32 +62,38 @@ class WebsocketsServer(Server):
         host = entry["host"]
         port = entry["port"]
 
-        event_loop = asyncio.get_event_loop()
-        server = websockets.serve(self.handle_connection, host, port)
-
-        running = event_loop.run_until_complete(server)
-        self.ports.append(running)
+        port = pywsgi.WSGIServer(
+            (host, port),
+            self.handle_connection,
+            handler_class=WebSocketHandler
+        )
+        self.ports.append(port)
+        # gevent.spawn(port.serve_forever)
+        port.serve_forever()
 
         logging.info("Started websockets server: {}:{}".format(host, port))
 
-    def handle_connection(self, reader, writer):
-        print("HELLOOOOO", reader, writer)
-        logging.info("New websockets connection from {}:{}".format("abc", "123"))
+    def handle_connection(self, environ, start_response):
+        logging.info("New websocket connection from {}:{}".format("abc", "123"))
+        print("DEBUG", environ, start_response)
+        ws = environ["wsgi.websocket"]
+        while True:
+            data = ws.receive()
+            ws.send("THIS IS A TEST: " + data)
+            gevent.sleep(1.0)
+
         # connection = TelnetConnection(sock, addr, self)
         # self.add_connection(connection)
         # connection.start()
 
     def start(self):
         """Instantiate the servers/ports and sockets."""
-        from settings import WEBSOCKETS_PORTS
+        from settings import WEBSOCKET_PORTS
 
         self.running = True
 
-        for entry in WEBSOCKETS_PORTS:
+        for entry in WEBSOCKET_PORTS:
             self.create_server(entry)
-
-        # event_loop = asyncio.get_event_loop()
-        # gevent.spawn(event_loop.run_forever)
 
         while self.running:
             for connection in self.connections:
@@ -98,10 +102,10 @@ class WebsocketsServer(Server):
             gevent.sleep(0.01)
 
 
-class Websockets(Module):
-    MODULE_NAME = "Websockets"
+class Websocket(Module):
+    MODULE_NAME = "Websocket"
     VERSION = "0.1.0"
 
     MANAGERS = [
-        WebsocketsServer,
+        WebsocketServer,
     ]
