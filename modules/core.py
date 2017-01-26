@@ -133,6 +133,12 @@ class Actor(RoomEntity):
     def get_aliases(self):
         return {}
 
+    def get_game(self):
+        return self._connection.server.game
+
+    def quit(self):
+        self._connection.stop()
+
     def handle_command(self, message, ignore_aliases=False):
         message = message.rstrip()
 
@@ -204,6 +210,7 @@ class ExampleManager(Manager):
     ]
 
     def tick(self, Characters, Rooms, Areas):
+        return
         chars = Characters.query({
             "room_id": "market_square",
         })

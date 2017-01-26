@@ -209,9 +209,10 @@ class Game(object):
         while self.running:
             # FIXME Move this into unique threads for Managers, for now, this
             # fits, but is not pretty.
+            gevent.sleep(1.0)
+            logging.info("Tick")
             for manager in self.managers:
                 self.inject(manager.tick)
-            gevent.sleep(1.0)
 
         for manager in self.managers:
             self.inject(manager.stop, async=True)

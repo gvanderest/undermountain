@@ -8,7 +8,7 @@ import gevent.monkey
 from mud.client import Client
 from mud.connection import Connection
 from mud.module import Module
-from mud.manager import Manager
+from mud.server import Server
 from modules.core import Actor
 from utils.ansi import Ansi
 
@@ -152,14 +152,9 @@ class TelnetConnection(Connection):
         self.socket.sendall(message.encode())
 
 
-class TelnetServer(Manager):
-    HANDLE_EVENTS = [
-        "GAME_TICK"
-    ]
-
+class TelnetServer(Server):
     def init(self):
         self.ports = []
-        self.connections = []
 
     def create_server(self, entry):
         """Create a port to listen on."""
@@ -174,18 +169,6 @@ class TelnetServer(Manager):
         self.ports.append(sock)
 
         logging.info("Started telnet server: {}:{}".format(host, port))
-
-    def add_connection(self, connection):
-        """Add the Connection to the list."""
-        # TODO register Connection with Game
-        self.connections.append(connection)
-        self.game.add_connection(connection)
-
-    def remove_connection(self, connection):
-        """Remove the Connection from the list."""
-        # TODO unregister Connection with Game
-        self.connections.remove(connection)
-        self.game.remove_connection(connection)
 
     def handle_new_connection(self, sock, addr):
         logging.info("New telnet connection from {}:{}".format(*addr))
@@ -218,24 +201,6 @@ class TelnetServer(Manager):
                 connection.handle_next_input()
                 connection.handle_flushing_output()
             gevent.sleep(0.01)
-
-    def dehydrate(self):
-        """Convert this into the dumbest data possible."""
-        return {
-            "connections": [conn.dehydrate() for conn in self.connections]
-        }
-
-    def hydrate(self, payload):
-        """Convert dumb information into better."""
-        self.connections = [
-            TelnetConnection.hydrate(conn) for conn
-            in payload["connections"]
-        ]
-
-    def tick(self):
-        logging.info("Number of Telnet connections: {}".format(
-            len(self.connections))
-        )
 
 
 class Telnet(Module):
