@@ -5,11 +5,13 @@ Provide options and flags for users to customize.
 import os.path
 from modules.core import Core
 from modules.telnet import Telnet
+from modules.websockets import Websockets
 
 
 MODULES = (
     Core,
     Telnet,
+    Websockets
 )
 
 DATA_PATH = os.path.dirname(__file__) + "/data"
@@ -24,6 +26,10 @@ REBOOT_FILE = 'REBOOT'
 TELNET_PORTS = (
     {"host": "0.0.0.0", "port": 4200},
     {"host": "0.0.0.0", "port": 4201},
+)
+
+WEBSOCKETS_PORTS = (
+    {"host": "0.0.0.0", "port": 14200},
 )
 
 

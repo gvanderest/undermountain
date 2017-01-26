@@ -17,6 +17,8 @@ gevent.monkey.patch_socket()
 
 class TelnetClient(Client):
     """Wrapper for how our Game works."""
+    def init(self):
+        self.last_command = None
 
     def hide_next_input(self):
         self.write("<TODO HIDE> ")
@@ -68,8 +70,18 @@ class TelnetClient(Client):
         return self.connection.actor
 
     def handle_playing(self, message):
+        if message == "!":
+            if self.last_command is None:
+                self.writeln("Huh?")
+                self.write_playing_prompt()
+            else:
+                self.handle_playing(self.last_command)
+            return
+
+        self.last_command = message
         actor = self.get_actor()
         actor.handle_command(message)
+
         self.write_playing_prompt()
 
     def gecho(self, message, emote=False):
@@ -136,7 +148,9 @@ class TelnetConnection(Connection):
         if message is None or not message:
             return None
 
-        message = message.decode("utf-8").replace("\r\n", "\n")
+        message = message \
+            .decode("utf-8", errors="ignore") \
+            .replace("\r\n", "\n")
         return message
 
     def close(self):
@@ -149,7 +163,10 @@ class TelnetConnection(Connection):
         else:
             message = Ansi.decolorize(message)
 
-        self.socket.sendall(message.encode())
+        try:
+            self.socket.sendall(message.encode())
+        except OSError:
+            pass
 
 
 class TelnetServer(Server):
@@ -167,10 +184,11 @@ class TelnetServer(Server):
         sock.listen(1)
 
         self.ports.append(sock)
+        gevent.spawn(self.accept_port_connections, sock)
 
         logging.info("Started telnet server: {}:{}".format(host, port))
 
-    def handle_new_connection(self, sock, addr):
+    def handle_connection(self, sock, addr):
         logging.info("New telnet connection from {}:{}".format(*addr))
         connection = TelnetConnection(sock, addr, self)
         self.add_connection(connection)
@@ -179,7 +197,7 @@ class TelnetServer(Server):
     def accept_port_connections(self, port):
         while self.running:
             sock, addr = port.accept()
-            gevent.spawn(self.handle_new_connection, sock, addr)
+            gevent.spawn(self.handle_connection, sock, addr)
             gevent.sleep(0.1)
 
     def start(self):
@@ -192,9 +210,6 @@ class TelnetServer(Server):
 
         for entry in TELNET_PORTS:
             self.create_server(entry)
-
-        for port in self.ports:
-            gevent.spawn(self.accept_port_connections, port)
 
         while self.running:
             for connection in self.connections:

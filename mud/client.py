@@ -4,6 +4,10 @@ class Client(object):
         self.write = connection.write
         self.writeln = connection.writeln
         self.state = "login_username"
+        self.init()
+
+    def init(self):
+        pass
 
     def get_game(self):
         server = self.connection.server

@@ -24,6 +24,7 @@ def no_handler(self, arguments):
 
 
 def quit_command(self, arguments):
+    self.echo("You are quitting.")
     self.quit()
 
 
@@ -143,7 +144,6 @@ class Actor(RoomEntity):
         message = message.rstrip()
 
         if not message:
-            self.write_playing_prompt()
             return
 
         if not ignore_aliases:

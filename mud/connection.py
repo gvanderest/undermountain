@@ -102,6 +102,7 @@ class Connection(object):
     def stop(self, clean=False):
         self.running = False
         self.clean_shutdown = clean
+        self.handle_flushing_output()
         self.close()
         self.server.remove_connection(self)
 
