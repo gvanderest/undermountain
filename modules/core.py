@@ -8,6 +8,23 @@ from utils.listify import listify
 import logging
 
 
+def look_command(self, arguments, Characters):
+    print("looking")
+    if arguments:
+        print("looking at person")
+        self.echo("Looking at players and things not yet supported.")
+        return
+
+    players = list(Characters.query())
+    if not players:
+        self.echo("You do not see anyone here.")
+        return
+
+    print(players)
+    for player in players:
+        print("Player", player)
+        self.echo("%s{x is here." % player.format_name_to(self))
+
 def say_command(self, arguments):
     if not arguments:
         self.echo("Say what?")
@@ -86,6 +103,7 @@ class Rooms(GameCollection):
 
 
 class Actor(RoomEntity):
+    # TODO move commands and handlers/logic out into their own places
     ONE_CHAR_ALIASES = {
         "'": "say",
         "/": "recall",
@@ -93,10 +111,17 @@ class Actor(RoomEntity):
         "?": "help",
     }
     COMMAND_HANDLERS = {
+        "look": look_command,
+        "say": say_command,
         "say": say_command,
         "quit": quit_command,
         "me": me_command,
     }
+
+    def format_name_to(self, target):
+        """Format the name of an Actor to another target, taking visibility
+           into account."""
+        return self.name
 
     def set_connection(self, connection):
         self._connection = connection
