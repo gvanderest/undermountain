@@ -11,7 +11,7 @@ from modules.websocket import Websocket
 MODULES = (
     Core,
     Telnet,
-    Websocket
+    # Websocket
 )
 
 DATA_PATH = os.path.dirname(__file__) + "/data"
@@ -31,6 +31,8 @@ TELNET_PORTS = (
 WEBSOCKET_PORTS = (
     {"host": "0.0.0.0", "port": 14200},
 )
+
+DEBUG_CONNECTION_COUNTS = False
 
 
 DIRECTIONS = {

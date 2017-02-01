@@ -34,7 +34,9 @@ class Server(Manager):
         ]
 
     def tick(self):
-        logging.info("Number of {} connections: {}".format(
-            self.__class__.__name__,
-            len(self.connections))
-        )
+        from settings import DEBUG_CONNECTION_COUNTS
+        if DEBUG_CONNECTION_COUNTS:
+            logging.info("Number of {} connections: {}".format(
+                self.__class__.__name__,
+                len(self.connections))
+            )

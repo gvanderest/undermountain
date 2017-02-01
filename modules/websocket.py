@@ -62,14 +62,13 @@ class WebsocketServer(Server):
         host = entry["host"]
         port = entry["port"]
 
-        port = pywsgi.WSGIServer(
+        server = pywsgi.WSGIServer(
             (host, port),
-            self.handle_connection,
-            handler_class=WebSocketHandler
+            self.handle_connection
+            # handler_class=WebSocketHandler
         )
-        self.ports.append(port)
-        # gevent.spawn(port.serve_forever)
-        port.serve_forever()
+        self.ports.append(server)
+        gevent.spawn(server.serve_forever)
 
         logging.info("Started websockets server: {}:{}".format(host, port))
 
