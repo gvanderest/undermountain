@@ -148,7 +148,10 @@ class Game(object):
         """Stop any processes/modules that are running."""
         self.running = False
 
-    def inject(self, method, overrides=None, async=False):
+    def inject_async(self, method, **kwargs):
+        return gevent.spawn(self.inject, method, **kwargs)
+
+    def inject(self, method, **overrides):
         """
         Call a function with injectors hydrated.  Additional injectors can be
         provided as a dictionary.
@@ -159,26 +162,32 @@ class Game(object):
         @param {dict} [overrides=None] to add/override existing game injectors
         @returns {*} result of the method call
         """
+        # Make a copy of the injectors
         injectors = dict(self.injectors)
 
         if overrides is not None:
             injectors.update(overrides)
 
         arg_names = inspect.getargspec(method)[0]
-        if arg_names and arg_names[0] in ["self"]:
-            arg_names.pop(0)
 
-        values = []
+        values = {}
         for name in arg_names:
+
+            # Allow overriding of "_self"->"self" injector
+            internal_name = name
+            if name == "self":
+                if "_self" not in injectors:
+                    continue
+                internal_name = "_self"
+
             try:
-                values.append(injectors[name])
+                values[name] = injectors[internal_name]
             except KeyError as e:
                 # TODO use a better exception type?
-                raise Exception("Injector '{}' not found".format(name))
+                raise Exception("Injector '{}' in {} not found for {}".format(
+                    name, arg_names, method))
 
-        if async:
-            return gevent.spawn(lambda: method(*values))
-        return method(*values)
+        return method(**values)
 
     def dispatch(self, event_type, data=None):
         if data is None:
@@ -192,7 +201,7 @@ class Game(object):
                 if event.type not in manager.HANDLE_EVENTS:
                     continue
 
-            event = self.inject(manager.handle_event, {"event": event})
+            event = self.inject(manager.handle_event, event=event)
             if event.is_blocked():
                 break
 
@@ -204,7 +213,7 @@ class Game(object):
         self.dispatch("GAME_STARTED")
 
         for manager in self.managers:
-            self.inject(manager.start, async=True)
+            self.inject_async(manager.start)
 
         while self.running:
             # FIXME Move this into unique threads for Managers, for now, this
@@ -215,7 +224,7 @@ class Game(object):
                 self.inject(manager.tick)
 
         for manager in self.managers:
-            self.inject(manager.stop, async=True)
+            self.inject_async(manager.stop)
 
         self.dispatch("GAME_STOPPED")
 

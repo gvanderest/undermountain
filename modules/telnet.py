@@ -80,7 +80,9 @@ class TelnetClient(Client):
 
         self.last_command = message
         actor = self.get_actor()
-        actor.handle_command(message)
+        game = self.get_game()
+        game.inject(actor.handle_command,
+            message=message, ignore_aliases=False)
 
         self.write_playing_prompt()
 

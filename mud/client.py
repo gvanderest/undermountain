@@ -18,4 +18,4 @@ class Client(object):
         method_name = "handle_{}".format(self.state)
 
         method = getattr(self, method_name)
-        game.inject(method, {"message": message})
+        game.inject(method, message=message)

@@ -175,10 +175,10 @@ class Actor(RoomEntity):
         if handler is None:
             self.echo("Huh?")
         else:
+            game = self.get_game()
             try:
-                handler(self, arguments)
+                game.inject(handler, _self=self, arguments=arguments)
             except Exception as e:
-                game = self.get_game()
                 game.handle_exception(e)
                 self.echo("Huh?!  (Code bug detected and reported.)")
 
