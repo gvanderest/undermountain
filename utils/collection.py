@@ -130,13 +130,20 @@ class Collection(object):
             return self.get(spec)
 
         for record in self.query(spec=spec, limit=1):
-            return self.wrap_record(record)
+            return record
 
         return None
 
     def query(self, spec=None, limit=None):
         """Generate a list of Records with a specification."""
         ids = None
+
+        # No filter provided
+        if spec is None:
+            for id in self.records.keys():
+                yield self.get(id)
+            raise StopIteration()
+
         for field in spec:
             matched = False
             for indexer in self.INDEXES:
@@ -192,6 +199,8 @@ class Collection(object):
         self.records[primary_key] = record
         self.index(record)
 
+        return self.wrap_record(record)
+
     def remove(self, record):
         """Remove the record from the Collection."""
         if hasattr(record, "__dict__"):
@@ -244,9 +253,13 @@ class GameCollection(EntityCollection):
 
 class Entity(object):
     def __init__(self, data):
+        if not isinstance(data, dict):
+            raise ValueError("Data must be a dictionary.")
         self._data = data
 
     def __getattr__(self, key):
+        if key.startswith("_"):
+            return super(Entity, self).__getattr__(key, None)
         return self._data.get(key, None)
 
     def __setattr__(self, key, value):
