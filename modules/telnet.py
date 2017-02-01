@@ -9,7 +9,6 @@ from mud.client import Client
 from mud.connection import Connection
 from mud.module import Module
 from mud.server import Server
-from modules.core import Actor
 from utils.ansi import Ansi
 
 gevent.monkey.patch_socket()
@@ -42,9 +41,16 @@ class TelnetClient(Client):
             return
         self.state = "playing"
 
-        actor = Actor({
-            "name": message.lower().title()
-        })
+        game = self.get_game()
+        Characters = game.get_injector("Characters")
+
+        cleaned_name = message.lower().title()
+
+        data = {"name": cleaned_name}
+
+        actor = Characters.find(data)
+        if not actor:
+            actor = Characters.save(data)
 
         self.connection.actor = actor
         actor.set_connection(self.connection)
@@ -117,6 +123,11 @@ class TelnetClient(Client):
 
     def quit(self):
         self.gecho("quit the chat", emote=True)
+        Characters = self.get_game().get_injector("Characters")
+
+        Characters.remove(self.actor)
+        self.actor = None
+
         self.connection.stop(clean=True)
 
     def login(self):
