@@ -29,6 +29,12 @@ class Connection(object):
         cls.UNIQUE_ID += 1
         return str(cls.UNIQUE_ID)
 
+    def set_client(self, client):
+        self.client = client
+
+    def get_client(self):
+        return self.client
+
     def read(self):
         """
         Read from raw socket.

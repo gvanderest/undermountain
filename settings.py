@@ -43,3 +43,20 @@ DIRECTIONS = {
     "up": {"opposite_id": "down"},
     "down": {"opposite_id": "up"},
 }
+
+SWEAR_WORDS = (
+    "cunt",
+    "cunts",
+    "fag",
+    "faggot",
+    "fags",
+    "fuck",
+    "fucker",
+    "fucking",
+    "fucked",
+    "fucks",
+    "nigger",
+    "niggers",
+)
+SWEAR_WORDS_REPLACE_SYMBOL = "*"
+SWEAR_WORDS_IGNORE_CHARS = "'\",\n\r-_?!"

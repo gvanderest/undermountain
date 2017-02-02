@@ -8,6 +8,10 @@ from utils.listify import listify
 import logging
 
 
+def swear_command(self, arguments):
+    self.echo("Testing swear filter: fuck")
+
+
 def look_command(self, arguments, Characters):
     print("looking")
     if arguments:
@@ -116,6 +120,7 @@ class Actor(RoomEntity):
         "say": say_command,
         "quit": quit_command,
         "me": me_command,
+        "swear": swear_command,
     }
 
     def format_name_to(self, target):
@@ -129,11 +134,18 @@ class Actor(RoomEntity):
     def get_connection(self):
         return self._connection
 
+    def get_client(self):
+        connection = self.get_connection()
+        if not connection:
+            return None
+
+        return connection.get_client()
+
     def echo(self, message):
-        connection = self._connection
-        if connection is None:
+        client = self.get_client()
+        if client is None:
             return
-        connection.writeln(message)
+        client.writeln(message)
 
     def act_around(self, message, *args, **kwargs):
         self.gecho(message, *args, **kwargs)
