@@ -13,9 +13,7 @@ def swear_command(self, arguments):
 
 
 def look_command(self, arguments, Characters):
-    print("looking")
     if arguments:
-        print("looking at person")
         self.echo("Looking at players and things not yet supported.")
         return
 
@@ -24,10 +22,9 @@ def look_command(self, arguments, Characters):
         self.echo("You do not see anyone here.")
         return
 
-    print(players)
     for player in players:
-        print("Player", player)
         self.echo("%s{x is here." % player.format_name_to(self))
+
 
 def say_command(self, arguments):
     if not arguments:
@@ -37,7 +34,10 @@ def say_command(self, arguments):
     message = " ".join(arguments)
 
     self.echo("{MYou say {x'{m%s{x'" % message)
-    self.act_around("{M%s says {x'{m%s{x'" % (self.name, message), exclude=self)
+    self.act_around(
+        "{M%s says {x'{m%s{x'" % (self.name, message),
+        exclude=self
+    )
 
 
 def no_handler(self, arguments):
