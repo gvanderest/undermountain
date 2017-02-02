@@ -9,7 +9,7 @@ import logging
 
 
 def swear_command(self, arguments):
-    self.echo("Testing swear filter: fuck")
+    self.echo("Testing swear filter: fuck Fuck FUCK fUcK fuCK? !!Fuck!!")
 
 
 def look_command(self, arguments, Characters):

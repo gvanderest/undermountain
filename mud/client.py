@@ -1,3 +1,6 @@
+import re
+
+
 class Client(object):
     NEWLINE = "\n"
 
@@ -46,7 +49,7 @@ class Client(object):
             stripped = stripped.replace(char, " ")
 
         # Make unique list
-        words = set(stripped.split(" "))
+        words = set(stripped.lower().split(" "))
 
         # TODO Performance test this
         # Replace out swears, as they're found
@@ -55,7 +58,10 @@ class Client(object):
             if word_is_swear:
                 length = len(word)
                 replacement = (SWEAR_WORDS_REPLACE_SYMBOL * length)[:length]
-                message = message.replace(word, replacement)
+
+                pattern = re.compile(re.escape(word), re.IGNORECASE)
+
+                message = pattern.sub(replacement, message)
 
         return message
 
