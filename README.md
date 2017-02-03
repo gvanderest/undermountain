@@ -40,7 +40,7 @@ A modular MUD platform for flexibly creating worlds, written in Python.
     affect the newest versions of the Python3 interpreter.
 
 2. Download the code from this repository
-    ```shell
+    ```
     git clone git@bitbucket.org:wdmud/undermountain.git
     ```
 
@@ -49,7 +49,7 @@ A modular MUD platform for flexibly creating worlds, written in Python.
     from being affected by the rest of the system, it can be created via
     the virtual environment system.
 
-    ```shell
+    ```
     python3 -m venv venv
     source venv/bin/activate
     ```
@@ -58,7 +58,7 @@ A modular MUD platform for flexibly creating worlds, written in Python.
     Using the built-in Python package manager `pip` you are able to read the
     list of dependencies from a file and install them.
 
-    ```shell
+    ```
     pip install -r requirements.txt
     ```
 
@@ -69,14 +69,14 @@ A modular MUD platform for flexibly creating worlds, written in Python.
 If you are using one, you will need to activate it each time you wish to start
 the engine.
 
-```shell
+```
 source venv/bin/activate
 ```
 
 ### Starting the Engine
 Get the game running and able to accept players.
 
-```shell
+```
 ./um start
 ```
 
@@ -84,7 +84,7 @@ Get the game running and able to accept players.
 You can either manually make a copy of the `data` folder yourself, but if you
 prefer to have the scripts handle it:
 
-```shell
+```
 ./um backup <identifier>
 ```
 
@@ -100,7 +100,7 @@ internal command.  This may filter out only valid-looking backup files.
 You can restore data by providing a partial backups filename (must be present
 in the `backups` folder) or the direct path to a file.
 
-```shell
+```
 ./um restore <identifier or path>
 ```
 
