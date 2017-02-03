@@ -6,13 +6,13 @@ from mud.module import Module
 from mud.manager import Manager
 from utils.listify import listify
 import logging
+import random
 
 
 def title_command(self, arguments):
     if not arguments:
         self.echo("Change your title to what?")
         return
-
 
     if arguments[0] == "clear":
         self.title = ""
@@ -77,7 +77,43 @@ def swear_command(self, arguments):
     self.echo("Testing swear filter: fuck Fuck FUCK fUcK fuCK? !!Fuck!!")
 
 
+LOOK_ACTOR_FLAGS = (
+    ("y", "V", "invisible"),
+    ("8", "H", "hiding"),
+    ("c", "C", "charmed"),
+    ("b", "T", "pass_door"),
+    ("w", "P", "faerie_fire"),
+    ("C", "I", "iceshield"),
+    ("r", "I", "fireshield"),
+    ("B", "L", "shockshield"),
+    ("R", "E", "evil"),
+    ("Y", "G", "good"),
+    ("W", "S", "sanctuary"),
+    ("G", "Q", "immortal_quest"),
+)
+
+
 def look_command(self, arguments, Characters):
+    def format_actor_flags(actor):
+        flag_found = False
+        flags = ""
+        for color, symbol, flag_id in LOOK_ACTOR_FLAGS:
+            if not actor.has_flag(flag_id):
+                symbol = "."
+            else:
+                flag_found = True
+            flags += "{%s%s" % (color, symbol)
+
+        if flag_found:
+            return "{x[%s{x] " % flags
+        return ""
+
+    def format_actor(actor):
+        return "%s%s is here" % (
+            format_actor_flags(actor),
+            actor.format_name_to(self)
+        )
+
     if arguments:
         self.echo("Looking at players and things not yet supported.")
         return
@@ -99,7 +135,7 @@ def look_command(self, arguments, Characters):
         return
 
     for player in players:
-        self.echo("%s{x is here." % player.format_name_to(self))
+        self.echo(format_actor(player))
 
 
 def say_command(self, arguments):
@@ -134,6 +170,10 @@ class RoomEntity(CollectionEntity):
     def get_room(self):
         Rooms = self.get_injector("Rooms")
         return Rooms.find(self.room_id)
+
+    def has_flag(self, flag_id):
+        """Return whether this Entity has a flag applied or not."""
+        return random.randint(0, 10) == 1
 
 
 class Area(CollectionEntity):
