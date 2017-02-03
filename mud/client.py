@@ -1,3 +1,4 @@
+import time
 import re
 
 
@@ -17,13 +18,22 @@ class Client(object):
         return server.game
 
     def handle_input(self, message):
+        from settings import DEBUG_INPUT_TIMING
+
         game = self.get_game()
         method_name = "handle_{}".format(self.state)
+
+        if DEBUG_INPUT_TIMING:
+            time_started = time.time()
 
         message = self.filter_input(message)
 
         method = getattr(self, method_name)
         game.inject(method, message=message)
+
+        if DEBUG_INPUT_TIMING:
+            duration = time.time() - time_started
+            self.writeln("Input execution time: %0.5f seconds" % duration)
 
     def writeln(self, message=""):
         self.write(message + self.NEWLINE)

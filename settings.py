@@ -33,7 +33,7 @@ WEBSOCKET_PORTS = (
 )
 
 DEBUG_CONNECTION_COUNTS = False
-
+DEBUG_INPUT_TIMING = True
 
 DIRECTIONS = {
     "north": {"opposite_id": "south"},
