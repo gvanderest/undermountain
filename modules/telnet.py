@@ -143,7 +143,6 @@ class TelnetClient(Client):
 
 class TelnetConnection(Connection):
     READ_SIZE = 1024
-    DEBUG = True
 
     def __init__(self, socket, addr, *args, **kwargs):
         super(TelnetConnection, self).__init__(*args, **kwargs)
