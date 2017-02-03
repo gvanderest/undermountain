@@ -8,15 +8,30 @@ from utils.listify import listify
 import logging
 
 
+def title_command(self, arguments):
+    if not arguments:
+        self.echo("Change your title to what?")
+        return
+
+
+    if arguments[0] == "clear":
+        self.title = ""
+        self.echo("Your title has been cleared.")
+    else:
+        self.title = " ".join(arguments)
+        self.echo("Your title has been set to: %s{x" % self.title)
+
+    self.save()
+
+
 def who_command(self, arguments, Characters):
     # FIXME Use Players injector instead, in the future
     total_count = 0
     visible_count = 0
     top_count = 999
 
-    title = "The Visible Mortals and Immortals of Waterdeep"
-    self.echo("{: ^79}".format(title))
-    self.echo("-" * 79)
+    self.echo((" " * 15) + "{GThe Visible Mortals and Immortals of Waterdeep")
+    self.echo("{g" + ("-" * 79))
 
     actors = list(Characters.query())
     actors = sorted(actors, key=lambda a: a.is_immortal(), reverse=True)
@@ -42,18 +57,20 @@ def who_command(self, arguments, Characters):
                  else "{x[.{BN{x......]{x")
         line += " "
         line += actor.name
-        line += (" {x%s{x" % actor.title) if actor.title else ""
+
+        if actor.title:
+            if actor.title[0] not in ",.":
+                line += " "
+            line += ("{x%s{x" % actor.title) if actor.title else ""
+
         line += (" {x[%s{x]" % actor.bracket) if actor.bracket else ""
 
         self.echo(line)
 
     self.echo()
-    self.echo("Players found: %s   Total online: %s   Most on today: %s" % (
-        visible_count,
-        total_count,
-        top_count
-    ))
-    self.echo()
+    self.echo(("{GPlayers found{g: {x%s   " % visible_count) +
+              ("{GTotal online{g: {W%s   " % total_count) +
+              ("{GMost on today{g: {x%s" % top_count))
 
 
 def swear_command(self, arguments):
@@ -65,9 +82,20 @@ def look_command(self, arguments, Characters):
         self.echo("Looking at players and things not yet supported.")
         return
 
+    room = self.get_room()
+    self.echo("{B%s{x" % room.name)
+
+    for index, line in enumerate(room.description):
+        if index == 0:
+            self.echo("{x  " + line)
+        else:
+            self.echo(line)
+
+    self.echo()
+    self.echo("{x[{GExits{g:{x none]   [{GDoors{g: {xnone{x]")
+
     players = list(Characters.query())
     if not players:
-        self.echo("You do not see anyone here.")
         return
 
     for player in players:
@@ -165,10 +193,10 @@ class Actor(RoomEntity):
     COMMAND_HANDLERS = {
         "look": look_command,
         "say": say_command,
-        "say": say_command,
         "quit": quit_command,
         "me": me_command,
         "swear": swear_command,
+        "title": title_command,
         "who": who_command,
     }
 

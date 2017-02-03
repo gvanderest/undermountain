@@ -56,6 +56,7 @@ class TelnetClient(Client):
         actor.set_connection(self.connection)
 
         self.writeln("Thanks for providing your name, {}!".format(actor.name))
+        self.writeln()
         self.login()
         self.write_playing_prompt()
 
@@ -64,6 +65,9 @@ class TelnetClient(Client):
         self.hide_next_input()
 
     def write_playing_prompt(self):
+        conn = self.connection
+        if conn.output_buffer and conn.output_buffer[-2:] != (2 * self.NEWLINE):
+            self.writeln()
         self.write("> ")
 
     def no_handler(self, arguments):
@@ -87,8 +91,11 @@ class TelnetClient(Client):
         self.last_command = message
         actor = self.get_actor()
         game = self.get_game()
-        game.inject(actor.handle_command,
-            message=message, ignore_aliases=False)
+        game.inject(
+            actor.handle_command,
+            message=message,
+            ignore_aliases=False
+        )
 
         self.write_playing_prompt()
 
@@ -131,7 +138,7 @@ class TelnetClient(Client):
         self.connection.stop(clean=True)
 
     def login(self):
-        self.gecho("joined the chat", emote=True)
+        self.handle_input("look")
 
 
 class TelnetConnection(Connection):
