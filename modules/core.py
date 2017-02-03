@@ -8,6 +8,54 @@ from utils.listify import listify
 import logging
 
 
+def who_command(self, arguments, Characters):
+    # FIXME Use Players injector instead, in the future
+    total_count = 0
+    visible_count = 0
+    top_count = 999
+
+    title = "The Visible Mortals and Immortals of Waterdeep"
+    self.echo("{: ^79}".format(title))
+    self.echo("-" * 79)
+
+    actors = list(Characters.query())
+    actors = sorted(actors, key=lambda a: a.is_immortal(), reverse=True)
+    for actor in actors:
+        total_count += 1
+        if not self.can_see(actor):
+            continue
+
+        visible_count += 1
+
+        line = ""
+        line += "{RIMM{x" if actor.is_immortal() else "{x  1{x"
+        line += " "
+        line += "{BM{x"
+        line += " "
+        line += "{CH{cuman"
+        line += " "
+        line += "{RA{rdv"
+        line += " "
+        line += "     "  # Clan
+        line += " "
+        line += ("{x[...{BN{x......]{x" if actor.is_immortal()
+                 else "{x[.{BN{x......]{x")
+        line += " "
+        line += actor.name
+        line += (" {x%s{x" % actor.title) if actor.title else ""
+        line += (" {x[%s{x]" % actor.bracket) if actor.bracket else ""
+
+        self.echo(line)
+
+    self.echo()
+    self.echo("Players found: %s   Total online: %s   Most on today: %s" % (
+        visible_count,
+        total_count,
+        top_count
+    ))
+    self.echo()
+
+
 def swear_command(self, arguments):
     self.echo("Testing swear filter: fuck Fuck FUCK fUcK fuCK? !!Fuck!!")
 
@@ -121,12 +169,23 @@ class Actor(RoomEntity):
         "quit": quit_command,
         "me": me_command,
         "swear": swear_command,
+        "who": who_command,
     }
+
+    def can_see(self, target):
+        """Return whether this Actor can see target Entity."""
+        return True
+
+    def is_visible_to(self, target):
+        """Return whether this Actor is visible to the target Entity."""
+        return target.can_see(self)
 
     def format_name_to(self, target):
         """Format the name of an Actor to another target, taking visibility
            into account."""
-        return self.name
+        if target.can_see(self):
+            return self.name
+        return "Someone"
 
     def set_connection(self, connection):
         self._connection = connection
@@ -141,7 +200,7 @@ class Actor(RoomEntity):
 
         return connection.get_client()
 
-    def echo(self, message):
+    def echo(self, message=""):
         client = self.get_client()
         if client is None:
             return
@@ -232,7 +291,8 @@ class Actors(GameCollection):
 
 
 class Character(Actor):
-    pass
+    def is_immortal(self):
+        return self.name == "Kelemvor"
 
 
 class Characters(Actors):
