@@ -11,6 +11,11 @@ import logging
 import random
 
 
+def exception_command(self):
+    """Raise an Exception."""
+    raise Exception("Testing exception")
+
+
 def title_command(self, arguments):
     if not arguments:
         self.echo("Change your title to what?")
@@ -279,6 +284,7 @@ class Actor(RoomEntity):
         "me": me_command,
         "swear": swear_command,
         "title": title_command,
+        "exception": exception_command,
         "who": who_command,
     }
 
