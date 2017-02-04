@@ -4,30 +4,52 @@ A modular MUD platform for flexibly creating worlds, written in Python.
 
 ## Features
 
+### Completed
+* Telnet Server
+
 ### In Progress
-* Telnet Connection Server
-* WebSockets Connection Server
+* Account System
+* Channel Communication System
 * Module System for Extensibility
 * Flat-File Database Collections for Areas, Rooms, Actors, Objects, etc.
-
-### Future Features
-* Account System
-* Import from ROT - Waterdeep Specific at this time
-* Scripting Engine for Areas, Rooms, Actors, Objects, etc.
-* Random Dungeon Generators
-* Maps and Mapping (NYI)
 * Organizations (Clans, Factions, etc.)
-* Player Housing
-* Equipment System with Upgrading
+* Scripting Engine for Areas, Rooms, Actors, Objects, etc.
 * Combat in PVE and PVP forms
-* Raiding and Encounter systems
-* Instancing of Areas for groups
-* In-Depth and Flexible Stats System with
+* Maps and Mapping
+* Import from ROT - Waterdeep Specific at this time
+* Equipment Slot and Weaponry
+* Races
+* Classes
+* Genders
+* In-Depth Equipment Stat System
 * Vehicles and Mounts
 * Pets and Henchmen
+
+### Future Features
+* WebSocket Server
+* Seasonal Reset Systems
+* Leaderboards for Time-Trials, Arena Victories, Player-Killing, etc.
+* Random (Endless?) Dungeon Generators
+* Player Housing
+* Tradeskills
+* Crafting System
+* Raiding / Claiming / Encounter systems
+* Instancing of Areas for Groups
 * PVP Battlegrounds and Arenas
-* API Integrations for fetching data
-* Bandit Attacks!
+* Forum and Discussion System
+* Global Effects and Buffs
+* Support Ticket Submission System
+* API Integrations
+* Random (Bandit?) Encounters
+* Pet Battles
+* Minigame Support
+* DDOS Protection
+* Immortal Punishment and Control Systems
+* Justice System
+* Questing System
+* Achievement System and Brackets
+* Building Tools
+* Global Roleplay Integrations
 
 
 ## Installation
