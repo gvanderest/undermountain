@@ -58,20 +58,6 @@ class Game(object):
                     "description": ms_desc,
                     "area_id": "westbridge",
                 }
-            },
-            "characters": {
-                "xyz321": {
-                    "name": "Torog",
-                    "room_id": "market_square",
-                },
-                "abc123": {
-                    "name": "Kelemvor",
-                    "room_id": "market_square",
-                    "who_restring": "{gC{Gre{Cat{Wor of W{Cor{Gld{gs",
-                    "who_brackets": [
-                        "{YSo{Rft{rwa{8re Deve{rlop{Rme{Ynt"
-                    ]
-                },
             }
         }
         self.running = False
