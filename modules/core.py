@@ -1,6 +1,8 @@
 """
 EXAMPLE MODULE
 """
+from utils.entity import Entity
+from utils.ansi import Ansi
 from utils.collection import GameCollection, Index, CollectionEntity
 from mud.module import Module
 from mud.manager import Manager
@@ -43,18 +45,52 @@ def who_command(self, arguments, Characters):
         visible_count += 1
 
         line = ""
-        line += "{RIMM{x" if actor.is_immortal() else "{x  1{x"
+
+        level_restring = actor.get("who_level_restring", None)
+        if level_restring:
+            line += level_restring + "{x"
+        else:
+            line += "{RIMM{x" if actor.is_immortal() else "{x  1{x"
+
         line += " "
-        line += "{BM{x"
+
+        who_restring = actor.get("who_restring", None)
+        if who_restring:
+            line += who_restring
+        else:
+            gender_restring = actor.get("who_gender_restring", None)
+            line += gender_restring if gender_restring else "{BM{x"
+
+            line += " "
+
+            race_restring = actor.get("who_race_restring", None)
+            line += race_restring if race_restring else "{CH{cuman"
+
+            line += " "
+
+            class_restring = actor.get("who_class_restring", None)
+            line += class_restring if class_restring else "{RA{rdv"
+
+            line += " "
+
+            clan_restring = actor.get("who_clan_restring", None)
+            if clan_restring:
+                line += clan_restring
+            else:
+                clan = actor.get_organization("clan")
+                if not clan:
+                    line += " " * 5
+                else:
+                    line += Ansi.pad_right(clan.who_name, 5)
+
         line += " "
-        line += "{CH{cuman"
-        line += " "
-        line += "{RA{rdv"
-        line += " "
-        line += "     "  # Clan
-        line += " "
-        line += ("{x[...{BN{x......]{x" if actor.is_immortal()
-                 else "{x[.{BN{x......]{x")
+
+        flag_restring = actor.get("who_flags_restring", None)
+        if flag_restring:
+            line += "{x[%s{x]" % flag_restring
+        else:
+            line += ("{x[...{BN{x......]{x" if actor.is_immortal()
+                     else "  {x[.{BN{x......]{x")
         line += " "
         line += actor.name
 
@@ -63,7 +99,8 @@ def who_command(self, arguments, Characters):
                 line += " "
             line += ("{x%s{x" % actor.title) if actor.title else ""
 
-        line += (" {x[%s{x]" % actor.bracket) if actor.bracket else ""
+        for bracket in actor.get("who_brackets", []):
+            line += (" {x[%s{x]" % bracket)
 
         self.echo(line)
 
@@ -222,6 +259,10 @@ class Rooms(GameCollection):
     ]
 
 
+class Organization(Entity):
+    pass
+
+
 class Actor(RoomEntity):
     # TODO move commands and handlers/logic out into their own places
     ONE_CHAR_ALIASES = {
@@ -239,6 +280,29 @@ class Actor(RoomEntity):
         "title": title_command,
         "who": who_command,
     }
+
+    def get_organization(self, type_id):
+        """Return the Organization of a type."""
+        from settings import ORGANIZATIONS
+
+        organization_id = self.get_organization_id(type_id)
+
+        if not organization_id:
+            return None
+
+        org = ORGANIZATIONS.get(organization_id, None)
+        if not org:
+            return None
+
+        return Organization(org)
+
+    def get_organization_id(self, type_id):
+        """Return the Organization ID that matches the requested type."""
+        return self.get_organization_ids().get(type_id, None)
+
+    def get_organization_ids(self):
+        """Return the key/value pairs of Organizations."""
+        return self.get("organizations", {})
 
     def can_see(self, target):
         """Return whether this Actor can see target Entity."""

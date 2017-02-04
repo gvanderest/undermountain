@@ -5,7 +5,7 @@ Provide options and flags for users to customize.
 import os.path
 from modules.core import Core
 from modules.telnet import Telnet
-from modules.websocket import Websocket
+# from modules.websocket import Websocket
 
 
 MODULES = (
@@ -60,3 +60,114 @@ SWEAR_WORDS = (
 )
 SWEAR_WORDS_REPLACE_SYMBOL = "*"
 SWEAR_WORDS_IGNORE_CHARS = "'\",\n\r-_?!"
+
+ORGANIZATION_TYPES = {
+    "clan": {
+        "leader_count": 1,
+        "ranks": [
+            {
+                "id": "leader",
+                "name": "Leader",
+                "who_symbol": "L",
+                "rank": 1,
+
+                "max_count": 1,
+                "powers": {
+                    "invite": True,
+                    "remove": True,
+                    "promote": True,
+                    "demote": True
+                }
+            },
+            {
+                "id": "officer",
+                "name": "Officer",
+                "who_symbol": "O",
+                "rank": 2,
+                "powers": {
+                    "invite": True,
+                    "remove": True,
+                    "promote": True,
+                    "demote": True
+                }
+
+            },
+            {
+                "id": "member",
+                "name": "Member",
+                "who_symbol": "M",
+                "rank": 3,
+                "powers": {
+                    "invite": False,
+                    "remove": False,
+                    "promote": False,
+                    "demote": False
+                }
+            },
+            {
+                "id": "recruit",
+                "name": "Recruit",
+                "who_symbol": "R",
+                "rank": 4,
+                "powers": {
+                    "invite": False,
+                    "remove": False,
+                    "promote": False,
+                    "demote": False
+                }
+            }
+        ]
+    }
+}
+ORGANIZATIONS = {
+    "vector": {
+        "type_id": "clan",
+        "name": "{MV{mectorian {ME{mmpire",
+        "who_name": "{MV{mectr",
+        "rank_names": {
+            "leader": "{ML{meader",
+            "officer": "{ML{meader",
+            "member": "{MM{member",
+            "recruit": "{MR{mecruit",
+        }
+    },
+    "blackchurch": {
+        "type_id": "clan",
+        "name": "{8Black Church",
+        "who_name": "BlkCh",
+        "allies": [
+            "radiantheart"
+        ],
+        "rank_names": {
+            "leader": "Leader",
+            "officer": "Officer",
+            "member": "Member",
+            "recruit": "Recruit",
+        }
+    },
+    "strife": {
+        "type_id": "clan",
+        "name": "{MCh{murc{8h of S{mtrife",
+        "who_name": "{MC{8o{MS",
+        "rank_names": {
+            "leader": "{MH{mig{8hpri{mes{Mt",
+            "officer": "{MB{mi{8sh{mo{Mp",
+            "member": "{MM{me{8mb{me{Mr",
+            "recruit": "{MA{mc{8oly{mt{Me",
+        }
+    },
+    "radiantheart": {
+        "type_id": "clan",
+        "allies": [
+            "blackchurch"
+        ],
+        "name": "{RO{rr{yd{re{Rr {cof the {RR{rad{yi{ran{Rt H{re{ya{rr{Rt",
+        "who_name": "{RR{rd{RH{rr{Rt",
+        "rank_names": {
+            "leader": "Lord Knight",
+            "officer": "Officer",
+            "member": "Member",
+            "recruit": "Recruit",
+        }
+    },
+}

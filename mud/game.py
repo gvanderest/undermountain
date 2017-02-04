@@ -67,6 +67,10 @@ class Game(object):
                 "abc123": {
                     "name": "Kelemvor",
                     "room_id": "market_square",
+                    "who_restring": "{gC{Gre{Cat{Wor of W{Cor{Gld{gs",
+                    "who_brackets": [
+                        "{YSo{Rft{rwa{8re Deve{rlop{Rme{Ynt"
+                    ]
                 },
             }
         }
