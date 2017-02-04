@@ -21,5 +21,11 @@ class Entity(object):
     def __setitem__(self, key, value):
         self.__setattr__(key, value)
 
+    def __to_dict__(self):
+        return dict(self._data)
+
+    def __from_dict__(self, data):
+        self._data = dict(data)
+
     def get(self, *args, **kwargs):
         return self._data.get(*args, **kwargs)

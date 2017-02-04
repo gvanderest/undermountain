@@ -18,6 +18,7 @@ class TelnetClient(Client):
     """Wrapper for how our Game works."""
     def init(self):
         self.last_command = None
+        self.actor = None
 
     def hide_next_input(self):
         self.write("<TODO HIDE> ")
@@ -52,8 +53,8 @@ class TelnetClient(Client):
         if not actor:
             actor = Characters.save(data)
 
-        self.connection.actor = actor
-        actor.set_connection(self.connection)
+        self.actor = actor
+        actor.set_client(self)
 
         self.writeln("Thanks for providing your name, {}!".format(actor.name))
         self.writeln()
@@ -66,18 +67,28 @@ class TelnetClient(Client):
 
     def write_playing_prompt(self):
         conn = self.connection
-        if conn.output_buffer and conn.output_buffer[-2:] != (2 * self.NEWLINE):
+        if conn.output_buffer and \
+                conn.output_buffer[-2:] != (2 * self.NEWLINE):
             self.writeln()
         self.write("> ")
 
     def no_handler(self, arguments):
         self.writeln("Invalid command.")
 
+    def get_connection(self):
+        return self.connection
+
     def get_game(self):
-        return self.connection.server.game
+        connection = self.get_connection()
+        if not connection:
+            return None
+        return connection.get_game()
+
+    def set_actor(self, actor):
+        self.actor = actor
 
     def get_actor(self):
-        return self.connection.actor
+        return self.actor
 
     def handle_playing(self, message):
         if message == "!":
@@ -101,8 +112,8 @@ class TelnetClient(Client):
 
     def gecho(self, message, emote=False):
         this_conn = self.connection
-        server = this_conn.server
-        actor = this_conn.actor
+        game = self.get_game()
+        actor = self.get_actor()
 
         template = "{}<#{}>: {}"
         if emote:
@@ -114,7 +125,9 @@ class TelnetClient(Client):
             message
         )
 
-        for connection in server.connections:
+        connections = game.get_connections()
+
+        for connection in connections:
             client = connection.client
 
             if client.state != "playing":
@@ -132,8 +145,10 @@ class TelnetClient(Client):
         self.gecho("quit the chat", emote=True)
         Characters = self.get_game().get_injector("Characters")
 
-        Characters.remove(self.actor)
-        self.actor = None
+        # Remove the Actor from the Game
+        actor = self.get_actor()
+        Characters.remove(actor)
+        self.set_actor(None)
 
         self.connection.stop(clean=True)
 

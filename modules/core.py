@@ -168,10 +168,10 @@ def look_command(self, arguments, Characters):
     self.echo("{x[{GExits{g:{x none]   [{GDoors{g: {xnone{x]")
 
     players = list(Characters.query())
-    if not players:
-        return
 
     for player in players:
+        if player == self:
+            continue
         self.echo(format_actor(player))
 
 
@@ -193,9 +193,10 @@ def no_handler(self, arguments):
     self.echo("Huh?")
 
 
-def quit_command(self, arguments):
+def quit_command(self, arguments, Characters):
     self.echo("You are quitting.")
-    self.quit()
+    client = self.get_client()
+    client.quit()
 
 
 def me_command(self, arguments):
@@ -319,18 +320,11 @@ class Actor(RoomEntity):
             return self.name
         return "Someone"
 
-    def set_connection(self, connection):
-        self._connection = connection
-
-    def get_connection(self):
-        return self._connection
+    def set_client(self, client):
+        self._client = client
 
     def get_client(self):
-        connection = self.get_connection()
-        if not connection:
-            return None
-
-        return connection.get_client()
+        return self._client
 
     def echo(self, message=""):
         client = self.get_client()
@@ -344,13 +338,12 @@ class Actor(RoomEntity):
     def gecho(self, message, exclude=None):
         exclude = listify(exclude)
 
-        connection = self._connection
-        if connection is None:
-            return
-
-        connections = connection.server.game.connections
+        game = self.get_game()
+        connections = game.get_connections()
         for conn in connections:
-            actor = conn.actor
+            client = conn.get_client()
+            actor = client.get_actor()
+
             if actor is None:
                 continue
 
@@ -363,10 +356,14 @@ class Actor(RoomEntity):
         return {}
 
     def get_game(self):
-        return self._connection.server.game
+        client = self.get_client()
+        if not client:
+            return None
+        return client.get_game()
 
     def quit(self):
-        self._connection.stop()
+        client = self.get_client()
+        client.quit()
 
     def handle_command(self, message, ignore_aliases=False):
         message = message.rstrip()

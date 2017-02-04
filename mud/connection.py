@@ -1,6 +1,7 @@
 import gevent
 import logging
 
+
 class Connection(object):
     NEWLINE = "\n"
     NEWLINE_REPLACE = "\n\r"
@@ -34,6 +35,20 @@ class Connection(object):
 
     def get_client(self):
         return self.client
+
+    def get_actor(self):
+        """Return the Actor for this Connections' Client."""
+        client = self.get_client()
+        return client.get_actor() if client else None
+
+    def get_server(self):
+        return self.server
+
+    def get_game(self):
+        server = self.get_server()
+        if not server:
+            return None
+        return server.get_game()
 
     def read(self):
         """

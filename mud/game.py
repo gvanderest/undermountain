@@ -84,6 +84,10 @@ class Game(object):
         self.set_modules(modules)
         self.set_logging(logging)
 
+    def get_connections(self):
+        """Return a list of Connections."""
+        return self.connections
+
     def handle_exception(self, e):
         """Handle an Exception and report appropriately."""
         exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -99,7 +103,7 @@ class Game(object):
     def wiznet(self, type, message):
         """Display a wiznet message to Players."""
         for connection in self.connections:
-            actor = connection.actor
+            actor = connection.get_actor()
             if actor is None:
                 continue
             actor.echo("{Y-->{x %s" % (message))

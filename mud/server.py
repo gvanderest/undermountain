@@ -26,6 +26,9 @@ class Server(Manager):
             "connections": [conn.dehydrate() for conn in self.connections]
         }
 
+    def get_game(self):
+        return self.game
+
     def hydrate(self, payload):
         """Convert dumb information into better."""
         self.connections = [

@@ -35,6 +35,11 @@ class Client(object):
             duration = time.time() - time_started
             self.writeln("Input execution time: %0.5f seconds" % duration)
 
+    def quit(self):
+        """Quit the game."""
+        connection = self.get_connection()
+        connection.close()
+
     def writeln(self, message=""):
         self.write(message + self.NEWLINE)
 

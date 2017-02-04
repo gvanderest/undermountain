@@ -184,8 +184,8 @@ class Collection(object):
 
     def save(self, record):
         """Save the record to the Collection."""
-        if hasattr(record, "__dict__"):
-            record = record.__dict__()
+        if hasattr(record, "__to_dict__"):
+            record = record.__to_dict__()
         else:
             record = dict(record)
 
@@ -204,14 +204,14 @@ class Collection(object):
 
     def remove(self, record):
         """Remove the record from the Collection."""
-        if hasattr(record, "__dict__"):
-            record = record.__dict__()
+        if hasattr(record, "__to_dict__"):
+            record = record.__to_dict__()
         record = dict(record)
 
         id = record[self.PRIMARY_KEY_FIELD]
         del self.records[id]
 
-        self.index(record)
+        self.deindex(record)
 
     def deindex(self, record):
         """Remove the Record from the indexes."""
@@ -270,3 +270,11 @@ class CollectionEntity(Entity):
     def remove(self):
         """Remove the Entity from the Collection."""
         self._collection.remove(self._data)
+
+    def __eq__(self, other):
+        if self.id is None or other.id is None:
+            return False
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
