@@ -21,11 +21,22 @@ A modular MUD platform for flexibly creating worlds, written in Python.
 * Races
 * Classes
 * Genders
+* Skills and Spells
+* Character Creation
+* Rerolling
 * In-Depth Equipment Stat System
 * Vehicles and Mounts
-* Pets and Henchmen
+* Pets
+* Levelling
+* Shops
 
 ### Future Features
+* Food and Drink with Effects
+* Pills and Potions with Effects
+* Staves and Wands and Scrolls with Effects
+* Henchmen
+* Multi-Classing Support
+* Specialization Support
 * WebSocket Server
 * Seasonal Reset Systems
 * Leaderboards for Time-Trials, Arena Victories, Player-Killing, etc.
@@ -49,7 +60,21 @@ A modular MUD platform for flexibly creating worlds, written in Python.
 * Questing System
 * Achievement System and Brackets
 * Building Tools
+* Auctioning and Marketplace System
+* Forget System
+* Friends System
+* Grouping System
+* Heal- and Damage-Over-Time Effects
 * Global Roleplay Integrations
+* Organization Builder Commands
+* Clan Commands
+* Mortal Administrator System
+* Mail System
+* Banking
+* Garrison-Like Quests
+* Detect Enemies-like Skills for Minimap
+* Tutorial Area for "Adventurer" type of class
+* Tracking of failed login attempts
 
 
 ## Installation
