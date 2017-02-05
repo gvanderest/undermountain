@@ -40,7 +40,6 @@ class TelnetClient(Client):
             self.writeln("Please pick a name, even if it's short.")
             self.write_login_username_prompt()
             return
-        self.state = "playing"
 
         game = self.get_game()
         Characters = game.get_injector("Characters")
@@ -50,9 +49,14 @@ class TelnetClient(Client):
         data = {"name": cleaned_name}
 
         actor = Characters.find(data)
-        if not actor:
-            actor = Characters.save(data)
+        if actor:
+            self.writeln("Sorry, that player is already playing.")
+            self.write("What is your name? ")
+            return
 
+        actor = Characters.save(data)
+
+        self.state = "playing"
         self.actor = actor
         actor.set_client(self)
 
@@ -153,6 +157,7 @@ class TelnetClient(Client):
         self.connection.stop(clean=True)
 
     def login(self):
+        # self.act_to_room("{actor.name} slowly fades into existence.")
         self.handle_input("look")
 
 
