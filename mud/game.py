@@ -57,6 +57,15 @@ class Game(object):
                     "name": "Market Square",
                     "description": ms_desc,
                     "area_id": "westbridge",
+                    "exits": {
+                        "north": {"room_id": "market_square"},
+                        "east": {"room_id": "market_square"},
+                        "south": {"room_id": "market_square"},
+                        "west": {"room_id": "market_square"},
+                        "up": {"room_id": "market_square"},
+                        "down": {"room_id": "market_square",
+                                 "flags": ["door", "closed"]}
+                    }
                 }
             }
         }

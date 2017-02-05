@@ -136,6 +136,8 @@ LOOK_ACTOR_FLAGS = (
 
 
 def look_command(self, arguments, Characters):
+    from settings import DIRECTIONS
+
     def format_actor_flags(actor):
         flag_found = False
         flags = ""
@@ -170,7 +172,31 @@ def look_command(self, arguments, Characters):
             self.echo(line)
 
     self.echo()
-    self.echo("{x[{GExits{g:{x none]   [{GDoors{g: {xnone{x]")
+
+    basic_exits = []
+    door_exits = []
+    secret_exits = []
+
+    for direction_id, direction in DIRECTIONS.items():
+        exit = room.get_exit(direction_id)
+        if not exit:
+            continue
+
+        if exit.is_door() and exit.is_closed():
+            door_exits.append(direction["name"])
+
+        else:
+            basic_exits.append(direction["name"])
+
+    line = ""
+    line += "{x[{GExits{g:{x %s{x]" % (
+        " ".join(basic_exits) if basic_exits else "none"
+    )
+    line += "   "
+    line += "{x[{GDoors{g:{x %s{x]" % (
+        " ".join(door_exits) if door_exits else "none"
+    )
+    self.echo(line)
 
     players = list(Characters.query())
 
@@ -233,25 +259,61 @@ class Areas(GameCollection):
     ]
 
 
-class RoomExit(CollectionEntity):
-    pass
+class RoomExit(Entity):
+    def __init__(self, data, room):
+        super(RoomExit, self).__init__(data)
+        self._room = room
+
+    def get_room(self):
+        """Return the Room."""
+        return self._room
+
+    def get_flags(self):
+        """Return list of flags."""
+        return self.get("flags", [])
+
+    def has_flag(self, flag_id):
+        """Return whether the flag is present."""
+        return flag_id in self.get_flags()
+
+    def is_door(self):
+        """Return whether exit is a door or not."""
+        return self.has_flag("door")
+
+    def is_closed(self):
+        """Return whether exit is closed or not."""
+        return self.has_flag("closed")
+
+    def is_open(self):
+        """Return whether exit is open or not."""
+        return not self.is_closed()
 
 
-class RoomExits(GameCollection):
-    WRAPPER_CLASS = RoomExit
-
-    NAME = "room_exits"
-    INDEXES = [
-        Index("id", required=True, unique=True),
-        Index("direction_id"),
-        Index("room_id"),
-    ]
+# class RoomExits(GameCollection):
+#     WRAPPER_CLASS = RoomExit
+#
+#     NAME = "room_exits"
+#     INDEXES = [
+#         Index("id", required=True, unique=True),
+#         Index("direction_id"),
+#         Index("room_id"),
+#     ]
 
 
 class Room(CollectionEntity):
     def get_area(self):
         Areas = self.get_injector("Areas")
         return Areas.find(self.area_id)
+
+    def get_exits(self):
+        """Return dict of exits."""
+        return self.get("exits", {})
+
+    def get_exit(self, direction_id):
+        """Return a RoomExit."""
+        exits = self.get_exits()
+        raw_exit = exits.get(direction_id, None)
+        return RoomExit(raw_exit, self) if raw_exit else None
 
 
 class Rooms(GameCollection):
@@ -477,7 +539,7 @@ class Core(Module):
     INJECTORS = {
         "Areas": Areas,
         "Rooms": Rooms,
-        "RoomExits": RoomExits,
+        # "RoomExits": RoomExits,
         "Actors": Actors,
         "Characters": Characters,
     }

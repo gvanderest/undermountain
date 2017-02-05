@@ -36,12 +36,12 @@ DEBUG_CONNECTION_COUNTS = False
 DEBUG_INPUT_TIMING = True
 
 DIRECTIONS = {
-    "north": {"opposite_id": "south"},
-    "east": {"opposite_id": "west"},
-    "south": {"opposite_id": "north"},
-    "west": {"opposite_id": "west"},
-    "up": {"opposite_id": "down"},
-    "down": {"opposite_id": "up"},
+    "north": {"name": "{Rnorth", "opposite_id": "south"},
+    "east": {"name": "{Meast", "opposite_id": "west"},
+    "south": {"name": "{rsouth", "opposite_id": "north"},
+    "west": {"name": "{mwest", "opposite_id": "west"},
+    "up": {"name": "{Yup", "opposite_id": "down"},
+    "down": {"name": "{ydown", "opposite_id": "up"},
 }
 
 SWEAR_WORDS = (
