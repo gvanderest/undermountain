@@ -209,6 +209,9 @@ class TelnetConnection(Connection):
 
 
 class TelnetServer(Server):
+
+    CONNECTION_CLASS = TelnetConnection
+
     def init(self):
         self.ports = []
 
@@ -229,9 +232,13 @@ class TelnetServer(Server):
 
     def handle_connection(self, sock, addr):
         logging.info("New telnet connection from {}:{}".format(*addr))
-        connection = TelnetConnection(sock, addr, self)
+        connection = self.CONNECTION_CLASS(sock, addr, self)
         self.add_connection(connection)
         connection.start()
+
+    def get_port_entries(self):
+        from settings import TELNET_PORTS
+        return TELNET_PORTS
 
     def accept_port_connections(self, port):
         while self.running:
@@ -243,11 +250,11 @@ class TelnetServer(Server):
         """Instantiate the servers/ports and sockets."""
         super(TelnetServer, self).start()
 
-        from settings import TELNET_PORTS
+        port_infos = self.get_port_entries()
 
         self.running = True
 
-        for entry in TELNET_PORTS:
+        for entry in port_infos:
             self.create_server(entry)
 
         while self.running:
