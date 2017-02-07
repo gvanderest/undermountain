@@ -28,9 +28,37 @@ class TelnetClient(Client):
         self.write_login_username_prompt()
 
     def write_login_banner(self):
-        self.writeln("Waterdeep: City of Splendors")
-        self.writeln()
-        self.writeln("So far, what's implemented is essentially a groupchat.")
+        self.writeln("""\
+
+
+            ;::::;                             Original DIKUMUD by Hans
+           ;::::; :;                         Staerfeldt, Katja Nyboe, Tom
+         ;:::::'   :;                        Madsen, Michael Seirfert and
+        ;:::::;     ;.                       Sebastiand Hammer. (c) 1991
+       ,:::::'       ;           OOO\\
+       ::::::;       ;          OOOOO\\         MERC 2.1 Code by Hatchet,
+       ;:::::;       ;         OOOOOOOO      Furey and Kahn. (c) 1993
+      ,;::::::;     ;'         / OOOOOOO
+    ;:::::::::`. ,,,;.        /  / DOOOOOO     RoM 2.4 Code by Russ Taylor.
+  .';:::::::::::::::::;,     /  /    DOOOO   (c) 1996
+ ,::::::;::::::;;;;::::;,   /  /       DOOO
+;`::::::`'::::::;;;::::: ,#/  /        DOOO    RoT 1.4 Code by Russ Welsh.
+:`:::::::`;::::::;;::: ;::#  /          DOOO (c) 1997
+::`:::::::`;:::::::: ;::::# /            DOO
+`:`:::::::`;:::::: ;::::::#/             DOO   WDM 2.0 Code by Waterdeep
+ :::`:::::::`;; ;:::::::::##              OO MUD Entertainmant. (c) 2007
+ ::::`:::::::`;::::::::;:::#              OO
+ `:::::`::::::::::::;'`:;::#              O  Owned & Operated by Kelemvor
+  `:::::`::::::::;' /  / `:#                 E-Mail:  wdmudimms@gmail.com
+   ::::::`:::::;'  /  /   `#
+           ##    ##  ####  ###### ######  ####  ######  ###### ###### #####
+           ##    ## ##  ##   ##   ##     ##  ##  ##  ## ##     ##     ##  ##
+           ## ## ## ######   ##   ####   ##  ##  ##  ## ####   ####   #####
+           ## ## ## ##  ##   ##   ##     #####   ##  ## ##     ##     ##
+            ##  ##  ##  ##   ##   ###### ##  ## ######  ###### ###### ##
+                          C I T Y  O F  S P L E N D O R S
+                                   [ Est 1997 ]
+""")
 
     def write_login_username_prompt(self):
         self.write("What is your name, adventurer? ")
@@ -162,6 +190,7 @@ class TelnetClient(Client):
 
 
 class TelnetConnection(Connection):
+    TYPE = "Telnet"
     READ_SIZE = 1024
 
     def __init__(self, socket, addr, *args, **kwargs):

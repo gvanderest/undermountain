@@ -11,6 +11,55 @@ import logging
 import random
 
 
+"""
+[Num Connected_State Login@ Idle] Player Name Host
+--------------------------------------------------------------------------
+[230     PLAYING     11:47AM 80] Arcturus     175.142.151.236
+[ 12     PLAYING     03:55PM 2563] Oido         198.199.93.118
+[283     PLAYING     03:55PM   ] Kelemvor     S01061cabc0b0f193.ok.shawcable.net
+[182     PLAYING     11:52PM 20] Epiliphz     190-196-165-66.rev.knet.ca
+[249     PLAYING     03:43AM 63] Xavier       broadband.time.net.my
+[ 68   Reading MOTD  08:05PM   ] Deckard      c-68-45-114-61.hsd1.in.comcast.net
+[ 59     PLAYING     03:55PM   ] Mask         cpe-68-206-190-15.elp.res.rr.com
+[251     PLAYING     01:20AM 3 ] Elmakor      213-139-184-162.co.dnainternet.fi
+[271     PLAYING     05:54AM 24] Dobu         mobile-107-77-160-72.mobile.att.net
+[ 34  Confirm Name   06:37PM   ] Shsisha      mobile-166-137-216-203.mycingular.net
+[290     PLAYING     03:55PM   ] Bahamut      23.95.pb.dsl.quiknet.com
+[280     PLAYING     11:11PM 1 ] Nemesis      mudconnector.com
+[275     PLAYING     07:55PM 1 ] Colman       pa49-195-121-169.pa.nsw.optusnet.com.au
+[265     PLAYING     04:00PM 63] Caleb        pool-173-66-71-216.washdc.fios.verizon.net
+[274     PLAYING     09:02PM 118] Cyress       99-122-240-132.lightspeed.mssnks.sbcglobal.net
+[322     PLAYING     03:55PM   ] Dumathoin    waterdeep.org
+[ 89     PLAYING     10:38AM   ] Jergal       wsip-70-168-50-162.sd.sd.cox.net
+
+17 users
+"""
+def sockets_command(self):
+    """List the socket Connections."""
+    game = self.get_game()
+    connections = game.get_connections()
+    self.echo("[Num Connected_State Login@ Idle] Player Name Host")
+    self.echo("-" * 79)
+    count = 0
+
+    for conn in connections:
+        count += 1
+        client = conn.get_client()
+        actor = client.actor
+        self.echo("[%3d %15s %7s %3d] %15s %s (%s) %s" % (
+            count,
+            client.state,
+            "00:00XX",
+            0,
+            actor.name if actor else "UNKNOWN",
+            conn.hostname,
+            conn.ip,
+            conn.TYPE
+        ))
+
+    self.echo()
+    self.echo("%d users" % count)
+
 def exception_command(self):
     """Raise an Exception."""
     raise Exception("Testing exception")
@@ -347,6 +396,7 @@ class Actor(RoomEntity):
         "swear": swear_command,
         "title": title_command,
         "exception": exception_command,
+        "sockets": sockets_command,
         "who": who_command,
     }
 
