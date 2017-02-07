@@ -38,20 +38,27 @@ def sockets_command(self):
     """List the socket Connections."""
     game = self.get_game()
     connections = game.get_connections()
-    self.echo("[Num Connected_State Login@ Idle] Player Name Host")
+    self.echo("[Port  Num Connected_State Login@ Idle] Player Name Host")
     self.echo("-" * 79)
     count = 0
 
     for conn in connections:
         count += 1
+        state = "handshaking"
+        actor_name = "UNKNOWN"
         client = conn.get_client()
-        actor = client.actor
-        self.echo("[%3d %15s %7s %3d] %15s %s (%s) %s" % (
+
+        if client:
+            state = client.state
+            if client.actor:
+                actor_name = client.actor.name
+
+        self.echo("[%3d %15s %7s %3d] %s %s (%s) %s" % (
             count,
-            client.state,
+            state,
             "00:00XX",
             0,
-            actor.name if actor else "UNKNOWN",
+            actor_name,
             conn.hostname,
             conn.ip,
             conn.TYPE
