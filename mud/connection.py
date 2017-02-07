@@ -110,7 +110,10 @@ class Connection(object):
 
     def start(self):
         self.running = True
-        self.client.start()
+
+        if self.client:
+            self.client.start()
+
         while self.running:
             message = self.read()
 

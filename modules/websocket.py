@@ -9,6 +9,7 @@ import gevent
 import socket
 import gevent.monkey
 import hashlib
+import zlib
 from mud.module import Module
 from mud.server import Server
 from mud.client import Client
@@ -24,43 +25,63 @@ class WebsocketClient(TelnetClient):
     def start(self):
         pass
 
-    def handle_input(self, message):
-        conn = self.connection
 
-        if ":" in message:
-            parts = message.split(": ")
-            key = parts[0].strip()
-            value = parts[1].strip() if len(parts) >= 2 else ""
-            print(len(parts), parts)
-            if key == "Sec-WebSocket-Key":
-                conn.source_key = value
-                conn.hash = get_random_hash()
-                key_bytes = (conn.source_key + conn.hash).encode()
-                print("RAW KEY", repr(key_bytes))
-                conn.key = base64.b64encode(hashlib.sha1(key_bytes).hexdigest().encode())
-                print("BOOOP", conn.key)
+class WebsocketConnection(Connection):
+    """Wrapper for interfacing with raw Websocket connection."""
+    READ_SIZE = 1024
 
-            elif key == "Sec-WebSocket-Protocol":
-                self.encoding = value
-                print("SETTING WEBSOCKET ENCODING", value)
+    def __init__(self, socket, path, server):
+        super(WebsocketConnection, self).__init__(server)
 
-        if not message:
-            print(79 * "=")
-            print("END OF REQUEST")
-            response = """\
-HTTP/1.1 101 Switching Protocols
-Upgrade: websocket
-Connection: Upgrade
-Sec-WebSocket-Accept: {}
-Sec-WebSocket-Protocol: chat
-""".format(conn.key)
-            print(">" * 79)
-            print(response)
-            print(">" * 79)
-            self.connection.socket.sendall(response.encode())
-            # self.send_frames()
+        self.socket = socket  # Raw socket
+        self.client = None
+        self.color = True
 
-    def send_frames(self):
+        self.ip = "abc"
+        self.hostname = "abc"
+        self.port = -1
+
+        self.http_buffer = ""
+        self.upgraded = False
+        self.encoding = "base64"
+
+    @classmethod
+    def generate_response_key(self, key):
+        MAGIC_WEBSOCKET_HASH = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+        key_bytes = (key + MAGIC_WEBSOCKET_HASH).encode()
+        hashed = hashlib.sha1(key_bytes).digest()
+        encoded = base64.b64encode(hashed).decode("utf-8")
+
+        return encoded
+
+    def encode_frame(self, message):
+        if self.encoding == "base64":
+            message = base64.b64encode(message.encode()).decode("utf-8")
+
+        packet = []
+
+        header = 0b10000001
+        packet.append(header)
+
+        length = len(message)
+        header = 0b00000000
+        if length < 127:
+            header |= length
+            packet.append(header)
+        else:
+            header |= 126
+            packet.append(header)
+            packet.append(0b00000000)
+            packet.append(length)
+
+        packet += [ord(c) for c in message]
+
+        packet = bytes(bytearray(packet))
+
+        return packet
+
+    def decode_frame(self, frame):
+        """Return a frame converted to a utf-8 message."""
         """
           0                   1                   2                   3
           0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -80,54 +101,87 @@ Sec-WebSocket-Protocol: chat
          + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
          |                     Payload Data continued ...                |
          +---------------------------------------------------------------+"""
-        packet = [
-            1,  # Is final chunk
-            0, 0, 0,  # Reserved flags
-            0, 0, 0, 1,  # Opcode
-            0,  # Mask
-            0, 0, 0, 0, 1, 0, 0  # Payload length in bytes
-        ]
+        frame = bytearray(frame)
 
-        message = "Test"
-        packet += [ord(c) for c in message]
+        first_byte = bin(frame.pop(0))[2:]
+        final_chunk = bool(int(first_byte[0]))
+        rsv1 = int(first_byte[1], 2)
+        rsv2 = int(first_byte[2], 2)
+        rsv3 = int(first_byte[3], 2)
+        opcode = int(first_byte[4:], 2)
 
-        print(bytearray(packet))
+        print("FIRST BYTE", final_chunk, rsv1, rsv2, rsv3, opcode)
 
-        self.connection.socket.send(bytearray(packet))
-        # self.writeln(packet)
+        second_byte = bin(frame.pop(0))[2:]
+        masked = bool(int(second_byte[0]))
+        length = int(second_byte[1:], 2)
 
+        print("SECOND_BYTE", masked, length)
 
-class WebsocketConnection(Connection):
-    """Wrapper for interfacing with raw Websocket connection."""
-    READ_SIZE = 1024
+        if masked:
+            print("MASKED")
+            mask = int(bin(frame.pop(0))[2:] + bin(frame.pop(0))[2:] + \
+                bin(frame.pop(0))[2:] + bin(frame.pop(0))[2:], 2)
+            print("MASK", mask)
 
-    def __init__(self, socket, path, server):
-        super(WebsocketConnection, self).__init__(server)
+        return "Kelemvor"
 
-        self.socket = socket  # Raw socket
-        self.client = WebsocketClient(self)
-        self.color = True
+    def send_upgrade_protocol_response(self, request):
+        print("REQUEST")
+        print(request)
+        if request["headers"].get("Connection") == "Upgrade" and \
+                request["headers"].get("Upgrade") == "websocket":
 
-        self.ip = "abc"
-        self.hostname = "abc"
-        self.port = -1
+            key = request["headers"].get("Sec-WebSocket-Key", "")
+            response_key = self.generate_response_key(key)
+            response = "\r\n".join([
+                "HTTP/1.1 101 Switching Protocols",
+                "Upgrade: websocket",
+                "Connection: Upgrade",
+                "Sec-WebSocket-Protocol: {}".format(self.encoding),
+                "Sec-WebSocket-Accept: {}".format(response_key),
+            ]) + "\r\n\r\n"
 
-        self.source_key = None
-        self.key = None
-        self.encoding = "base64"
-        self.hash = None
+            self.socket.sendall(response.encode())
+
+            self.upgraded = True
+
+            self.client = TelnetClient(self)
+            self.client.start()
+
+    def handle_http_request(self, message):
+        request = {
+            "headers": {}
+        }
+
+        lines = message.split("\r\n")
+
+        for line in lines:
+            if ":" in line:
+                parts = line.split(":")
+                key = parts[0].strip()
+                value = parts[1].strip()
+
+                request["headers"][key] = value
+
+        self.send_upgrade_protocol_response(request)
 
     def read(self):
-        message = self.socket.recv(self.READ_SIZE)
+        try:
+            message = self.socket.recv(self.READ_SIZE)
+        except Exception:
+            message = None
 
-        if message is None or not message:
+        if not message:
             return None
 
-        message = message \
-            .decode("utf-8", errors="ignore") \
-            .replace("\r\n", "\n")
+        if not self.upgraded:
+            self.http_buffer += message.decode("utf-8")
+            if self.http_buffer.endswith("\r\n\r\n"):
+                self.handle_http_request(self.http_buffer)
+            return ""
 
-        print("RAW WEBSOCKET", message)
+        message = self.decode_frame(message)
         return message
 
     def close(self):
@@ -140,14 +194,29 @@ class WebsocketConnection(Connection):
         else:
             message = Ansi.decolorize(message)
 
-        try:
+        print(">" * 79)
+        print(message)
+        print(">" * 79)
+
+        if self.upgraded:
+            self.socket.sendall(self.encode_frame(message))
+        else:
             self.socket.sendall(message.encode())
-        except OSError:
-            pass
+
+
+assert WebsocketConnection.generate_response_key("sEGJXdZWFYbO1zhnJFIJYg==") == \
+    "k8XClzmPQSrsx2iosVcli0dbw2g="
+assert WebsocketConnection.generate_response_key("aP4YaacppD1DAxk7yVph6w==") == \
+    "kvA1w1TSUEC0dZbKgCKKjzZO3LU="
 
 
 class WebsocketServer(TelnetServer):
     CONNECTION_CLASS = WebsocketConnection
+
+    def __init__(self, *args, **kwargs):
+        super(WebsocketServer, self).__init__(*args, **kwargs)
+
+        self.keys = []
 
     def get_port_entries(self):
         from settings import WEBSOCKET_PORTS
