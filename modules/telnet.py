@@ -189,7 +189,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
                 continue
 
             if client_actor == actor:
-                connection.close()
+                connection.destroy()
 
             # TODO Echo that a disconnect occurred (from host)
             # TODO Wiznet that a disconnect occurred (with host)
@@ -293,7 +293,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         Characters.remove(actor)
         self.set_actor(None)
 
-        self.connection.stop(clean=True)
+        self.connection.destroy(clean=True)
 
 
 class TelnetConnection(Connection):
@@ -318,7 +318,10 @@ class TelnetConnection(Connection):
         self.color = False
 
     def read(self):
-        message = self.socket.recv(self.READ_SIZE)
+        try:
+            message = self.socket.recv(self.READ_SIZE)
+        except OSError:
+            message = None
 
         if message is None or not message:
             return None
@@ -335,8 +338,6 @@ class TelnetConnection(Connection):
             pass
 
         self.socket.close()
-        self.server.remove_connection(self)
-
 
     def flush(self, message):
         if self.color:

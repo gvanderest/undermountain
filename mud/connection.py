@@ -124,13 +124,15 @@ class Connection(object):
             self.receive(message)
             gevent.sleep(0.1)
 
-        self.stop()
-
-    def stop(self, clean=False):
-        self.running = False
+    def destroy(self, clean=False):
         self.clean_shutdown = clean
+        self.running = False
         self.handle_flushing_output()
         self.close()
+        self.server.remove_connection(self)
+
+    def close(self):
+        """Handle actual closing of the raw socket."""
 
     def clear_output_buffer(self):
         self.output_buffer = ""
