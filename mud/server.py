@@ -10,15 +10,13 @@ class Server(Manager):
 
     def add_connection(self, connection):
         """Add the Connection to the list."""
-        # TODO register Connection with Game
         self.connections.append(connection)
         self.game.add_connection(connection)
 
     def remove_connection(self, connection):
         """Remove the Connection from the list."""
-        # TODO unregister Connection with Game
-        self.connections.remove(connection)
         self.game.remove_connection(connection)
+        self.connections.remove(connection)
 
     def dehydrate(self):
         """Convert this into the dumbest data possible."""

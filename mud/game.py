@@ -106,10 +106,20 @@ class Game(object):
     def add_connection(self, connection):
         """Add a Connection to the Game."""
         self.connections.append(connection)
+        logging.info("Added connection from {}({}):{}".format(
+            connection.hostname,
+            connection.ip,
+            connection.port,
+        ))
 
     def remove_connection(self, connection):
         """Remove a Connection from the Game."""
         self.connections.remove(connection)
+        logging.info("Removed connection from {}({}):{}".format(
+            connection.hostname,
+            connection.ip,
+            connection.port,
+        ))
 
     def get_state(self):
         return self.state

@@ -19,6 +19,7 @@ class TelnetClient(Client):
     def init(self):
         self.last_command = None
         self.actor = None
+        self.name = None
 
     def hide_next_input(self):
         self.write("<TODO HIDE> ")
@@ -63,26 +64,39 @@ class TelnetClient(Client):
     def write_login_username_prompt(self):
         self.write("What is your name, adventurer? ")
 
+    def get_character(self, name):
+        game = self.get_game()
+        Characters = game.get_injector("Characters")
+        return Characters.find({"name": name})
+
+    def create_character(self, data):
+        game = self.get_game()
+        Characters = game.get_injector("Characters")
+        return Characters.save(data)
+
+    def get_cleaned_name(self, name):
+        return name.strip().lower().title()
+
     def handle_login_username(self, message):
+        """Handle logging in username prompt."""
+        self.name = self.get_cleaned_name(message)
+
         if not message:
             self.writeln("Please pick a name, even if it's short.")
             self.write_login_username_prompt()
             return
 
-        game = self.get_game()
-        Characters = game.get_injector("Characters")
+        actor = self.get_character(self.name)
 
-        cleaned_name = message.lower().title()
-
-        data = {"name": cleaned_name}
-
-        actor = Characters.find(data)
+        # That Actor is already in the Game, reconnect?
         if actor:
-            self.writeln("Sorry, that player is already playing.")
-            self.write("What is your name? ")
+            self.write_login_reconnect_confirm_prompt()
+            self.state = "login_reconnect_confirm"
             return
 
-        actor = Characters.save(data)
+        # Create the Character and bind to client
+        data = {"name": self.name}
+        actor = self.create_character(data)
 
         self.state = "playing"
         self.actor = actor
@@ -90,8 +104,105 @@ class TelnetClient(Client):
 
         self.writeln("Thanks for providing your name, {}!".format(actor.name))
         self.writeln()
-        self.login()
-        self.write_playing_prompt()
+        self.write_motd_prompt()
+        self.state = "motd"
+
+    def write_motd_prompt(self):
+        self.writeln("""\
+
+                                                          __
+                                                        //  \\\\
+                                                       // /\\ \\\\
+                                                       \\\\ \\/ //
+                                                        \\\\__//
+                                                        [|//|]
+                                                        [|//|]
+               Welcome to                               [|//|]
+                                                        [|//|]
+            W A T E R D E E P                           [|//|]
+                                                        [|//|]
+            City of Splendors                /)         [|//|]        (\\
+                                            //\\_________[|//|]________/\\\\
+                est. 1997                   ))__________||__||_________((
+                                           <_/         [  \\/  ]        \\_>
+                                                       ||    ||
+                                                       ||    ||
+                                                       ||    ||
+ [x] Waterdeep is rated [R] for Mature Audiences Only. ||    ||
+ [x] Please follow the rules of the game. [Help Rules] ||    ||
+ [x] Check the News Board for game info.               ||    ||
+                                                       ||    ||
+ [x] Type HELP for our directory of help files.        ||    ||
+ [x] Type HELP NEWBIE for basic directions and help.   ||    ||
+                                                       ||    ||
+                                                       ||    ||
+                                                       ||    ||
+         Waterdeep Entertainment                       ||    ||
+            www.waterdeep.org                          ||    ||
+                                                       ||    ||
+                                                       ||    ||
+                                                       ||    ||
+                                                       \\\\    //
+                                                        \\\\  //
+                                                         \\\\//
+                                                          \\/
+[Hit Enter to Continue]
+
+
+Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
+""")
+
+    def handle_motd(self, message):
+        self.state = "playing"
+
+        # self.act_to_room("{actor.name} slowly fades into existence.")
+
+        self.handle_input("look")
+        self.handle_input("unread")
+        self.handle_input("version")
+
+    def write_login_reconnect_confirm_prompt(self):
+        self.writeln("That character is already playing.")
+        self.write("Would you like to reconnect? [Y/N] ")
+
+    def handle_login_reconnect_confirm(self, message):
+        cleaned = message.strip().lower()
+
+        if not cleaned:
+            self.write_login_reconnect_confirm_prompt()
+            return
+
+        if not cleaned.startswith("y"):
+            self.write_login_username_prompt()
+            self.state = "login_username"
+            return
+
+        game = self.get_game()
+        actor = self.get_character(self.name)
+
+        # Cycle through Connections and disconnect existing ones
+        connection = None
+        for connection in game.get_connections():
+            client = connection.get_client()
+            client_actor = client.get_actor()
+            if not client_actor:
+                continue
+
+            if client_actor == actor:
+                connection.close()
+
+            # TODO Echo that a disconnect occurred (from host)
+            # TODO Wiznet that a disconnect occurred (with host)
+
+        # Bind the Actor to this Client
+        self.set_actor(actor)
+        actor.set_client(self)
+
+        # TODO Echo that a reconnect occurred (from host)
+        # TODO Wiznet that a reconnect occurred (with host)
+        self.writeln("Reconnected..")
+        self.state = "playing"
+        self.handle_input("look")
 
     def write_login_password_prompt(self):
         self.write("Password: ")
@@ -184,10 +295,6 @@ class TelnetClient(Client):
 
         self.connection.stop(clean=True)
 
-    def login(self):
-        # self.act_to_room("{actor.name} slowly fades into existence.")
-        self.handle_input("look")
-
 
 class TelnetConnection(Connection):
     TYPE = "Telnet"
@@ -222,8 +329,14 @@ class TelnetConnection(Connection):
         return message
 
     def close(self):
-        self.socket.shutdown(socket.SHUT_WR)
+        try:
+            self.socket.shutdown(socket.SHUT_WR)
+        except OSError:
+            pass
+
         self.socket.close()
+        self.server.remove_connection(self)
+
 
     def flush(self, message):
         if self.color:
@@ -261,7 +374,6 @@ class TelnetServer(Server):
         logging.info("Started telnet server: {}:{}".format(host, port))
 
     def handle_connection(self, sock, addr):
-        logging.info("New telnet connection from {}:{}".format(*addr))
         connection = self.CONNECTION_CLASS(sock, addr, self)
         self.add_connection(connection)
         connection.start()

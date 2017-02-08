@@ -128,7 +128,11 @@ class WebsocketConnection(Connection):
 
         chars = [chr(x) for x in results]
 
-        decoded = base64.b64decode("".join(chars)).decode("utf-8")
+        try:
+            decoded = base64.b64decode("".join(chars)).decode("utf-8")
+        except ValueError:
+            decoded = None
+
         return decoded
 
     def send_upgrade_protocol_response(self, request):
@@ -188,7 +192,10 @@ class WebsocketConnection(Connection):
         return message
 
     def close(self):
-        self.socket.shutdown(socket.SHUT_WR)
+        try:
+            self.socket.shutdown(socket.SHUT_WR)
+        except OSError:
+            pass
         self.socket.close()
 
     def flush(self, message):

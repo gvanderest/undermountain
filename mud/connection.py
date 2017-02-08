@@ -118,17 +118,19 @@ class Connection(object):
             message = self.read()
 
             if message is None:
+                self.running = False
                 break
 
             self.receive(message)
             gevent.sleep(0.1)
+
+        self.stop()
 
     def stop(self, clean=False):
         self.running = False
         self.clean_shutdown = clean
         self.handle_flushing_output()
         self.close()
-        self.server.remove_connection(self)
 
     def clear_output_buffer(self):
         self.output_buffer = ""
