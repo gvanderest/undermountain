@@ -300,14 +300,14 @@ class TelnetConnection(Connection):
     TYPE = "Telnet"
     READ_SIZE = 1024
 
-    def __init__(self, socket, addr, *args, **kwargs):
+    def __init__(self, the_socket, addr, *args, **kwargs):
         super(TelnetConnection, self).__init__(*args, **kwargs)
 
-        self.socket = socket  # Raw socket
+        self.socket = the_socket  # Raw socket
         self.client = TelnetClient(self)
         self.color = True
 
-        self.ip = addr[0]  # Connection IP
+        self.ip = socket.gethostbyname(addr[0])  # Connection IP
         self.hostname = addr[0]  # Connection hostname
         self.port = addr[1]  # Connection port
 

@@ -31,14 +31,14 @@ class WebsocketConnection(Connection):
     TYPE = "Websocket"
     READ_SIZE = 1024
 
-    def __init__(self, socket, addr, server):
+    def __init__(self, the_socket, addr, server):
         super(WebsocketConnection, self).__init__(server)
 
-        self.socket = socket  # Raw socket
+        self.socket = the_socket  # Raw socket
         self.client = None
         self.color = True
 
-        self.ip = addr[0]  # Connection IP
+        self.ip = socket.gethostbyname(addr[0])  # Connection IP
         self.hostname = addr[0]  # Connection hostname
         self.port = addr[1]  # Connection port
 
