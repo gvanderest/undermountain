@@ -95,7 +95,11 @@ class TelnetClient(Client):
             return
 
         # Create the Character and bind to client
-        data = {"name": self.name}
+        # TODO Make this a constant for starting room?
+        data = {
+            "name": self.name,
+            "room_id": "market_square"
+        }
         actor = self.create_character(data)
 
         self.state = "playing"

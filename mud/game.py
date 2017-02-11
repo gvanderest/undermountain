@@ -63,11 +63,18 @@ class Game(object):
                         "south": {"room_id": "market_square"},
                         "west": {"room_id": "market_square"},
                         "up": {"room_id": "market_square"},
-                        "down": {"room_id": "market_square",
-                                 "flags": ["door", "closed"]}
-                    }
-                }
-            }
+                        "down": {"room_id": "coliseum_entrance"},
+                    },
+                },
+                "coliseum_entrance": {
+                    "name": "Coliseum Of Pain",
+                    "description": ms_desc,
+                    "area_id": "westbridge",
+                    "exits": {
+                        "up": {"room_id": "market_square"},
+                    },
+                },
+            },
         }
         self.running = False
         self.modules = []
