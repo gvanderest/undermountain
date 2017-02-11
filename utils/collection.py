@@ -61,12 +61,13 @@ class Index(object):
 
         values = value if isinstance(value, list) else [value]
         for value in values:
-            ids = index[value]
-            ids.remove(id)
+            ids = index.get(value)
+            if ids is not None:
+                ids.remove(id)
 
-            # Remove the key if there are no records, to reduce memory
-            if not ids:
-                del index[value]
+                # Remove the key if there are no records, to reduce memory
+                if not ids:
+                    del index[value]
 
             indexes[self.field] = index
 
@@ -127,6 +128,9 @@ class Collection(object):
 
     def find(self, spec=None):
         """Find a Record with a specification."""
+        if spec is None:
+            return None
+
         if isinstance(spec, str):
             return self.get(spec)
 
