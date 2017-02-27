@@ -171,3 +171,32 @@ ORGANIZATIONS = {
         }
     },
 }
+
+CHANNELS = {
+    "ooc": {
+        "name": "Out Of Character",
+        "default_active": True,
+        "force_visible": True,
+        "force_immortal_visible": False,
+        "default_color": "{w",
+        "self_format": "{{WYou OOC {{8'{{w{message}{{8'{{x",
+        "format": "{{W[*OOC*]{{c{actor.name} {{8'{{w{message}{{8'{{x",
+    },
+    "trash": {
+        "name": "Trash",
+        "default_active": False,
+        "confirmation": True,
+        "confirmation_message": "Are you sure you wish to activate the trash channel?\nType 'trash' again if so.",
+        "force_visible": True,
+        "format": "TRASH {actor.name} '{message}'",
+    },
+    "clan": {
+        "name": "Clan Chat",
+        "self_format": "You clan '{{M{message}{{x'",
+        "format": "{actor.name} clans '{{M{message}{{x'",
+        "default_active": True,
+        "activate_check": lambda self: self.clan_id is not None,
+        "receive_check": lambda self, other: self.clan_id == other.clan_id,
+        "send_check": lambda self: self.clan_id is not None,
+    }
+}

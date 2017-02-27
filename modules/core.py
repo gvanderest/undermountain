@@ -11,6 +11,17 @@ import logging
 import random
 
 
+def channel_command(self, channel, message):
+    """Echo a Channel to the Game."""
+    game = self.get_game()
+
+    template = channel.get("format", "")
+    self.gecho(template.format(actor=self, message=message), exclude=self)
+
+    self_template = channel.get("self_format", template)
+    self.echo(self_template.format(actor=self, message=message))
+
+
 def walk_command(self, arguments):
     """Walk in a direction."""
     from settings import DIRECTIONS
@@ -511,7 +522,7 @@ class Actor(RoomEntity):
         client.quit()
 
     def handle_command(self, message, ignore_aliases=False):
-        from settings import DIRECTIONS
+        from settings import DIRECTIONS, CHANNELS
 
         message = message.rstrip()
 
@@ -535,6 +546,7 @@ class Actor(RoomEntity):
 
         command = parts.pop(0).lower()
         arguments = tuple(parts)
+        named_arguments = {}
 
         handler = None
 
@@ -543,6 +555,16 @@ class Actor(RoomEntity):
                 handler = walk_command
                 arguments = (direction_id,)
                 break
+
+        if handler is None:
+            for channel_id, channel in CHANNELS.items():
+                if channel_id.startswith(command):
+                    handler = channel_command
+                    named_arguments = {
+                        "channel": channel,
+                        "message": " ".join(arguments),
+                    }
+                    break
 
         # Try to find a suitable command handler
         if handler is None:
@@ -558,7 +580,12 @@ class Actor(RoomEntity):
 
         game = self.get_game()
         try:
-            game.inject(handler, _self=self, arguments=arguments)
+            game.inject(
+                handler,
+                _self=self,
+                arguments=arguments,
+                **named_arguments
+            )
         except Exception as e:
             game.handle_exception(e)
             self.echo("Huh?!  (Code bug detected and reported.)")

@@ -203,8 +203,7 @@ class Game(object):
             try:
                 values[name] = injectors[internal_name]
             except KeyError as e:
-                # TODO use a better exception type?
-                raise Exception("Injector '{}' in {} not found for {}".format(
+                raise KeyError("Injector '{}' in {} not found for {}".format(
                     name, arg_names, method))
 
         return method(**values)
