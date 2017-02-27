@@ -232,7 +232,10 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         return connection.get_game()
 
     def set_actor(self, actor):
-        self.actor_id = actor.id
+        if actor:
+            self.actor_id = actor.id
+        else:
+            self.actor_id = None
 
     def get_actor(self):
         Characters = self.get_injector("Characters")
