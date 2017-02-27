@@ -61,8 +61,9 @@ def sockets_command(self):
 
         if client:
             state = client.state
-            if client.actor:
-                actor_name = client.actor.name
+            actor = client.get_actor()
+            if actor:
+                actor_name = actor.name
 
         self.echo("[%3d %15s %7s %3d] %s %s (%s) %s" % (
             count,
