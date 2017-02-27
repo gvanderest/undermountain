@@ -39,7 +39,9 @@ class Connection(object):
     def get_actor(self):
         """Return the Actor for this Connections' Client."""
         client = self.get_client()
-        return client.get_actor() if client else None
+        if not client:
+            return None
+        return client.get_actor()
 
     def get_server(self):
         return self.server
