@@ -23,8 +23,8 @@ SHUTDOWN_FILE = 'SHUTDOWN'
 REBOOT_FILE = 'REBOOT'
 
 TELNET_PORTS = (
-    {"host": "0.0.0.0", "port": 4200},
     {"host": "0.0.0.0", "port": 4201},
+    {"host": "0.0.0.0", "port": 4202},
 )
 
 WEBSOCKET_PORTS = (
