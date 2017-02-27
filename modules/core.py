@@ -305,7 +305,6 @@ class RoomEntity(CollectionEntity):
 
     def get_room(self):
         Rooms = self.get_injector("Rooms")
-        self.echo("ROOM ID: {}".format(self.room_id))
         return Rooms.find(self.room_id)
 
     def has_flag(self, flag_id):
@@ -328,9 +327,10 @@ class Areas(GameCollection):
 
 
 class RoomExit(Entity):
-    def __init__(self, data, room):
+    def __init__(self, data, room, parent_room):
         super(RoomExit, self).__init__(data)
         self._room = room
+        self._parent_room = parent_room
 
     def get_room(self):
         """Return the Room."""
@@ -379,9 +379,15 @@ class Room(CollectionEntity):
 
     def get_exit(self, direction_id):
         """Return a RoomExit."""
+        Rooms = self.get_injector("Rooms")
+
         exits = self.get_exits()
         raw_exit = exits.get(direction_id, None)
-        return RoomExit(raw_exit, self) if raw_exit else None
+        if not raw_exit:
+            return None
+
+        exit_room = Rooms.get(raw_exit["room_id"])
+        return RoomExit(raw_exit, exit_room, self)
 
 
 class Rooms(GameCollection):

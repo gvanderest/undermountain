@@ -18,7 +18,7 @@ class TelnetClient(Client):
     """Wrapper for how our Game works."""
     def init(self):
         self.last_command = None
-        self.actor = None
+        self.actor_id = None
         self.name = None
 
     def hide_next_input(self):
@@ -103,7 +103,7 @@ class TelnetClient(Client):
         actor = self.create_character(data)
 
         self.state = "playing"
-        self.actor = actor
+        self.actor_id = actor.id
         actor.set_client(self)
 
         self.writeln("Thanks for providing your name, {}!".format(actor.name))
@@ -232,10 +232,13 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         return connection.get_game()
 
     def set_actor(self, actor):
-        self.actor = actor
+        self.actor_id = actor.id
 
     def get_actor(self):
-        return self.actor
+        Characters = self.get_injector("Characters")
+        actor = Characters.get(self.actor_id)
+        actor.set_client(self)
+        return actor
 
     def handle_playing(self, message):
         if message == "!":
@@ -288,9 +291,14 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
     def reconnect(self):
         self.gecho("reconnected to the chat", emote=True)
 
+    def get_injector(self, *args, **kwargs):
+        """Return an Injector from the Game."""
+        game = self.get_game()
+        return game.get_injector(*args, **kwargs)
+
     def quit(self):
         self.gecho("quit the chat", emote=True)
-        Characters = self.get_game().get_injector("Characters")
+        Characters = self.get_injector("Characters")
 
         # Remove the Actor from the Game
         actor = self.get_actor()
