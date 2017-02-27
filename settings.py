@@ -28,7 +28,8 @@ TELNET_PORTS = (
 )
 
 WEBSOCKET_PORTS = (
-    {"host": "0.0.0.0", "port": 14200},
+    {"host": "0.0.0.0", "port": 14201},
+    {"host": "0.0.0.0", "port": 14202},
 )
 
 DEBUG_CONNECTION_COUNTS = False
