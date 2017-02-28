@@ -162,7 +162,7 @@ def who_command(self, arguments, Characters):
                 line += clan_restring
             else:
                 clan = actor.get_organization("clan")
-                if not clan:
+                if not clan or clan.is_hidden():
                     line += " " * 5
                 else:
                     line += Ansi.pad_right(clan.who_name, 5)
@@ -400,7 +400,8 @@ class Rooms(GameCollection):
 
 
 class Organization(Entity):
-    pass
+    def is_hidden(self):
+        return self.hidden is True
 
 
 class Actor(RoomEntity):

@@ -99,9 +99,9 @@ class TelnetClient(Client):
         data = {
             "name": self.name,
             "room_id": "market_square",
-            # "organizations": {
-            #     "clan": "vector",
-            # },
+            "organizations": {
+                "clan": "vector",
+            },
         }
         actor = self.create_character(data)
 
