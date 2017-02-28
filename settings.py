@@ -198,5 +198,14 @@ CHANNELS = {
         "activate_check": lambda self: self.clan_id is not None,
         "receive_check": lambda self, other: self.clan_id == other.clan_id,
         "send_check": lambda self: self.clan_id is not None,
+    },
+    "say": {
+        "name": "Say",
+        "format": "{{M{actor.name}{{M says {{x'{{m{message}{{x'",
+        "self_format": "{{MYou say {{x'{{m{message}{{x'"
+    },
+    "immtalk": {
+        "name": "Immortal Talk",
+        "format": "{{x{actor.name}: {{W{message}{{x"
     }
 }

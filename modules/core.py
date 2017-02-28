@@ -285,20 +285,6 @@ def look_command(self, arguments, Characters):
         self.echo(format_actor(player))
 
 
-def say_command(self, arguments):
-    if not arguments:
-        self.echo("Say what?")
-        return
-
-    message = " ".join(arguments)
-
-    self.echo("{MYou say {x'{m%s{x'" % message)
-    self.act_around(
-        "{M%s says {x'{m%s{x'" % (self.name, message),
-        exclude=self
-    )
-
-
 def quit_command(self, arguments, Characters):
     self.echo("You are quitting.")
     client = self.get_client()
@@ -427,7 +413,6 @@ class Actor(RoomEntity):
     }
     COMMAND_HANDLERS = {
         "look": look_command,
-        "say": say_command,
         "quit": quit_command,
         "me": me_command,
         "swear": swear_command,
