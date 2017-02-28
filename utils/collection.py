@@ -32,44 +32,48 @@ class Index(object):
     def index(self, indexes, id, record):
         self.check_required(id, record)
         index = indexes.get(self.field, {})
-
         value = record.get(self.field)
+
         if value is None:
             return indexes
 
         values = value if isinstance(value, list) else [value]
         for value in values:
-            if value not in index:
-                index[value] = []
+            value_ids = index.get(value, [])
 
-            if self.unique and len(index[value]) > 0:
+            if self.unique and value_ids:
                 raise UniqueCollision("Field '{}' value '{}' for record '{}'"
                                       .format(self.field, value, id))
 
-            index[value].append(id)
+            if id not in value_ids:
+                value_ids.append(id)
 
-            indexes[self.field] = index
+            index[value] = value_ids
+
+        indexes[self.field] = index
+
         return indexes
 
     def deindex(self, indexes, id, record):
         self.check_required(id, record)
-        index = indexes.get(self.field, {})
 
+        index = indexes.get(self.field, {})
         value = record.get(self.field)
+
         if value is None:
             return indexes
 
         values = value if isinstance(value, list) else [value]
+
         for value in values:
-            ids = index.get(value)
-            if ids is not None:
-                ids.remove(id)
+            value_ids = index.get(value, [])
 
-                # Remove the key if there are no records, to reduce memory
-                if not ids:
-                    del index[value]
+            if id in value_ids:
+                value_ids.remove(id)
 
-            indexes[self.field] = index
+            index[value] = value_ids
+
+        indexes[self.field] = index
 
         return indexes
 
@@ -121,6 +125,8 @@ class Collection(object):
         if record is None:
             return None
 
+        record = dict(record)
+
         if skip_wrap:
             return record
 
@@ -159,6 +165,7 @@ class Collection(object):
                 raise UnindexedField("Field '{}' must be indexed"
                                      .format(field))
 
+        # TODO Make this faster, as it's iterating too much
         for indexer in self.INDEXES:
             if not indexer.spec_matches(spec):
                 continue
