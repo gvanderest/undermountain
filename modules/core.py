@@ -277,7 +277,7 @@ def look_command(self, arguments, Characters):
     )
     self.echo(line)
 
-    players = list(Characters.query())
+    players = Characters.query({"room_id": room.id})
 
     for player in players:
         if player == self:
