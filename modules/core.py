@@ -11,6 +11,38 @@ import logging
 import random
 
 
+def wizlist_command(self):
+    """List the Immortals."""
+    output = """\
+  ___________________________________________________________________________
+ /\\_\\                                                                      \\_\\
+|/\\\\_\\                    Gods and Rulers Of Waterdeep                      \\_\\
+\\_/_|_|                                                                     |_|
+    |_|                         Implementors [110]                          |_|
+    |_|                         ******************                          |_|
+    |_|                     Kord              Kelemvor                      |_|
+    |_|                                                                     |_|
+    |_|                         Creators     [109]                          |_|
+    |_|                         ******************                          |_|
+    |_|            Sharess           Sune              Torog                |_|
+    |_|            Bahamut           Jergal            Mielikki             |_|
+    |_|                                                                     |_|
+    |_|                         Deities      [107]                          |_|
+    |_|                         ******************                          |_|
+    |_|                              Vorcet                                 |_|
+    |_|                                                                     |_|
+    |_|                         Immortals    [105]                          |_|
+    |_|                         ******************                          |_|
+    |_|                              Meathe                                 |_|
+    |_|                                                                     |_|
+ ___|_|                                                                     |_|
+/ \\ |_|                                                                     |_|
+|\\//_/                                                                      /_/
+ \\/_/______________________________________________________________________/_/
+"""
+    self.echo(output)
+
+
 def channel_command(self, channel, message):
     """Echo a Channel to the Game."""
     if not message:
@@ -426,6 +458,7 @@ class Actor(RoomEntity):
         "sockets": sockets_command,
         "who": who_command,
         "walk": walk_command,
+        "wizlist": wizlist_command,
     }
 
     def get_organization(self, type_id):
