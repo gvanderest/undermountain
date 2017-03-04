@@ -13,6 +13,10 @@ import random
 
 def channel_command(self, channel, message):
     """Echo a Channel to the Game."""
+    if not message:
+        self.echo("Channel toggling is not yet supported.")
+        return
+
     game = self.get_game()
 
     template = channel.get("format", "")

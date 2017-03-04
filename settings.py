@@ -182,13 +182,14 @@ CHANNELS = {
         "self_format": "{{WYou OOC {{8'{{w{message}{{8'{{x",
         "format": "{{W[*OOC*]{{c{actor.name} {{8'{{w{message}{{8'{{x",
     },
-    "trash": {
-        "name": "Trash",
+    "bitch": {
+        "name": "Bitch",
         "default_active": False,
         "confirmation": True,
         "confirmation_message": "Are you sure you wish to activate the trash channel?\nType 'trash' again if so.",
         "force_visible": True,
-        "format": "TRASH {actor.name} '{message}'",
+        "format": "{actor.name} {{RB{{ri{{Bt{{bc{{Bh{{re{{Rs {{8'{{Y{message}{{8'",
+        "self_format": "{{WYou {{YBITCH {{8'{{Y{message}{{8'",
     },
     "clan": {
         "name": "Clan Chat",
@@ -207,5 +208,70 @@ CHANNELS = {
     "immtalk": {
         "name": "Immortal Talk",
         "format": "{{x{actor.name}: {{W{message}{{x"
-    }
+    },
+    "auction": {
+        "name": "Auction",
+        "self_format": "{{xYou {{R<{{G-{{Y={{MA/B{{Y={{G-{{R> {{CAuction {{x'{{G{message}{{x'",
+        "format": "{{x{actor.name} {{R<{{G-{{Y={{MA/B{{Y={{G-{{R> {{CAuctions {{x'{{G{message}{{x'",
+    },
+    "bid": {
+        "name": "Bid",
+        "self_format": "{{xYou {{R<{{G-{{Y={{MA/B{{Y={{G-{{R> {{CBid {{x'{{G{message}{{x'",
+        "format": "{{x{actor.name} {{R<{{G-{{Y={{MA/B{{Y={{G-{{R> {{CBids {{x'{{G{message}{{x'",
+    },
+    "cgossip": {
+        "name": "Clan Gossip",
+        "self_format": "You cgossip '{{R{message}{{x'",
+        "format": "{actor.name} cgossips '{{R{message}{{x'",
+    },
+    "agossip": {
+        "name": "Area Gossip",
+        "self_format": "{{xYou {{8({{Rag{{ro{{Bs{{rs{{Rip{{8) '{{B{message}{{x'",
+        "format": "{{x{actor.name} {{8({{Rag{{ro{{Bs{{rs{{Rip{{8) '{{B{message}{{x'",
+    },
+    "gtell": {
+        "name": "Group Tell",
+        "self_format": "You tell the group '{{c{message}{{x'",
+        "format": "{actor.name} tells the group '{{c{message}{{x'",
+    },
+    "quote": {
+        "name": "Quote",
+        "self_format": "You quote '{{g{message}{{x'",
+        "format": "{actor.name} quotes '{{g{message}{{x'",
+    },
+    "heronet": {
+        "name": "Heronet",
+        "format": "{{g[{{R{actor.name} {{GHero-Nets{{g]:'{message}{{g'{{x",
+        "self_format": "{{g[You {{GHero-Net{{g]:'{message}{{g'{{x",
+    },
+    "qgossip": {
+        "name": "Quest Gossip",
+        "format": "{{x{actor.name} {{C({{Wqg{{Bo{{bs{{Bs{{Wip{{C) {{x'{{C{message}{{x'",
+        "self_format": "{{xYou {{C({{Wqg{{Bo{{bs{{Bs{{Wip{{C) {{x'{{C{message}{{x'",
+    },
+    "music": {
+        "name": "Music",
+        "format": "{actor.name} MUSIC: '{{C{message}{{x'",
+        "self_format": "You MUSIC: '{{C{message}{{x'",
+    },
+    "ask": {
+        "name": "Ask",
+        "format": "{actor.name} [Q/A] Asks '{{Y{message}{{x'",
+        "self_format": "You [Q/A] Ask '{{Y{message}{{x'",
+    },
+    "answer": {
+        "name": "Answer",
+        "format": "{actor.name} [Q/A] Answers '{{Y{message}{{x'",
+        "self_format": "You [Q/A] Answer '{{Y{message}{{x'",
+    },
+    "grats": {
+        "name": "Congratulations",
+        "format": "{actor.name} {{Gg{{Yr{{Ra{{Bt{{Ms '{{y{message}{{x'",
+        "self_format": "You grats '{{y{message}{{x'",
+    },
+    "shout": {
+        "name": "Shout",
+        "format": "{actor.name} shouts '{{r{message}{{x'",
+        "self_format": "You shout '{{r{message}{{x'",
+    },
 }
