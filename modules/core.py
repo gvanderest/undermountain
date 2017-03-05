@@ -11,36 +11,28 @@ import logging
 import random
 
 
-def wizlist_command(self):
-    """List the Immortals."""
+def scrollify(lines, header=""):
     output = """\
-  ___________________________________________________________________________
- /\\_\\                                                                      \\_\\
-|/\\\\_\\                    Gods and Rulers Of Waterdeep                      \\_\\
+  __________________________________________________________________________
+ /\\_\\                                                                     \\_\\
+|/\\\\_\\""" + header.center(69)+ """\\_\\
 \\_/_|_|                                                                     |_|
-    |_|                         Implementors [110]                          |_|
-    |_|                         ******************                          |_|
-    |_|                     Kord              Kelemvor                      |_|
-    |_|                                                                     |_|
-    |_|                         Creators     [109]                          |_|
-    |_|                         ******************                          |_|
-    |_|            Sharess           Sune              Torog                |_|
-    |_|            Bahamut           Jergal            Mielikki             |_|
-    |_|                                                                     |_|
-    |_|                         Deities      [107]                          |_|
-    |_|                         ******************                          |_|
-    |_|                              Vorcet                                 |_|
-    |_|                                                                     |_|
-    |_|                         Immortals    [105]                          |_|
-    |_|                         ******************                          |_|
-    |_|                              Meathe                                 |_|
-    |_|                                                                     |_|
+"""
+    for line in lines:
+        output += "    |_| " + line.center(67, " ") + " |_|"
+    output += """
  ___|_|                                                                     |_|
 / \\ |_|                                                                     |_|
-|\\//_/                                                                      /_/
- \\/_/______________________________________________________________________/_/
+|\\//_/                                                                     /_/
+ \\/_/_____________________________________________________________________/_/
 """
-    self.echo(output)
+    return output
+
+
+def wizlist_command(self, Characters):
+    """List the Immortals."""
+    names = [char.name for char in Characters.query() if char.is_immortal()]
+    self.echo(scrollify(names, header="Gods and Rulers Of Waterdeep"))
 
 
 def channel_command(self, channel, message):
