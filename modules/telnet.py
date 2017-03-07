@@ -243,6 +243,10 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
     def get_actor(self):
         Characters = self.get_injector("Characters")
         actor = Characters.get(self.actor_id)
+
+        if not actor:
+            return None
+
         actor.set_client(self)
         return actor
 
