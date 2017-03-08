@@ -90,6 +90,23 @@ def channel_command(self, channel, message):
     self.echo(self_template.format(actor=self, message=message))
 
 
+def social_command(self, social, target):
+    """Handle an Actor performing a social emote."""
+    if target is None:
+        self.gecho(social["me_to_room"].format(me=self))
+        self.gecho(social["actor_to_room"].format(actor=self))
+        return
+
+    if target == self:
+        self.gecho(social["me_to_self"].format(me=self))
+        self.gecho(social["actor_to_self"].format(actor=self))
+        return
+
+    self.gecho(social["me_to_target"].format(me=self, target=target))
+    self.gecho(social["actor_to_target"].format(actor=self, target=target))
+    self.gecho(social["actor_to_me"].format(actor=self, me=target))
+
+
 def walk_command(self, arguments):
     """Walk in a direction."""
     from settings import DIRECTIONS
@@ -578,7 +595,7 @@ class Actor(RoomEntity):
         client.quit()
 
     def handle_command(self, message, ignore_aliases=False):
-        from settings import DIRECTIONS, CHANNELS
+        from settings import DIRECTIONS, CHANNELS, SOCIALS
 
         message = message.rstrip()
 
@@ -606,11 +623,22 @@ class Actor(RoomEntity):
 
         handler = None
 
-        for direction_id in DIRECTIONS.keys():
-            if direction_id.startswith(command):
-                handler = walk_command
-                arguments = (direction_id,)
-                break
+        if handler is None:
+            for social_id, social in SOCIALS.items():
+                if social_id.startswith(command):
+                    handler = social_command
+                    named_arguments = {
+                        "social": social,
+                        "target": None
+                    }
+                    break
+
+        if handler is None:
+            for direction_id in DIRECTIONS.keys():
+                if direction_id.startswith(command):
+                    handler = walk_command
+                    arguments = (direction_id,)
+                    break
 
         if handler is None:
             for channel_id, channel in CHANNELS.items():

@@ -275,3 +275,30 @@ CHANNELS = {
         "self_format": "You shout '{{r{message}{{x'",
     },
 }
+
+"""
+SOCIALS
+
+me_to_room - You performing it to the room or nobody
+actor_to_room - Actor performing to the room or nobody
+
+me_to_target - You performing the emote to an Actor
+actor_to_me - Actor performing the emote to you
+actor_to_target - Watching an Actor perform the emote to its Target
+
+me_to_self - You performing the emote to yourself
+actor_to_self - Actor performing the emote to itself
+"""
+SOCIALS = {
+    "dance": {
+        "me_to_room": "Feels silly, doesn't it?",
+        "actor_to_room": "{actor.name} dances wildly before you!",
+
+        "me_to_target": "You lead {target.him} to the dancefloor.",
+        "actor_to_me": "{actor.name} you across the dancefloor.",
+        "actor_to_target": "{actor.name} sends {target.name} across the dancefloor.",
+
+        "actor_to_self": "{actor.name} skips a light Fandango.",
+        "me_to_self": "You skip and dance around by yourself.",
+    }
+}
