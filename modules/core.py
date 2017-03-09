@@ -6,6 +6,7 @@ from utils.ansi import Ansi
 from utils.collection import GameCollection, Index, CollectionEntity
 from mud.module import Module
 from mud.manager import Manager
+from mud.command_resolver import CommandResolver
 from utils.listify import listify
 import logging
 import random
@@ -510,6 +511,7 @@ class Actor(RoomEntity):
         "wizlist": wizlist_command,
         "score": score_command,
     }
+    COMMAND_RESOLVER = CommandResolver(COMMAND_HANDLERS)
 
     def get_organization(self, type_id):
         """Return the Organization of a type."""
@@ -652,10 +654,9 @@ class Actor(RoomEntity):
 
         # Try to find a suitable command handler
         if handler is None:
-            for key, method in self.COMMAND_HANDLERS.items():
-                if key.startswith(command):
-                    handler = method
-                    break
+            handlers = COMMAND_RESOLVER[command]
+            if handlers:
+                handler = handlers[0]
 
         # Execute the appropriate code
         if handler is None:
