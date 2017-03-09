@@ -21,7 +21,9 @@ assert look_command is not in x["la"]
 assert laugh_command is in x["la"]
 """
 class CommandResolver(object):
-    def __init__(self, data):
+    def __init__(self, data=None):
+        if data is None:
+            data = {}
         self.data = {}
         for key, value in data.items():
             self.add(key, value)
@@ -30,10 +32,11 @@ class CommandResolver(object):
         return self.data.get(key, [])
 
     def __getitem__(self, key):
+        key = key.lower()
         return self.data.get(key, [])
 
     def _get_subkeys(self, key):
-        for x in range(len(key)):
+        for x in range(len(key) + 1):
             yield key[:x]
 
     def add(self, key, value):
