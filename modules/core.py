@@ -332,6 +332,8 @@ LOOK_ACTOR_FLAGS = (
 
 
 def look_command(self, arguments, Characters, Actors):
+    from settings import SELF_KEYWORDS
+
     def format_actor_flags(actor):
         flag_found = False
         flags = ""
@@ -354,8 +356,22 @@ def look_command(self, arguments, Characters, Actors):
 
     room = self.get_room()
 
+    def look_at_actor(target):
+        for index, line in enumerate(target.get("description", [
+            "You see nothing special about %s." % target.name
+        ])):
+            self.echo(("{C" + line) if index == 0 else line)
+        self.echo("{x%s{x {Ris in excellent condition.{x" % (
+            target.name
+        ))
+
     if arguments:
         keyword = arguments[0]
+
+        if keyword in SELF_KEYWORDS:
+            look_at_actor(self)
+            return
+
         targets = [
             Characters.query({"room_id": room.id, "online": True}),
             Actors.query({"room_id": room.id}),
@@ -363,14 +379,7 @@ def look_command(self, arguments, Characters, Actors):
         for actors in targets:
             for actor in actors:
                 if self.can_see(actor) and actor.matches_keywords(keyword):
-                    target = actor
-                    for index, line in enumerate(target.get("description", [
-                        "You see nothing special about %s." % target.name
-                    ])):
-                        self.echo(("{C" + line) if index == 0 else line)
-                    self.echo("{x%s{x {Ris in excellent condition.{x" % (
-                        target.name
-                    ))
+                    look_at_actor(actor)
                     return
 
         self.echo("You don't see that here.")

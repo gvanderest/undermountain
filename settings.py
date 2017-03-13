@@ -440,3 +440,5 @@ CLASSES = {
         "parent_id": "vampire",
     },
 }
+
+SELF_KEYWORDS = ["self"]
