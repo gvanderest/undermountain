@@ -1,6 +1,9 @@
 """
 EXAMPLE MODULE
 """
+import hashlib
+import json
+from glob import glob
 from utils.entity import Entity
 from utils.ansi import Ansi
 from utils.collection import GameCollection, Index, CollectionEntity
@@ -196,7 +199,6 @@ def title_command(self, arguments):
 
 
 def who_command(self, arguments, Characters):
-    # FIXME Use Players injector instead, in the future
     total_count = 0
     visible_count = 0
     top_count = 999
@@ -204,7 +206,7 @@ def who_command(self, arguments, Characters):
     self.echo((" " * 15) + "{GThe Visible Mortals and Immortals of Waterdeep")
     self.echo("{g" + ("-" * 79))
 
-    actors = list(Characters.query())
+    actors = list(Characters.query({"online": True}))
     actors = sorted(actors, key=lambda a: a.is_immortal(), reverse=True)
     for actor in actors:
         total_count += 1
@@ -362,7 +364,7 @@ def look_command(self, arguments, Characters):
     )
     self.echo(line)
 
-    players = Characters.query({"room_id": room.id})
+    players = Characters.query({"online": True, "room_id": room.id})
 
     for player in players:
         if player == self:
@@ -370,7 +372,7 @@ def look_command(self, arguments, Characters):
         self.echo(format_actor(player))
 
 
-def quit_command(self, arguments, Characters):
+def quit_command(self, arguments):
     self.echo("You are quitting.")
     client = self.get_client()
     client.quit()
@@ -690,11 +692,25 @@ class Character(Actor):
     def is_immortal(self):
         return self.name == "Kelemvor"
 
+    def generate_password(self, password):
+        """Return a SHA256 hashed password with appropriate salting."""
+        from settings import PASSWORD_SALT_PREFIX, PASSWORD_SALT_SUFFIX
+        salted = PASSWORD_SALT_PREFIX + password + PASSWORD_SALT_SUFFIX
+        return hashlib.sha256(salted.encode("utf-8")).hexdigest()
+
+    def password_is(self, password):
+        """Return whether the password matches this Character's or not."""
+        return self.password == self.generate_password(password)
+
 
 class Characters(Actors):
     WRAPPER_CLASS = Character
 
     NAME = "characters"
+
+    INDEXES = Actors.INDEXES + [
+        Index("online")
+    ]
 
 
 class ExampleManager(Manager):
@@ -704,31 +720,55 @@ class ExampleManager(Manager):
 
     def tick(self, Characters, Rooms, Areas):
         return
-        chars = Characters.query({
-            "room_id": "market_square",
-        })
+        chars = Characters.query({ "room_id": "market_square", "online": True})
 
         logging.debug("Characters in room market_square:")
         if chars:
-            for char in chars:
-                count = char.get("count", 0)
-                count += 1
-                char.count = count
-                char.save()
-                room = char.get_room()
-                area = room.get_area()
-                logging.debug("* {} - {} - {} - {}".format(
-                    char.name,
-                    room.name,
-                    area.name,
-                    char.count
-                ))
+            for actors in chars:
+                if actors:
+                    for char in actors:
+                        count = char.get("count", 0)
+                        count += 1
+                        char.count = count
+                        char.save()
+                        room = char.get_room()
+                        area = room.get_area()
+                        logging.debug("* {} - {} - {} - {}".format(
+                            char.name,
+                            room.name,
+                            area.name,
+                            char.count
+                    ))
         else:
-            print("No characters")
+            logging.debug("No characters at market_square")
 
 
 class Entities(GameCollection):
     pass
+
+
+class EntityManager(Manager):
+    INJECTOR_NAME = None
+    DATA_PATH = None
+
+    def tick(self):
+        Entities = self.game.get_injector(self.INJECTOR_NAME)
+        logging.debug("ENTITY MANAGER")
+        print(Entities)
+
+    def start(self):
+        Entities = self.game.get_injector(self.INJECTOR_NAME)
+        logging.debug("ENTITY MANAGER STARTED")
+        for path in glob(self.DATA_PATH + "/*"):
+            data = json.loads(open(path).read())
+            Entities.save(data)
+
+
+class CharactersManager(EntityManager):
+    INJECTOR_NAME = "Characters"
+    DATA_PATH = "data/characters"
+
+
 
 
 class Core(Module):
@@ -738,11 +778,11 @@ class Core(Module):
     INJECTORS = {
         "Areas": Areas,
         "Rooms": Rooms,
-        # "RoomExits": RoomExits,
         "Actors": Actors,
         "Characters": Characters,
     }
 
     MANAGERS = [
+        CharactersManager,
         ExampleManager,
     ]

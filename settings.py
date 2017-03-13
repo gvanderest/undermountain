@@ -18,6 +18,9 @@ DATA_PATH = os.path.dirname(__file__) + "/data"
 ROT_DATA_PATH = DATA_PATH + "/__rot__"
 
 
+PASSWORD_SALT_PREFIX = "SALTY"
+PASSWORD_SALT_SUFFIX = "PIRATE"
+
 PID_FILE = "pid"
 SHUTDOWN_FILE = 'SHUTDOWN'
 REBOOT_FILE = 'REBOOT'

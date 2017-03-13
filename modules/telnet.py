@@ -32,25 +32,25 @@ class TelnetClient(Client):
         self.writeln("""\
 
 
-            ;::::;                             Original DIKUMUD by Hans
-           ;::::; :;                         Staerfeldt, Katja Nyboe, Tom
-         ;:::::'   :;                        Madsen, Michael Seirfert and
-        ;:::::;     ;.                       Sebastiand Hammer. (c) 1991
+            ;::::;
+           ;::::; :;
+         ;:::::'   :;
+        ;:::::;     ;.
        ,:::::'       ;           OOO\\
-       ::::::;       ;          OOOOO\\         MERC 2.1 Code by Hatchet,
-       ;:::::;       ;         OOOOOOOO      Furey and Kahn. (c) 1993
+       ::::::;       ;          OOOOO\\
+       ;:::::;       ;         OOOOOOOO
       ,;::::::;     ;'         / OOOOOOO
-    ;:::::::::`. ,,,;.        /  / DOOOOOO     RoM 2.4 Code by Russ Taylor.
-  .';:::::::::::::::::;,     /  /    DOOOO   (c) 1996
+    ;:::::::::`. ,,,;.        /  / DOOOOO
+  .';:::::::::::::::::;,     /  /    DOOOO
  ,::::::;::::::;;;;::::;,   /  /       DOOO
-;`::::::`'::::::;;;::::: ,#/  /        DOOO    RoT 1.4 Code by Russ Welsh.
-:`:::::::`;::::::;;::: ;::#  /          DOOO (c) 1997
+;`::::::`'::::::;;;::::: ,#/  /        DOOO
+:`:::::::`;::::::;;::: ;::#  /          DOOO
 ::`:::::::`;:::::::: ;::::# /            DOO
-`:`:::::::`;:::::: ;::::::#/             DOO   WDM 2.0 Code by Waterdeep
- :::`:::::::`;; ;:::::::::##              OO MUD Entertainmant. (c) 2007
+`:`:::::::`;:::::: ;::::::#/             DOO
+ :::`:::::::`;; ;:::::::::##              OO
  ::::`:::::::`;::::::::;:::#              OO
- `:::::`::::::::::::;'`:;::#              O  Owned & Operated by Kelemvor
-  `:::::`::::::::;' /  / `:#                 E-Mail:  wdmudimms@gmail.com
+ `:::::`::::::::::::;'`:;::#              O
+  `:::::`::::::::;' /  / `:#
    ::::::`:::::;'  /  /   `#
            ##    ##  ####  ###### ######  ####  ######  ###### ###### #####
            ##    ## ##  ##   ##   ##     ##  ##  ##  ## ##     ##     ##  ##
@@ -90,20 +90,26 @@ class TelnetClient(Client):
 
         # That Actor is already in the Game, reconnect?
         if actor:
-            self.write_login_reconnect_confirm_prompt()
-            self.state = "login_reconnect_confirm"
-            return
+            if actor.online:
+                self.write_login_reconnect_confirm_prompt()
+                self.state = "login_reconnect_confirm"
+                return
 
-        # Create the Character and bind to client
-        # TODO Make this a constant for starting room?
-        data = {
-            "name": self.name,
-            "room_id": "market_square",
-            "organizations": {
-                "clan": "vector",
-            },
-        }
-        actor = self.create_character(data)
+            actor.online = True
+            actor.save()
+        else:
+            # Create the Character and bind to client
+            # TODO Make this a constant for starting room?
+            data = {
+                "name": self.name,
+                "room_id": "market_square",
+                "online": True,
+                "password": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
+                "organizations": {
+                    # "clan": "vector",
+                },
+            }
+            actor = self.create_character(data)
 
         self.state = "playing"
         self.actor_id = actor.id
@@ -312,7 +318,8 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
 
         # Remove the Actor from the Game
         actor = self.get_actor()
-        Characters.remove(actor)
+        actor.online = False
+        actor.save()
         self.set_actor(None)
 
         self.connection.destroy(clean=True)
