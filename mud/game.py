@@ -47,6 +47,17 @@ class Game(object):
             "heads off to the north.",
         ]
         self.state = {
+            "actors": {
+                "abc123": {
+                    "room_id": "market_square",
+                    "name": "{8Tchazzar, {rthe Dragon Queen",
+                    "room_name": "{8Tchazzar, {rThe Dragon Queen{x rests on her throne here.",
+                    "description": [
+                        "This is the biggest dragon you have ever seen. It has five heads, one of",
+                        "each chromatic dragon color.",
+                    ]
+                }
+            },
             "areas": {
                 "westbridge": {
                     "name": "Westbridge City",

@@ -331,7 +331,7 @@ LOOK_ACTOR_FLAGS = (
 )
 
 
-def look_command(self, arguments, Characters):
+def look_command(self, arguments, Characters, Actors):
     def format_actor_flags(actor):
         flag_found = False
         flags = ""
@@ -347,7 +347,7 @@ def look_command(self, arguments, Characters):
         return ""
 
     def format_actor(actor):
-        return "%s%s is here" % (
+        return "%s%s is here{x" % (
             format_actor_flags(actor),
             actor.format_name_to(self)
         )
@@ -398,6 +398,10 @@ def look_command(self, arguments, Characters):
         if player == self:
             continue
         self.echo(format_actor(player))
+
+    actors = Actors.query({"room_id": room.id})
+    for actor in actors:
+        self.echo(format_actor(actor))
 
 
 def quit_command(self, arguments):
@@ -694,7 +698,7 @@ class Actor(RoomEntity):
 class Actors(GameCollection):
     WRAPPER_CLASS = Actor
 
-    NAME = "actor"
+    NAME = "actors"
     INDEXES = [
         Index("id", required=True, unique=True),
         Index("name", required=True, unique=True),
