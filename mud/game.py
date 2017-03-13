@@ -50,6 +50,7 @@ class Game(object):
             "actors": {
                 "abc123": {
                     "room_id": "market_square",
+                    "keywords": "tchazzar",
                     "name": "{8Tchazzar, {rthe Dragon Queen",
                     "room_name": "{8Tchazzar, {rThe Dragon Queen{x rests on her throne here.",
                     "description": [

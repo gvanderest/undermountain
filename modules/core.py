@@ -352,11 +352,30 @@ def look_command(self, arguments, Characters, Actors):
             actor.format_name_to(self)
         )
 
+    room = self.get_room()
+
     if arguments:
-        self.echo("Looking at players and things not yet supported.")
+        keyword = arguments[0]
+        targets = [
+            Characters.query({"room_id": room.id, "online": True}),
+            Actors.query({"room_id": room.id}),
+        ]
+        for actors in targets:
+            for actor in actors:
+                if self.can_see(actor) and actor.matches_keywords(keyword):
+                    target = actor
+                    for index, line in enumerate(target.get("description", [
+                        "You see nothing special about %s." % target.name
+                    ])):
+                        self.echo(("{C" + line) if index == 0 else line)
+                    self.echo("{x%s{x {Ris in excellent condition.{x" % (
+                        target.name
+                    ))
+                    return
+
+        self.echo("You don't see that here.")
         return
 
-    room = self.get_room()
     self.echo("{B%s{x" % room.name)
 
     for index, line in enumerate(room.description):
@@ -393,7 +412,6 @@ def look_command(self, arguments, Characters, Actors):
     self.echo(line)
 
     players = Characters.query({"online": True, "room_id": room.id})
-
     for player in players:
         if player == self:
             continue
@@ -564,6 +582,9 @@ class Actor(RoomEntity):
         "?": "help",
     }
 
+    def matches_keywords(self, keywords):
+        return self.keywords.startswith(keywords)
+
     def get_organization(self, type_id):
         """Return the Organization of a type."""
         from settings import ORGANIZATIONS
@@ -707,6 +728,9 @@ class Actors(GameCollection):
 
 
 class Character(Actor):
+    def matches_keywords(self, keywords):
+        return self.name.startswith(keywords)
+
     def is_immortal(self):
         return self.name == "Kelemvor"
 
