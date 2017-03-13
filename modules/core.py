@@ -82,13 +82,14 @@ def wizlist_command(self, Characters):
 
 def channel_command(self, message):
     """Echo a Channel to the Game."""
+    parts = message.split(" ")
+    channel_name = parts.pop(0)
+    message = " ".join(parts)
+
     if not message:
         self.echo("Channel toggling is not yet supported.")
         return
 
-    parts = message.split(" ")
-    channel_name = parts.pop(0)
-    message = " ".join(parts)
 
     channel = None
     for channel_id, entry in CHANNELS.items():
