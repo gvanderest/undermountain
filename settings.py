@@ -305,3 +305,142 @@ SOCIALS = {
         "me_to_self": "You skip and dance around by yourself.",
     }
 }
+
+RACES = {
+    "human": {
+        "name": "Human",
+    },
+    "goblin": {
+        "name": "Goblin",
+    },
+    "halfling": {
+        "name": "Halfling",
+    },
+    "elf": {
+        "name": "Elf",
+    },
+    "halfelf": {
+        "name": "Half-Elf",
+    },
+    "halforc": {
+        "name": "Half-Orc",
+    },
+    "avian": {
+        "name": "Avian",
+    },
+    "centaur": {
+        "name": "Centaur",
+    },
+    "draconian": {
+        "name": "Draconian",
+    },
+    "drow": {
+        "name": "Drow",
+    },
+    "dwarf": {
+        "name": "Dwarf",
+    },
+    "esper": {
+        "name": "Esper",
+    },
+    "giant": {
+        "name": "Giant",
+    },
+    "gnoll": {
+        "name": "Gnoll",
+    },
+    "gnome": {
+        "name": "Gnome",
+    },
+    "heucuva": {
+        "name": "Heucuva",
+    },
+    "kenku": {
+        "name": "Kenku",
+    },
+    "minotaur": {
+        "name": "Minotaur",
+    },
+    "pixie": {
+        "name": "Pixie",
+    },
+    "podrikev": {
+        "name": "Podrikev",
+    },
+    "satyr": {
+        "name": "Satyr",
+    },
+    "thrikreen": {
+        "name": "Thri'Kreen",
+    },
+    "titan": {
+        "name": "Titan",
+    },
+}
+
+CLASSES = {
+    "mage": {
+        "name": "Mage",
+        "tier": 1,
+    },
+    "thief": {
+        "name": "Thief",
+        "tier": 1,
+    },
+    "fighter": {
+        "name": "Fighter",
+        "tier": 1,
+    },
+    "druid": {
+        "name": "Druid",
+        "tier": 1,
+    },
+    "ranger": {
+        "name": "Ranger",
+        "tier": 1,
+    },
+    "cleric": {
+        "name": "Cleric",
+        "tier": 1,
+    },
+    "vampire": {
+        "name": "Vampire",
+        "tier": 1,
+    },
+
+    "wizard": {
+        "name": "Wizard",
+        "tier": 2,
+        "parent_id": "mage",
+    },
+    "mercenary": {
+        "name": "Mercenary",
+        "tier": 2,
+        "parent_id": "thief"
+    },
+    "gladiator": {
+        "name": "Gladiator",
+        "tier": 2,
+        "parent_id": "fighter",
+    },
+    "sage": {
+        "name": "Sage",
+        "tier": 2,
+        "parent_id": "druid",
+    },
+    "strider": {
+        "name": "Strider",
+        "tier": 2,
+        "parent_id": "ranger",
+    },
+    "priest": {
+        "name": "Priest",
+        "tier": 2,
+        "parent_id": "cleric",
+    },
+    "lich": {
+        "name": "Lich",
+        "tier": 2,
+        "parent_id": "vampire",
+    },
+}
