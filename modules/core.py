@@ -738,7 +738,7 @@ class Actors(GameCollection):
 
 class Character(Actor):
     def matches_keywords(self, keywords):
-        return self.name.startswith(keywords)
+        return self.name.lower().startswith(keywords)
 
     def is_immortal(self):
         return self.name == "Kelemvor"
