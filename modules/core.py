@@ -766,8 +766,6 @@ class EntityManager(Manager):
 
     def tick(self):
         Entities = self.game.get_injector(self.INJECTOR_NAME)
-        logging.debug("ENTITY MANAGER")
-        print(Entities)
 
     def start(self):
         Entities = self.game.get_injector(self.INJECTOR_NAME)
