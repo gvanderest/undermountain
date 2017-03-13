@@ -12,6 +12,8 @@ from mud.manager import Manager
 from utils.listify import listify
 import logging
 import random
+from settings import DIRECTIONS, CHANNELS, SOCIALS
+
 
 
 def score_command(self):
@@ -78,11 +80,21 @@ def wizlist_command(self, Characters):
     self.echo(scrollify(names, header="Gods and Rulers Of Waterdeep"))
 
 
-def channel_command(self, channel, message):
+def channel_command(self, message):
     """Echo a Channel to the Game."""
     if not message:
         self.echo("Channel toggling is not yet supported.")
         return
+
+    parts = message.split(" ")
+    channel_name = parts.pop(0)
+    message = " ".join(parts)
+
+    channel = None
+    for channel_id, entry in CHANNELS.items():
+        if channel_id.startswith(channel_name):
+            channel = entry
+            break
 
     game = self.get_game()
 
@@ -93,8 +105,22 @@ def channel_command(self, channel, message):
     self.echo(self_template.format(actor=self, message=message))
 
 
-def social_command(self, social, target):
+def social_command(self, message):
     """Handle an Actor performing a social emote."""
+    parts = message.split(" ")
+    social_name = parts.pop(0)
+
+    target = None
+    if parts:
+        # TODO Figure out target
+        pass
+
+    social = None
+    for social_id, entry in SOCIALS.items():
+        if social_id.startswith(social_name):
+            social = entry
+            break
+
     if target is None:
         self.gecho(social["me_to_room"].format(me=self))
         self.gecho(social["actor_to_room"].format(actor=self))
@@ -110,16 +136,19 @@ def social_command(self, social, target):
     self.gecho(social["actor_to_me"].format(actor=self, me=target))
 
 
-def walk_command(self, arguments):
+def walk_command(self, message):
     """Walk in a direction."""
-    from settings import DIRECTIONS
+    arguments = message.split(" ")
 
     if not arguments:
         self.echo("Walk where?")
         return
 
-    direction_id = arguments[0]
-    direction = DIRECTIONS.get(direction_id, None)
+    direction = None
+    for direction_id, entry in DIRECTIONS.items():
+        if direction_id.startswith(arguments[0]):
+            direction = entry
+            break
 
     if direction is None:
         self.echo("You can't walk in that direction.")
@@ -302,8 +331,6 @@ LOOK_ACTOR_FLAGS = (
 
 
 def look_command(self, arguments, Characters):
-    from settings import DIRECTIONS
-
     def format_actor_flags(actor):
         flag_found = False
         flags = ""
@@ -491,6 +518,38 @@ class Organization(Entity):
         return self.hidden is True
 
 
+# TODO Verify this is the right place?
+# TODO Verify this is the right place?
+from mud.command_resolver import CommandResolver
+
+COMMAND_RESOLVER = CommandResolver()
+
+for direction_id in DIRECTIONS.keys():
+    COMMAND_RESOLVER.add(direction_id, walk_command)
+
+COMMAND_RESOLVER.update({
+    "look": look_command,
+    "quit": quit_command,
+    "me": me_command,
+    "swear": swear_command,
+    "title": title_command,
+    "exception": exception_command,
+    "sockets": sockets_command,
+    "who": who_command,
+    "walk": walk_command,
+    "wizlist": wizlist_command,
+    "score": score_command,
+})
+
+for channel_id in CHANNELS.keys():
+    COMMAND_RESOLVER.add(channel_id, channel_command)
+
+for social_id in SOCIALS.keys():
+    COMMAND_RESOLVER.add(social_id, social_command)
+# TODO Verify this is the right place?
+# TODO Verify this is the right place?
+
+
 class Actor(RoomEntity):
     # TODO move commands and handlers/logic out into their own places
     ONE_CHAR_ALIASES = {
@@ -498,19 +557,6 @@ class Actor(RoomEntity):
         "/": "recall",
         "=": "cgossip",
         "?": "help",
-    }
-    COMMAND_HANDLERS = {
-        "look": look_command,
-        "quit": quit_command,
-        "me": me_command,
-        "swear": swear_command,
-        "title": title_command,
-        "exception": exception_command,
-        "sockets": sockets_command,
-        "who": who_command,
-        "walk": walk_command,
-        "wizlist": wizlist_command,
-        "score": score_command,
     }
 
     def get_organization(self, type_id):
@@ -597,8 +643,6 @@ class Actor(RoomEntity):
         client.quit()
 
     def handle_command(self, message, ignore_aliases=False):
-        from settings import DIRECTIONS, CHANNELS, SOCIALS
-
         message = message.rstrip()
 
         if not message:
@@ -623,41 +667,9 @@ class Actor(RoomEntity):
         arguments = tuple(parts)
         named_arguments = {}
 
-        handler = None
-
-        if handler is None:
-            for social_id, social in SOCIALS.items():
-                if social_id.startswith(command):
-                    handler = social_command
-                    named_arguments = {
-                        "social": social,
-                        "target": None
-                    }
-                    break
-
-        if handler is None:
-            for direction_id in DIRECTIONS.keys():
-                if direction_id.startswith(command):
-                    handler = walk_command
-                    arguments = (direction_id,)
-                    break
-
-        if handler is None:
-            for channel_id, channel in CHANNELS.items():
-                if channel_id.startswith(command):
-                    handler = channel_command
-                    named_arguments = {
-                        "channel": channel,
-                        "message": " ".join(arguments),
-                    }
-                    break
-
-        # Try to find a suitable command handler
-        if handler is None:
-            for key, method in self.COMMAND_HANDLERS.items():
-                if key.startswith(command):
-                    handler = method
-                    break
+        handlers = COMMAND_RESOLVER.get(command)
+        # TODO Add secondary resolution checks: level, access, etc.
+        handler = handlers[0] if handlers else None
 
         # Execute the appropriate code
         if handler is None:
@@ -670,6 +682,7 @@ class Actor(RoomEntity):
                 handler,
                 _self=self,
                 arguments=arguments,
+                message=message,
                 **named_arguments
             )
         except Exception as e:

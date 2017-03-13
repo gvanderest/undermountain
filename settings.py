@@ -3,15 +3,11 @@ SETTINGS
 Provide options and flags for users to customize.
 """
 import os.path
-from modules.core import Core
-from modules.telnet import Telnet
-from modules.websocket import Websocket
-
 
 MODULES = (
-    Core,
-    Telnet,
-    Websocket
+    'modules.core.Core',
+    'modules.telnet.Telnet',
+    'modules.websocket.Websocket'
 )
 
 DATA_PATH = os.path.dirname(__file__) + "/data"
