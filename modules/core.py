@@ -688,6 +688,8 @@ class Actor(RoomEntity):
 
     def echo(self, message=""):
         client = self.get_client()
+        if not client:
+            return
         client.writeln(message)
 
     def act_around(self, message, *args, **kwargs):
