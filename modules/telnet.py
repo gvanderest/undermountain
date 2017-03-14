@@ -77,9 +77,29 @@ class TelnetClient(Client):
     def get_cleaned_name(self, name):
         return name.strip().lower().title()
 
+    def is_valid_username(self, username):
+        if len(username) < 3:
+            return False
+
+        for char in username.lower():
+            if char not in "abcdefghijklmnopqrstuvwxyz":
+                return False
+
+        return True
+
     def handle_login_username(self, message):
         """Handle logging in username prompt."""
-        self.name = self.get_cleaned_name(message)
+        username = self.get_cleaned_name(message)
+
+        if not self.is_valid_username(username):
+            self.writeln("The name you provided is not valid.")
+            self.writeln("* Must be at least 3 characters in length")
+            self.writeln("* Must only contain letters")
+            self.writeln()
+            self.write_login_username_prompt()
+            return
+
+        self.name = username
 
         if not message:
             self.writeln("Please pick a name, even if it's short.")
