@@ -676,7 +676,6 @@ class Actor(RoomEntity):
         if self._client:
             return self._client
 
-    def echo(self, message=""):
         connection = self._game.get_actor_connection(self)
         if not connection:
             return None
@@ -685,6 +684,10 @@ class Actor(RoomEntity):
         if client is None:
             return
 
+        return client
+
+    def echo(self, message=""):
+        client = self.get_client()
         client.writeln(message)
 
     def act_around(self, message, *args, **kwargs):
