@@ -453,6 +453,8 @@ def look_command(self, arguments, Characters, Actors):
 def quit_command(self, arguments):
     self.echo("You are quitting.")
     client = self.get_client()
+    if not client:
+        return
     client.quit()
 
 
