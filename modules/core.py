@@ -6,7 +6,8 @@ import json
 from glob import glob
 from utils.entity import Entity
 from utils.ansi import Ansi
-from utils.collection import GameCollection, Index, CollectionEntity
+from mud.collection import Collection, Entity
+from utils.collection import Index
 from mud.module import Module
 from mud.manager import Manager
 from utils.listify import listify
@@ -14,6 +15,28 @@ import logging
 import random
 from settings import DIRECTIONS, CHANNELS, SOCIALS
 
+
+
+def force_command(self, arguments):
+    if not arguments:
+        self.echo("Force who do to what?")
+        return
+
+    if len(arguments) == 1:
+        self.echo("Force them to do what?")
+        return
+
+    target_name = arguments[0]
+    commands = " ".join(arguments[1:])
+
+    target = self.find_room_actor(target_name)
+    if not target:
+        self.echo("You can't find them.")
+        return
+
+    # TODO Check permissions/power
+    self.echo("You force %s{x to: %s" % (target.name, commands))
+    target.handle_command(commands)
 
 
 def score_command(self):
@@ -372,17 +395,13 @@ def look_command(self, arguments, Characters, Actors):
             look_at_actor(self)
             return
 
-        targets = [
-            Characters.query({"room_id": room.id, "online": True}),
-            Actors.query({"room_id": room.id}),
-        ]
-        for actors in targets:
-            for actor in actors:
-                if self.can_see(actor) and actor.matches_keywords(keyword):
-                    look_at_actor(actor)
-                    return
+        # TODO Look at objects too
+        target = self.find_room_actor(keyword)
+        if target:
+            look_at_actor(target)
+        else:
+            self.echo("You don't see that here.")
 
-        self.echo("You don't see that here.")
         return
 
     self.echo("{B%s{x" % room.name)
@@ -442,7 +461,7 @@ def me_command(self, arguments):
     self.gecho(message, emote=True)
 
 
-class RoomEntity(CollectionEntity):
+class RoomEntity(Entity):
     def set_room(self, room):
         """Set the Room for the RoomEntity."""
         self.room_id = room.id
@@ -456,11 +475,11 @@ class RoomEntity(CollectionEntity):
         return random.randint(0, 10) == 1
 
 
-class Area(CollectionEntity):
+class Area(Entity):
     pass
 
 
-class Areas(GameCollection):
+class Areas(Collection):
     WRAPPER_CLASS = Area
 
     NAME = "areas"
@@ -501,7 +520,7 @@ class RoomExit(Entity):
         return not self.is_closed()
 
 
-# class RoomExits(GameCollection):
+# class RoomExits(Collection):
 #     WRAPPER_CLASS = RoomExit
 #
 #     NAME = "room_exits"
@@ -512,7 +531,7 @@ class RoomExit(Entity):
 #     ]
 
 
-class Room(CollectionEntity):
+class Room(Entity):
     def get_area(self):
         Areas = self.get_injector("Areas")
         return Areas.find(self.area_id)
@@ -534,7 +553,7 @@ class Room(CollectionEntity):
         return RoomExit(raw_exit, exit_room, self)
 
 
-class Rooms(GameCollection):
+class Rooms(Collection):
     WRAPPER_CLASS = Room
 
     NAME = "rooms"
@@ -571,6 +590,7 @@ COMMAND_RESOLVER.update({
     "walk": walk_command,
     "wizlist": wizlist_command,
     "score": score_command,
+    "force": force_command,
 })
 
 for channel_id in CHANNELS.keys():
@@ -590,6 +610,23 @@ class Actor(RoomEntity):
         "=": "cgossip",
         "?": "help",
     }
+
+    def find_room_actor(self, keywords, can_see=True):
+        room = self.get_room()
+        Actors, Characters = self.get_injectors("Actors", "Characters")
+        targets = [
+            Characters.query({"room_id": room.id, "online": True}),
+            Actors.query({"room_id": room.id}),
+        ]
+        for actors in targets:
+            for actor in actors:
+                if can_see and not self.can_see(actor):
+                    continue
+
+                if not actor.matches_keywords(keywords):
+                    continue
+
+                return actor
 
     def matches_keywords(self, keywords):
         return self.keywords.startswith(keywords)
@@ -636,12 +673,18 @@ class Actor(RoomEntity):
         self._client = client
 
     def get_client(self):
-        return self._client
+        if self._client:
+            return self._client
 
     def echo(self, message=""):
-        client = self.get_client()
+        connection = self._game.get_actor_connection(self)
+        if not connection:
+            return None
+
+        client = connection.client
         if client is None:
             return
+
         client.writeln(message)
 
     def act_around(self, message, *args, **kwargs):
@@ -668,10 +711,7 @@ class Actor(RoomEntity):
         return {}
 
     def get_game(self):
-        client = self.get_client()
-        if not client:
-            return None
-        return client.get_game()
+        return self._game
 
     def quit(self):
         client = self.get_client()
@@ -725,7 +765,7 @@ class Actor(RoomEntity):
             self.echo("Huh?!  (Code bug detected and reported.)")
 
 
-class Actors(GameCollection):
+class Actors(Collection):
     WRAPPER_CLASS = Actor
 
     NAME = "actors"
@@ -794,7 +834,7 @@ class ExampleManager(Manager):
             logging.debug("No characters at market_square")
 
 
-class Entities(GameCollection):
+class Entities(Collection):
     pass
 
 

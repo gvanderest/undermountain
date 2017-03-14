@@ -98,6 +98,12 @@ class Game(object):
         self.set_modules(modules)
         self.set_logging(logging)
 
+    def get_actor_connection(self, actor):
+        # FIXME Make this a dictionary
+        for connection in self.connections:
+            if connection.client.actor_id == actor.id:
+                return connection
+
     def get_connections(self):
         """Return a list of Connections."""
         return self.connections

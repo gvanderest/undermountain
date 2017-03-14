@@ -6,7 +6,10 @@ class Entity(object):
 
     def __getattr__(self, key):
         if key.startswith("_"):
-            return super(Entity, self).__getattr__(key, None)
+            try:
+                return super(Entity, self).__getattribute__(key)
+            except AttributeError:
+                return None
         return self._data.get(key, None)
 
     def __setattr__(self, key, value):

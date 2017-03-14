@@ -130,7 +130,7 @@ class Collection(object):
         if skip_wrap:
             return record
 
-        return self.wrap(record)
+        return self.wrap_record(record)
 
     def find(self, spec=None):
         """Find a Record with a specification."""
@@ -238,10 +238,6 @@ class Collection(object):
             record, primary_key = self.hydrate_primary_key(record)
             self.indexes = indexer.index(self.indexes, primary_key, record)
 
-    def wrap(self, record):
-        """Wrap the Record in its."""
-        return self.WRAPPER_CLASS(record, self)
-
 
 class EntityCollection(Collection):
     WRAPPER_CLASS = None
@@ -249,18 +245,6 @@ class EntityCollection(Collection):
     def wrap_record(self, record):
         """Return a Record with a link back to the Collection."""
         return self.WRAPPER_CLASS(record, self)
-
-
-class GameCollection(EntityCollection):
-    def __init__(self, game):
-        self.game = game
-
-        state = self.game.get_state()
-        records = state.get(self.NAME, {})
-        state[self.NAME] = records
-        self.game.set_state(state)
-
-        super(GameCollection, self).__init__(records)
 
 
 class CollectionEntity(Entity):
