@@ -442,3 +442,12 @@ CLASSES = {
 }
 
 SELF_KEYWORDS = ["self"]
+BANNED_NAMES = [
+    "root",
+    "shell",
+    "admin",
+    "guest",
+    "supervisor",
+    "god",
+    "bash",
+]

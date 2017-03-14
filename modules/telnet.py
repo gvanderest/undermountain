@@ -78,10 +78,16 @@ class TelnetClient(Client):
         return name.strip().lower().title()
 
     def is_valid_username(self, username):
+        from settings import BANNED_NAMES
+        username = username.lower()
+
+        if username in BANNED_NAMES:
+            return False
+
         if len(username) < 3:
             return False
 
-        for char in username.lower():
+        for char in username:
             if char not in "abcdefghijklmnopqrstuvwxyz":
                 return False
 
