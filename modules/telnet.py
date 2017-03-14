@@ -101,6 +101,7 @@ class TelnetClient(Client):
             self.writeln("The name you provided is not valid.")
             self.writeln("* Must be at least 3 characters in length")
             self.writeln("* Must only contain letters")
+            self.writeln("* Must not be a reserved or banned name")
             self.writeln()
             self.write_login_username_prompt()
             return
