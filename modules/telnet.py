@@ -188,11 +188,16 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
     def handle_motd(self, message):
         self.state = "playing"
 
-        # self.act_to_room("{actor.name} slowly fades into existence.")
-
         self.handle_input("look")
         self.handle_input("unread")
         self.handle_input("version")
+
+        actor = self.get_actor()
+        self.wiznet("connect", "%s has connected" % (actor.name))
+
+    def wiznet(self, *args, **kwargs):
+        game = self.get_game()
+        return game.wiznet(*args, **kwargs)
 
     def write_login_reconnect_confirm_prompt(self):
         self.writeln("That character is already playing.")
@@ -236,6 +241,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         self.writeln("Reconnected..")
         self.state = "playing"
         self.handle_input("look")
+        self.wiznet("connect", "%s has reconnected" % (actor.name))
 
     def write_login_password_prompt(self):
         self.write("Password: ")
@@ -322,7 +328,8 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             connection.writeln(output)
 
     def disconnect(self):
-        self.gecho("disconnected from the chat", emote=True)
+        actor = self.get_actor()
+        self.wiznet("connect", "%s has disconnected" % (actor.name))
 
     def reconnect(self):
         self.gecho("reconnected to the chat", emote=True)
@@ -333,9 +340,6 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         return game.get_injector(*args, **kwargs)
 
     def quit(self):
-        self.gecho("quit the chat", emote=True)
-        Characters = self.get_injector("Characters")
-
         # Remove the Actor from the Game
         actor = self.get_actor()
         actor.online = False
@@ -343,6 +347,8 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         self.set_actor(None)
 
         self.connection.destroy(clean=True)
+
+        self.wiznet("connect", "%s has quit" % (actor.name))
 
 
 class TelnetConnection(Connection):
