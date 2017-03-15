@@ -29,7 +29,7 @@ class Game(object):
         return cls.VERSION
 
     def __init__(self, modules=None, injectors=None, logging=False):
-        ms_desc = [
+        tol_desc = [
             "This is the interior of a large white marble temple.  A pipe "
             "organ",
             "plays in the background as people sing a hymn of peacefulness.  "
@@ -49,7 +49,7 @@ class Game(object):
         self.state = {
             "actors": {
                 "abc123": {
-                    "room_id": "market_square",
+                    "room_id": "temple_of_life",
                     "keywords": "tchazzar",
                     "name": "{8Tchazzar, {rthe Dragon Queen",
                     "room_name": "{8Tchazzar, {rThe Dragon Queen{x rests on her throne here.",
@@ -65,25 +65,29 @@ class Game(object):
                 },
             },
             "rooms": {
-                "market_square": {
-                    "name": "Market Square",
-                    "description": ms_desc,
+                "tol123": {
+                    "id": "tol123",
+                    "name": "The Temple of Life",
+                    "vnum": "westbridge:temple_of_life",
+                    "description": tol_desc,
                     "area_id": "westbridge",
                     "exits": {
-                        "north": {"room_id": "market_square"},
-                        "east": {"room_id": "market_square"},
-                        "south": {"room_id": "market_square"},
-                        "west": {"room_id": "market_square"},
-                        "up": {"room_id": "market_square"},
-                        "down": {"room_id": "coliseum_entrance"},
+                        "north": {"room_id": "tol123"},
+                        "east": {"room_id": "tol123"},
+                        "south": {"room_id": "tol123"},
+                        "west": {"room_id": "tol123"},
+                        "up": {"room_id": "tol123"},
+                        "down": {"room_id": "cop321"},
                     },
                 },
-                "coliseum_entrance": {
+                "cop321": {
+                    "id": "cop321",
                     "name": "Coliseum Of Pain",
-                    "description": ms_desc,
+                    "vnum": "westbridge:coliseum_entrance",
+                    "description": [],
                     "area_id": "westbridge",
                     "exits": {
-                        "up": {"room_id": "market_square"},
+                        "up": {"room_id": "tol123"},
                     },
                 },
             },

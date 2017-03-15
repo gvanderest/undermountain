@@ -469,8 +469,28 @@ class RoomEntity(Entity):
         self.room_id = room.id
 
     def get_room(self):
+        """Return the Room that the RoomEntity is in."""
+        from settings import DEFAULT_ROOM_VNUM
+
         Rooms = self.get_injector("Rooms")
-        return Rooms.find(self.room_id)
+
+        room = Rooms.find(self.room_id)
+
+        if not room:
+            room = Rooms.find({"vnum": DEFAULT_ROOM_VNUM})
+
+            if not room:
+                raise Exception(
+                    "RoomEntity {} fallback room {} cannot be found.".format(
+                        self.id,
+                        DEFAULT_ROOM_VNUM
+                    )
+                )
+
+            self.room_id = room.id
+            self.save()
+
+        return room
 
     def has_flag(self, flag_id):
         """Return whether this Entity has a flag applied or not."""
@@ -561,6 +581,7 @@ class Rooms(Collection):
     NAME = "rooms"
     INDEXES = [
         Index("id", required=True, unique=True),
+        Index("vnum", required=True, unique=True),
         Index("name", required=True, unique=True),
         Index("area_id"),
     ]

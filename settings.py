@@ -21,6 +21,8 @@ PID_FILE = "pid"
 SHUTDOWN_FILE = 'SHUTDOWN'
 REBOOT_FILE = 'REBOOT'
 
+DEFAULT_ROOM_VNUM = "westbridge:temple_of_life"
+
 TELNET_PORTS = (
     {"host": "0.0.0.0", "port": 4201},
     {"host": "0.0.0.0", "port": 4202},
@@ -32,7 +34,7 @@ WEBSOCKET_PORTS = (
 )
 
 DEBUG_CONNECTION_COUNTS = False
-DEBUG_INPUT_TIMING = True
+DEBUG_INPUT_TIMING = False
 
 DIRECTIONS = {
     "north": {"name": "{Rnorth", "opposite_id": "south"},
