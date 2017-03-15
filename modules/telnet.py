@@ -130,7 +130,7 @@ class TelnetClient(Client):
             data = {
                 "name": self.name,
                 "room_id": "market_square",
-                "online": True,
+                "online": False,
                 "password": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
                 "organizations": {
                     # "clan": "vector",
@@ -200,6 +200,9 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         self.handle_input("version")
 
         actor = self.get_actor()
+        actor.online = True
+        actor.save()
+
         self.wiznet("connect", "%s has connected" % (actor.name))
 
     def wiznet(self, *args, **kwargs):
