@@ -16,6 +16,16 @@ import random
 from settings import DIRECTIONS, CHANNELS, SOCIALS
 
 
+def prompt_command(self, arguments):
+    """Set the prompt for an Actor."""
+    if not arguments:
+        self.prompt_enabled = not self.prompt_enabled
+        return
+
+    self.prompt = " ".join(arguments)
+    self.echo("Your prompt has been set to: {}".format(self.prompt))
+    self.save()
+
 
 def force_command(self, arguments):
     if not arguments:
@@ -621,6 +631,7 @@ COMMAND_RESOLVER.update({
     "wizlist": wizlist_command,
     "score": score_command,
     "force": force_command,
+    "prompt": prompt_command,
 })
 
 for channel_id in CHANNELS.keys():

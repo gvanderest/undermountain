@@ -21,6 +21,9 @@ PID_FILE = "pid"
 SHUTDOWN_FILE = 'SHUTDOWN'
 REBOOT_FILE = 'REBOOT'
 
+DEFAULT_TELNET_PROMPT = "{8[{R%h{8/{r%H{8h {B%m{8/{b%M{8m {M%v{8v " \
+    "{W%N{8({Y%X{8) {W%r{8({w%q{8/{w%t{8) {W%a{8]"
+
 DEFAULT_ROOM_VNUM = "westbridge:temple_of_life"
 
 TELNET_PORTS = (

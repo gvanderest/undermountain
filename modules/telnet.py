@@ -10,6 +10,7 @@ from mud.connection import Connection
 from mud.module import Module
 from mud.server import Server
 from utils.ansi import Ansi
+from settings import DEFAULT_TELNET_PROMPT
 
 gevent.monkey.patch_socket()
 
@@ -257,12 +258,89 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         self.write("Password: ")
         self.hide_next_input()
 
+    def get_actor_prompt(self, actor):
+        prompt = (actor.prompt or DEFAULT_TELNET_PROMPT) + "{x"
+        if not prompt.endswith("\n"):
+            prompt += " "
+
+        room = actor.get_room()
+        area = room.get_area()
+
+        if "%h" in prompt:
+            prompt = prompt.replace("%h", actor.get("current_hp", str(0)))
+
+        if "%H" in prompt:
+            prompt = prompt.replace("%H", actor.get("hp", str(0)))
+
+        if "%m" in prompt:
+            prompt = prompt.replace("%m", actor.get("current_mana", str(0)))
+
+        if "%M" in prompt:
+            prompt = prompt.replace("%M", actor.get("mana", str(0)))
+
+        if "%c" in prompt:
+            prompt = prompt.replace("%c", "\n")
+
+        if "%v" in prompt:
+            prompt = prompt.replace("%v", actor.get("current_moves", str(0)))
+
+        if "%V" in prompt:
+            prompt = prompt.replace("%V", actor.get("moves", str(0)))
+
+        if "%x" in prompt:
+            prompt = prompt.replace("%x", str(0))
+
+        if "%X" in prompt:
+            prompt = prompt.replace("%X", str(0))
+
+        if "%r" in prompt:
+            prompt = prompt.replace("%r", room.name)
+
+        if "%N" in prompt:
+            prompt = prompt.replace("%N", actor.name)
+
+        if "%q" in prompt:
+            prompt = prompt.replace("%q", str(0))
+
+        if "%Q" in prompt:
+            prompt = prompt.replace("%Q", str(0))
+
+        if "%j" in prompt:
+            prompt = prompt.replace("%j", str(0))
+
+        if "%J" in prompt:
+            prompt = prompt.replace("%J", str(0))
+
+        if "%a" in prompt:
+            prompt = prompt.replace("%a", str(0))
+
+        if "%t" in prompt:
+            prompt = prompt.replace("%t", "12{Bam")
+
+        if "%g" in prompt:
+            prompt = prompt.replace("%g", "{G" + str(0))
+
+        if "%e" in prompt:
+            prompt = prompt.replace("%e", "NESWDU")
+
+        if "%R" in prompt:
+            prompt = prompt.replace("%R", "0")
+
+        if "%z" in prompt:
+            prompt = prompt.replace("%R", area.name)
+
+        return prompt
+
     def write_playing_prompt(self):
         conn = self.connection
         if conn.output_buffer and \
                 conn.output_buffer[-2:] != (2 * self.NEWLINE):
             self.writeln()
-        self.write("> ")
+
+        actor = self.get_actor()
+
+        prompt = self.get_actor_prompt(actor)
+        self.write(prompt)
 
     def no_handler(self, arguments):
         self.writeln("Invalid command.")
