@@ -1,12 +1,12 @@
 """
-EXAMPLE MODULE
+CORE MODULE
 """
 import hashlib
 import json
 from glob import glob
 from utils.entity import Entity
 from utils.ansi import Ansi
-from mud.collection import Collection, Entity
+from mud.collection import Collection
 from utils.collection import Index
 from mud.module import Module
 from mud.manager import Manager
@@ -48,29 +48,38 @@ def score_command(self):
         "True", "Neutral", "Male", "Heucuva", "Priest", 101, 306
     ))
 
-    lines.append("{GHP{g:{x%d{g/{x%d {g({c%d{g) {GMana{g:{x%d{g/{x%d {g({c%d{g) {GMove{g:{x%d{g/{x%d {g({c%d{g) {GSaves{g:{x%d" % (
-        8206, 8206, 2794, 11092, 11092, 10132, 1248, 1248, 998, -66
-    ))
+    lines.append("{GHP{g:{x%d{g/{x%d {g({c%d{g) {GMana{g:{x%d{g/{x%d {g"
+                 "({c%d{g) {GMove{g:{x%d{g/{x%d {g({c%d{g) {GSaves{g:{x%d" % (
+                     8206, 8206, 2794, 11092, 11092, 10132, 1248, 1248,
+                     998, -66))
 
     lines.append("{g------------+-----------------------+---------------{x")
-    lines.append("{GStr{g: {x%d{g({x%d{g) {g| {GItems{g:     {x%d{g/{x%d     {g| {GHitroll{g: {x%d" % (
-        25, 25, 25, 125, 255
-    ))
-    lines.append("{GInt{g: {x%s{g({x%s{g) | {GWeight{g:    {x%s{g/ {x%s     {g| {GDamroll{g: {x%s" % (25, 25, 20, 72, 285))
-    lines.append("{GWis{g: {x%s{g({x%s{g) +----------------+------+---------------" % (25, 25))
-    lines.append("{GDex{g: {x%s{g({x%s{g) | {GPractices{g:  {x%s {g| {GArena Wins{g:     {x%s" % (25, 25, 10, 0))
-    lines.append("{GCon{g: {x%s{g({x%s{g) | {GTrains{g:     {x%s {g| {GArena Losses{g:   {x%s" % (25, 25, 10, 0))
+    lines.append("{GStr{g: {x%d{g({x%d{g) {g| {GItems{g:     {x%d{g/{x%d     "
+                 "{g| {GHitroll{g: {x%d" % (
+                    25, 25, 25, 125, 255))
+    lines.append("{GInt{g: {x%s{g({x%s{g) | {GWeight{g:    {x%s{g/ {x%s     "
+                 "{g| {GDamroll{g: {x%s" % (25, 25, 20, 72, 285))
+    lines.append("{GWis{g: {x%s{g({x%s{g) +----------------+------+-----------"
+                 "----" % (25, 25))
+    lines.append("{GDex{g: {x%s{g({x%s{g) | {GPractices{g:  {x%s {g| {GArena "
+                 "Wins{g:     {x%s" % (25, 25, 10, 0))
+    lines.append("{GCon{g: {x%s{g({x%s{g) | {GTrains{g:     {x%s {g| {GArena "
+                 "Losses{g:   {x%s" % (25, 25, 10, 0))
     lines.append("{g------------+---------+------+----------------------")
     lines.append("{GCoins Platinum{g:    {x%s {g| {GExperience" % (10))
-    lines.append("      {GGold{g:        {x%s {g|  {GCurrent{g: {x%s" % (10, 10000000))
-    lines.append("      {GSilver{g:      {x%s {g| {GAdventure Points{g: {x%s" % (10, 100))
+    lines.append("      {GGold{g:        {x%s {g|  {GCurrent{g: {x%s" % (
+        10, 10000000
+    ))
+    lines.append("      {GSilver{g:      {x%s {g| {GAdventure Points{g: "
+                 "{x%s" % (10, 100))
     lines.append("{g----------------------+-----------------------------")
     lines.append("{GArmor Pierce{g:  {x%d [%s{x]" % (123, "super armored"))
     lines.append("      {GBash{g:    {x%d [%s{x]" % (123, "super armored"))
     lines.append("      {GSlash{g:   {x%d [%s{x]" % (123, "super armored"))
     lines.append("      {GMagic{g:   {x%d [%s{x]" % (123, "super armored"))
     lines.append("{g----------------+-------------+---------------------")
-    lines.append("{GAlignment{g:   {x%d {g| {GWimpy{g:    {x%d {g| {GQuest Points{g: {x%d" % (49, 0, 1984))
+    lines.append("{GAlignment{g:   {x%d {g| {GWimpy{g:    {x%d {g| {GQuest "
+                 "Points{g: {x%d" % (49, 0, 1984))
 
     lines.append("{g----------------+-------------+---------------------{x")
     lines.append("{GPkStatus{g: {x%s{x" % ("PK"))
@@ -78,6 +87,7 @@ def score_command(self):
 
     output = "\n".join(lines)
     self.echo(output)
+
 
 def scrollify(lines, header=""):
     output = """\
@@ -113,14 +123,11 @@ def channel_command(self, message):
         self.echo("Channel toggling is not yet supported.")
         return
 
-
     channel = None
     for channel_id, entry in CHANNELS.items():
         if channel_id.startswith(channel_name):
             channel = entry
             break
-
-    game = self.get_game()
 
     template = channel.get("format", "")
     self.gecho(template.format(actor=self, message=message), exclude=self)
@@ -869,9 +876,6 @@ class Entities(Collection):
 class EntityManager(Manager):
     INJECTOR_NAME = None
     DATA_PATH = None
-
-    def tick(self):
-        Entities = self.game.get_injector(self.INJECTOR_NAME)
 
     def start(self):
         Entities = self.game.get_injector(self.INJECTOR_NAME)
