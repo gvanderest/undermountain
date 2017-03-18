@@ -2,6 +2,7 @@
 
 ## In Progress
 * Channel Communication System
+* Idle connection cleanup
 * Flat-File Database Collections for Areas, Rooms, Actors, Objects, etc.
 * Organizations (Clans, Factions, etc.)
 * Scripting Engine for Areas, Rooms, Actors, Objects, etc.
