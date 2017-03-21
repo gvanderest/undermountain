@@ -1,5 +1,6 @@
 import gevent
 import logging
+from datetime import datetime
 
 
 class Connection(object):
@@ -23,6 +24,16 @@ class Connection(object):
         self.ip = ""  # Connection IP
         self.hostname = ""  # Connection hostname
         self.port = -1  # Connection port
+
+        self.update_last_input_date()
+
+    def update_last_input_date(self):
+        """Update the last Player input date."""
+        self.last_input_date = datetime.now()
+
+    def get_last_input_date(self):
+        """Return the last Player input date."""
+        return self.last_input_date
 
     @classmethod
     def get_unique_id(cls):
@@ -94,6 +105,7 @@ class Connection(object):
         if self.DEBUG:
             logging.debug("DEBUG INPUT: " + command)
         self.client.handle_input(command)
+        self.update_last_input_date()
 
     def write(self, message):
         """Write to the output_buffer."""

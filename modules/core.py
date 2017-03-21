@@ -1,19 +1,19 @@
 """
 CORE MODULE
 """
+from datetime import datetime, timedelta
 import hashlib
 import json
 from glob import glob
-from utils.entity import Entity
 from utils.ansi import Ansi
-from mud.collection import Collection
+from mud.collection import Collection, Entity
 from utils.collection import Index
 from mud.module import Module
 from mud.manager import Manager
 from utils.listify import listify
 import logging
 import random
-from settings import DIRECTIONS, CHANNELS, SOCIALS
+from settings import DIRECTIONS, CHANNELS, SOCIALS, IDLE_TIME_TO_DISCONNECT
 
 
 def prompt_command(self, arguments):
@@ -901,6 +901,16 @@ class CharactersManager(EntityManager):
     DATA_PATH = "data/characters"
 
 
+class IdleManager(Manager):
+    def tick(self):
+        now = datetime.now()
+        max_age = timedelta(seconds=IDLE_TIME_TO_DISCONNECT)
+
+        for conn in self.game.get_connections():
+            age = now - conn.get_last_input_date()
+            if age > max_age:
+                conn.writeln("You are being disconnected for being idle.")
+                conn.close()
 
 
 class Core(Module):
@@ -917,4 +927,5 @@ class Core(Module):
     MANAGERS = [
         CharactersManager,
         ExampleManager,
+        IdleManager,
     ]
