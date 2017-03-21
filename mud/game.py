@@ -228,7 +228,11 @@ class Game(object):
                 raise KeyError("Injector '{}' in {} not found for {}".format(
                     name, arg_names, method))
 
-        return method(**values)
+        try:
+            return method(**values)
+        except Exception as e:
+            self.handle_exception(e)
+            return None
 
     def dispatch(self, event_type, data=None):
         if data is None:
