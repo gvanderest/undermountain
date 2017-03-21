@@ -4,6 +4,7 @@ CORE MODULE
 from datetime import datetime, timedelta
 import hashlib
 import json
+import math
 from glob import glob
 from utils.ansi import Ansi
 from mud.collection import Collection, Entity
@@ -221,12 +222,15 @@ def sockets_command(self):
     self.echo("[Port  Num Connected_State Login@ Idle] Player Name Host")
     self.echo("-" * 79)
     count = 0
+    now = datetime.now()
 
     for conn in connections:
         count += 1
         state = "handshaking"
         actor_name = "UNKNOWN"
         client = conn.get_client()
+        age = now - conn.get_last_input_date()
+        minutes = math.floor(age.seconds / 60)
 
         if client:
             state = client.state
@@ -238,7 +242,7 @@ def sockets_command(self):
             count,
             state,
             "00:00XX",
-            0,
+            minutes,
             actor_name,
             conn.hostname,
             conn.ip,
