@@ -908,10 +908,10 @@ class CharactersManager(EntityManager):
 class IdleManager(Manager):
     def tick(self):
         now = datetime.now()
-        max_age = timedelta(seconds=IDLE_TIME_TO_DISCONNECT)
+        max_age = IDLE_TIME_TO_DISCONNECT
 
         for conn in self.game.get_connections():
-            age = now - conn.get_last_input_date()
+            age = (now - conn.get_last_input_date()).seconds
             if age > max_age:
                 conn.writeln("You are being disconnected for being idle.")
                 conn.close()
