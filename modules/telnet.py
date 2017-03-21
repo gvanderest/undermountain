@@ -476,6 +476,10 @@ class TelnetConnection(Connection):
 
     def close(self):
         try:
+            self.handle_flushing_output()
+        except Exception:
+            pass
+        try:
             self.socket.shutdown(socket.SHUT_WR)
         except OSError:
             pass
