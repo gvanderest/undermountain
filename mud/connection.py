@@ -72,6 +72,7 @@ class Connection(object):
 
     def receive(self, message):
         """Write a line to the input_buffer."""
+        self.update_last_input_date()
         if self.DEBUG:
             logging.debug("DEBUG RECEIVE: " + repr(message))
         self.input_buffer += message
@@ -102,7 +103,6 @@ class Connection(object):
 
     def handle_input(self, command):
         """Handle an input being provided."""
-        self.update_last_input_date()
         if self.DEBUG:
             logging.debug("DEBUG INPUT: " + command)
         self.client.handle_input(command)

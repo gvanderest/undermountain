@@ -480,11 +480,13 @@ class TelnetConnection(Connection):
         except Exception:
             pass
         try:
-            self.socket.shutdown(socket.SHUT_WR)
-        except OSError:
+            self.socket.shutdown(socket.SHUT_RDWR)
+        except Exception:
             pass
-
-        self.socket.close()
+        try:
+            self.socket.close()
+        except Exception:
+            pass
 
     def flush(self, message):
         if self.color:
