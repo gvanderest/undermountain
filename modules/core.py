@@ -17,6 +17,163 @@ import random
 from settings import DIRECTIONS, CHANNELS, SOCIALS, IDLE_TIME_TO_DISCONNECT
 
 
+class Map(object):
+    def __init__(self, data, width, height, origin=None):
+        self.data = data
+        self.origin = origin
+        self.width = width
+        self.height = height
+
+    def format_lines(self):
+        origin = self.origin or (None, None)
+
+        rows = len(self.data)
+        columns = len(self.data[0]) if rows else 0
+        if rows == 0 or columns == 0:
+            return ""
+
+        formatted = self.get_grid(rows * 2, columns * 2, value=" ")
+        output = ""
+        grid = self.data
+        for y, row in enumerate(grid):
+            for x, room in enumerate(row):
+                if room is None:
+                    continue
+                actual_y = y * 2
+                actual_x = x * 2
+
+                # TODO Make use of the existing grid instead of lookups
+                if room.get_exit("north"):
+                    formatted[actual_y - 1][actual_x] = "|"
+                if room.get_exit("east"):
+                    formatted[actual_y][actual_x + 1] = "-"
+                if room.get_exit("south"):
+                    formatted[actual_y + 1][actual_x] = "|"
+                if room.get_exit("west"):
+                    formatted[actual_y][actual_x - 1] = "-"
+                if room.get_exit("up"):
+                    formatted[actual_y - 1][actual_x + 1] = "{Y,{x"
+                if room.get_exit("down"):
+                    formatted[actual_y + 1][actual_x - 1] = "{Y'{x"
+
+                formatted[actual_y][actual_x] = \
+                    "{R@{x" if (origin[0] == y and origin[1] == x) else "{C#{x"
+
+        return ["".join(row[:self.width]) for row in formatted[:self.height]]
+
+    def format_string(self):
+        return "\n".join(self.format_lines)
+
+    @classmethod
+    def get_grid(cls, rows, columns, value=None):
+        """Return a 2-dimension dictionary of value."""
+        grid = []
+        for cy in range(rows):
+            row = []
+            for cx in range(columns):
+                row.append(value)
+            grid.append(row)
+        return grid
+
+    @classmethod
+    def generate_from_room(cls, origin_room, height=25, width=50):
+        POSITION_MODIFIERS = {
+            "north": (-1, 0),
+            "east": (0, 1),
+            "south": (1, 0),
+            "west": (0, -1)
+        }
+
+        columns = math.ceil(width / 2)
+        rows = math.ceil(height / 2)
+
+        grid = cls.get_grid(rows, columns)
+
+        origin_x = math.floor(columns / 2)
+        origin_y = math.floor(rows / 2)
+
+        room_ids = []
+        stack = [
+            (origin_y, origin_x, origin_room)
+        ]
+        while stack:
+            y, x, room = stack.pop()
+            grid[y][x] = room
+            room_ids.append(room.id)
+
+            for exit in room.get_exits():
+                if exit.direction_id not in POSITION_MODIFIERS:
+                    continue
+                modifier = POSITION_MODIFIERS[exit.direction_id]
+                next_y = y + modifier[0]
+                next_x = x + modifier[1]
+                if next_x > 0 and next_x < columns and \
+                        next_y > 0 and next_y < rows:
+                    next_room = exit.get_room()
+                    if next_room.id in room_ids:
+                        continue
+                    stack.append((next_y, next_x, next_room))
+
+        return cls(grid, width=width, height=height,
+                   origin=(origin_y, origin_x))
+
+
+MAP_META = [
+    "#=building",
+    "#=city",
+    "P=field",
+    "F=forest",
+    "H=hills",
+    "M=mountain",
+    "W=swim",
+    "W=noswim",
+    "X=unused",
+    "%=air",
+    "D=desert",
+    "+=road",
+    "i=inn",
+    "s=shop",
+    "t=temple",
+    "g=guild",
+    "S=swamp",
+    "J=jungle",
+    "#=dungeon",
+    "G=garden",
+    "C=cavern",
+    "+=cityst",
+    "+=asport",
+    "H=ashangar",
+    "H=phome",
+    "H=phangar",
+    "D=dock",
+    "B=bridge",
+    "+=dirtpath",
+    "B=bttlfld",
+    "F=factory",
+    "J=junkyard",
+    "L=emptylot",
+    "U=underwtr",
+    "@=YOU  |,-=normal path  |,-=door |,-=one way  |,-=secret  |,-=non-linear"
+]
+
+
+def map_command(self):
+    room = self.get_room()
+    area = room.get_area()
+    area_name = area.name if area else "Unknown"
+    mapped = Map.generate_from_room(room, width=50, height=25)
+    map_lines = mapped.format_lines()
+    meta_width = 15
+
+    self.echo("{}'s Map of {}".format(self.name, area_name).center(80))
+
+    for row in range(35):
+        meta = MAP_META[row].ljust(meta_width) if row < len(MAP_META) \
+            else (" " * meta_width)
+        map_line = map_lines[row] if row < len(map_lines) else ""
+        self.echo(meta + " " + map_line)
+
+
 def recall_command(self, Rooms):
     """Move Actor to the stating Room."""
     from settings import DEFAULT_ROOM_VNUM
@@ -260,6 +417,7 @@ def sockets_command(self):
 
     self.echo()
     self.echo("%d users" % count)
+
 
 def exception_command(self):
     """Raise an Exception."""
@@ -597,16 +755,21 @@ class Room(Entity):
 
     def get_exits(self):
         """Return dict of exits."""
-        return self.get("exits", {})
+        exits = []
+        for direction_id in self.get("exits", {}):
+            exits.append(self.get_exit(direction_id))
+        return exits
 
     def get_exit(self, direction_id):
         """Return a RoomExit."""
         Rooms = self.get_injector("Rooms")
 
-        exits = self.get_exits()
+        exits = self.get("exits", {})
         raw_exit = exits.get(direction_id, None)
         if not raw_exit:
             return None
+
+        raw_exit["direction_id"] = direction_id
 
         exit_room = Rooms.get(raw_exit["room_id"])
         return RoomExit(raw_exit, exit_room, self)
@@ -629,8 +792,6 @@ class Organization(Entity):
         return self.hidden is True
 
 
-# TODO Verify this is the right place?
-# TODO Verify this is the right place?
 from mud.command_resolver import CommandResolver
 
 COMMAND_RESOLVER = CommandResolver()
@@ -640,6 +801,7 @@ for direction_id in DIRECTIONS.keys():
 
 COMMAND_RESOLVER.update({
     "look": look_command,
+    "map": map_command,
     "recall": recall_command,
     "quit": quit_command,
     "me": me_command,
@@ -660,8 +822,6 @@ for channel_id in CHANNELS.keys():
 
 for social_id in SOCIALS.keys():
     COMMAND_RESOLVER.add(social_id, social_command)
-# TODO Verify this is the right place?
-# TODO Verify this is the right place?
 
 
 class Object(RoomEntity):
@@ -893,7 +1053,7 @@ class ExampleManager(Manager):
 
     def tick(self, Characters, Rooms, Areas):
         return
-        chars = Characters.query({ "room_id": "market_square", "online": True})
+        chars = Characters.query({"room_id": "market_square", "online": True})
 
         logging.debug("Characters in room market_square:")
         if chars:

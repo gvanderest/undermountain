@@ -73,7 +73,9 @@ class Game(object):
                     "description": tol_desc,
                     "area_id": "westbridge",
                     "exits": {
-                        "north": {"room_id": "tol123"},
+                        "north": {"room_id": "tol123", "flags": [
+                            "secret", "door", "closed"
+                        ]},
                         "east": {"room_id": "tol123"},
                         "south": {"room_id": "room_0"},
                         "west": {"room_id": "tol123"},
@@ -95,7 +97,7 @@ class Game(object):
         }
 
         # Makea lot of rooms
-        rooms = 100000
+        rooms = 100
         for x in range(rooms):
             exits = {}
             if x > 0:
@@ -118,7 +120,7 @@ class Game(object):
             }
 
         import random
-        actors = 100000
+        actors = 100
         for x in range(actors):
             actor_id = "actor_{}".format(x)
             self.state["actors"][actor_id] = {
@@ -130,7 +132,7 @@ class Game(object):
                 "room_id": "room_{}".format(random.randint(0, rooms))
             }
 
-        objects = 100000
+        objects = 100
         for x in range(objects):
             object_id = "object_{}".format(x)
             self.state["objects"][object_id] = {
