@@ -614,8 +614,8 @@ def look_command(self, arguments, Characters, Actors, Objects):
         if not exit:
             continue
 
-        if exit.has_flag("door") and exit.has_flag("closed"):
-            if exit.has_flag("secret"):
+        if exit.is_door() and exit.is_closed():
+            if exit.is_secret():
                 secret_exits.append(direction["name"])
             else:
                 door_exits.append(direction["name"])
@@ -697,9 +697,13 @@ class RoomEntity(Entity):
 
         return room
 
+    def get_flags(self):
+        """Return list of flags."""
+        return self.get("flags", [])
+
     def has_flag(self, flag_id):
-        """Return whether this Entity has a flag applied or not."""
-        return random.randint(0, 10) == 1
+        """Return whether the flag is present."""
+        return flag_id in self.get_flags()
 
 
 class Area(Entity):
@@ -737,6 +741,10 @@ class RoomExit(Entity):
     def is_door(self):
         """Return whether exit is a door or not."""
         return self.has_flag("door")
+
+    def is_secret(self):
+        """Return whether exit is a secret exit or not."""
+        return self.has_flag("secret")
 
     def is_closed(self):
         """Return whether exit is closed or not."""
@@ -1033,7 +1041,7 @@ class Character(Actor):
         return self.name.lower().startswith(keywords)
 
     def is_immortal(self):
-        return self.name == "Kelemvor"
+        return self.has_flag("immortal")
 
     def generate_password(self, password):
         """Return a SHA256 hashed password with appropriate salting."""
