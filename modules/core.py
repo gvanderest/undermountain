@@ -161,7 +161,7 @@ def map_command(self):
     room = self.get_room()
     area = room.get_area()
     area_name = area.name if area else "Unknown"
-    mapped = Map.generate_from_room(room, width=50, height=25)
+    mapped = Map.generate_from_room(room, width=64, height=33)
     map_lines = mapped.format_lines()
     meta_width = 15
 
