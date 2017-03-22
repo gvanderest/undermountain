@@ -17,6 +17,14 @@ import random
 from settings import DIRECTIONS, CHANNELS, SOCIALS, IDLE_TIME_TO_DISCONNECT
 
 
+def recall_command(self, Rooms):
+    """Move Actor to the stating Room."""
+    from settings import DEFAULT_ROOM_VNUM
+    room = Rooms.find({"vnum": DEFAULT_ROOM_VNUM})
+    self.set_room(room)
+    self.handle_command("look")
+
+
 def prompt_command(self, arguments):
     """Set the prompt for an Actor."""
     if not arguments:
@@ -624,6 +632,7 @@ for direction_id in DIRECTIONS.keys():
 
 COMMAND_RESOLVER.update({
     "look": look_command,
+    "recall": recall_command,
     "quit": quit_command,
     "me": me_command,
     "swear": swear_command,
