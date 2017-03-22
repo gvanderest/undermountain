@@ -914,7 +914,7 @@ class IdleManager(Manager):
             age = (now - conn.get_last_input_date()).seconds
             if age > max_age:
                 conn.writeln("You are being disconnected for being idle.")
-                conn.close()
+                conn.destroy()
 
 
 class Core(Module):
