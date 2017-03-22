@@ -384,7 +384,7 @@ LOOK_ACTOR_FLAGS = (
 )
 
 
-def look_command(self, arguments, Characters, Actors):
+def look_command(self, arguments, Characters, Actors, Objects):
     from settings import SELF_KEYWORDS
 
     def format_actor_flags(actor):
@@ -406,6 +406,9 @@ def look_command(self, arguments, Characters, Actors):
             format_actor_flags(actor),
             actor.format_name_to(self)
         )
+
+    def format_object(obj):
+        return "%s is lying here." % obj.name
 
     room = self.get_room()
 
@@ -478,6 +481,10 @@ def look_command(self, arguments, Characters, Actors):
     actors = Actors.query({"room_id": room.id})
     for actor in actors:
         self.echo(format_actor(actor))
+
+    objects = Objects.query({"room_id": room.id})
+    for obj in objects:
+        self.echo(format_object(obj))
 
 
 def quit_command(self, arguments):
@@ -657,7 +664,11 @@ for social_id in SOCIALS.keys():
 # TODO Verify this is the right place?
 
 
-class Actor(RoomEntity):
+class Object(RoomEntity):
+    pass
+
+
+class Actor(Object):
     # TODO move commands and handlers/logic out into their own places
     ONE_CHAR_ALIASES = {
         "'": "say",
@@ -825,6 +836,17 @@ class Actor(RoomEntity):
             self.echo("Huh?!  (Code bug detected and reported.)")
 
 
+class Objects(Collection):
+    WRAPPER_CLASS = Object
+
+    NAME = "objects"
+    INDEXES = [
+        Index("id", required=True, unique=True),
+        Index("name", required=True, unique=True),
+        Index("room_id"),
+    ]
+
+
 class Actors(Collection):
     WRAPPER_CLASS = Actor
 
@@ -940,6 +962,7 @@ class Core(Module):
     INJECTORS = {
         "Areas": Areas,
         "Rooms": Rooms,
+        "Objects": Objects,
         "Actors": Actors,
         "Characters": Characters,
     }

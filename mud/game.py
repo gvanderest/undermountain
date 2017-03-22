@@ -136,6 +136,7 @@ class Game(object):
             self.state["objects"][object_id] = {
                 "id": object_id,
                 "name": "Object {}".format(x),
+                "room_id": "room_{}".format(random.randint(0, rooms)),
                 "description": []
             }
 
