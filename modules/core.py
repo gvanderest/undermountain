@@ -22,6 +22,7 @@ def recall_command(self, Rooms):
     from settings import DEFAULT_ROOM_VNUM
     room = Rooms.find({"vnum": DEFAULT_ROOM_VNUM})
     self.set_room(room)
+    self.save()
     self.handle_command("look")
 
 
