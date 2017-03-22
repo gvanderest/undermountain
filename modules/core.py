@@ -922,8 +922,14 @@ class IdleManager(Manager):
         for conn in self.game.get_connections():
             age = (now - conn.get_last_input_date()).seconds
             if age > max_age:
-                conn.writeln("You are being disconnected for being idle.")
-                conn.destroy()
+                message = "You are being disconnected for being idle."
+                actor = conn.get_actor()
+                if actor:
+                    actor.echo(message)
+                    actor.handle_command("quit")
+                else:
+                    conn.writeln(message)
+                    conn.destroy()
 
 
 class Core(Module):
