@@ -157,6 +157,16 @@ MAP_META = [
 ]
 
 
+def afk_command(self):
+    if self.is_afk():
+        self.remove_flag("afk")
+        self.echo("You are no longer marked as AFK.")
+    else:
+        self.add_flag("afk")
+        self.echo("You are now marked as AFK.")
+    self.save()
+
+
 def map_command(self):
     room = self.get_room()
     area = room.get_area()
@@ -504,6 +514,10 @@ def who_command(self, arguments, Characters):
             line += ("{x[...{BN{x......]{x" if actor.is_immortal()
                      else "  {x[.{BN{x......]{x")
         line += " "
+
+        if actor.is_afk():
+            line += "[{yAFK{x] "
+
         line += actor.name
 
         if actor.title:
@@ -705,6 +719,20 @@ class RoomEntity(Entity):
         """Return whether the flag is present."""
         return flag_id in self.get_flags()
 
+    def add_flag(self, flag_id):
+        if not self.flags:
+            self.flags = []
+
+        if flag_id not in self.flags:
+            self.flags.append(flag_id)
+
+    def remove_flag(self, flag_id):
+        if not self.flags:
+            self.flags = []
+
+        if flag_id in self.flags:
+            self.flags.remove(flag_id)
+
 
 class Area(Entity):
     pass
@@ -819,6 +847,7 @@ for direction_id in DIRECTIONS.keys():
 
 COMMAND_RESOLVER.update({
     "look": look_command,
+    "afk": afk_command,
     "map": map_command,
     "recall": recall_command,
     "quit": quit_command,
@@ -854,6 +883,9 @@ class Actor(Object):
         "=": "cgossip",
         "?": "help",
     }
+
+    def is_afk(self):
+        return self.has_flag("afk")
 
     def find_room_actor(self, keywords, can_see=True):
         room = self.get_room()

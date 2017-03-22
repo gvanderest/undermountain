@@ -262,7 +262,11 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         if not actor:
             return ""
 
-        prompt = (actor.prompt or DEFAULT_TELNET_PROMPT) + "{x"
+        if actor.is_afk():
+            prompt = "<AFK>"
+        else:
+            prompt = (actor.prompt or DEFAULT_TELNET_PROMPT) + "{x"
+
         if not prompt.endswith("\n"):
             prompt += " "
 
