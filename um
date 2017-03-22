@@ -2,8 +2,8 @@
 """Undermountain Startup Script."""
 import importlib
 import gevent
-import logging
 import sys
+import logging
 from logging.handlers import RotatingFileHandler
 from mud.game import Game
 from settings import MODULES
@@ -82,7 +82,7 @@ arg = sys.argv[1]
 if arg == "start":
     # loop.set_default_executor(ThreadPoolExecutor(1000))
     RESOLVED_MODULES = [import_class(name) for name in MODULES]
-    game = Game(modules=RESOLVED_MODULES, logging=True)
+    game = Game(modules=RESOLVED_MODULES)
     start = gevent.spawn(game.start)
     try:
         start.join()

@@ -28,7 +28,7 @@ class Game(object):
 
         return cls.VERSION
 
-    def __init__(self, modules=None, injectors=None, logging=False):
+    def __init__(self, modules=None, injectors=None):
         tol_desc = [
             "This is the interior of a large white marble temple.  A pipe "
             "organ",
@@ -49,7 +49,7 @@ class Game(object):
         self.state = {
             "actors": {
                 "abc123": {
-                    "room_id": "temple_of_life",
+                    "room_id": "tol123",
                     "keywords": "tchazzar",
                     "name": "{8Tchazzar, {rthe Dragon Queen",
                     "room_name": "{8Tchazzar, {rThe Dragon Queen{x rests on her throne here.",
@@ -64,6 +64,7 @@ class Game(object):
                     "name": "Westbridge City",
                 },
             },
+            "objects": {},
             "rooms": {
                 "tol123": {
                     "id": "tol123",
@@ -74,7 +75,7 @@ class Game(object):
                     "exits": {
                         "north": {"room_id": "tol123"},
                         "east": {"room_id": "tol123"},
-                        "south": {"room_id": "tol123"},
+                        "south": {"room_id": "room_0"},
                         "west": {"room_id": "tol123"},
                         "up": {"room_id": "tol123"},
                         "down": {"room_id": "cop321"},
@@ -92,15 +93,59 @@ class Game(object):
                 },
             },
         }
+
+        # Makea lot of rooms
+        rooms = 100000
+        for x in range(rooms):
+            exits = {}
+            if x > 0:
+                exits["north"] = {"room_id": "room_{}".format(x - 1)}
+            else:
+                exits["north"] = {"room_id": "tol123"}
+
+            if x < rooms - 1:
+                exits["south"] = {"room_id": "room_{}".format(x + 1)}
+
+            room_id = "room_{}".format(x)
+            self.state["rooms"][room_id] = {
+                "id": room_id,
+                "vnum": room_id,
+                "name": "Room {}".format(x),
+                "description": [
+                    "You're in room {}".format(x)
+                ],
+                "exits": exits
+            }
+
+        import random
+        actors = 100000
+        for x in range(actors):
+            actor_id = "actor_{}".format(x)
+            self.state["actors"][actor_id] = {
+                "id": actor_id,
+                "keywords": "actor {}".format(x),
+                "name": "Actor {}".format(x),
+                "room_name": "Actor {}".format(x),
+                "description": [],
+                "room_id": "room_{}".format(random.randint(0, rooms))
+            }
+
+        objects = 100000
+        for x in range(objects):
+            object_id = "object_{}".format(x)
+            self.state["objects"][object_id] = {
+                "id": object_id,
+                "name": "Object {}".format(x),
+                "description": []
+            }
+
         self.running = False
         self.modules = []
-        self.logging = False
         self.injectors = {}
         self.managers = []
         self.connections = []
 
         self.set_modules(modules)
-        self.set_logging(logging)
 
     def get_actor_connection(self, actor):
         # FIXME Make this a dictionary
@@ -181,10 +226,6 @@ class Game(object):
     def get_injectors(self, *names):
         """Return a tuple of Injectors."""
         return tuple(map(self.get_injector, names))
-
-    def set_logging(self, logging):
-        """Set the logging flag to a value."""
-        self.logging = logging
 
     def shutdown(self):
         """Stop any processes/modules that are running."""

@@ -1,4 +1,5 @@
 from utils.collection import EntityCollection, CollectionEntity
+import logging
 
 
 class Collection(EntityCollection):
@@ -9,6 +10,7 @@ class Collection(EntityCollection):
         records = state.get(self.NAME, {})
         state[self.NAME] = records
         self.game.set_state(state)
+        logging.info("LOADED {} OBJECTS".format(len(records)))
 
         super(Collection, self).__init__(records)
 
