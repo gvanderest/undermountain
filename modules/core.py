@@ -1,7 +1,7 @@
 """
 CORE MODULE
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 import hashlib
 import json
 import math
@@ -614,8 +614,11 @@ def look_command(self, arguments, Characters, Actors, Objects):
         if not exit:
             continue
 
-        if exit.is_door() and exit.is_closed():
-            door_exits.append(direction["name"])
+        if exit.has_flag("door") and exit.has_flag("closed"):
+            if exit.has_flag("secret"):
+                secret_exits.append(direction["name"])
+            else:
+                door_exits.append(direction["name"])
 
         else:
             basic_exits.append(direction["name"])
@@ -628,6 +631,13 @@ def look_command(self, arguments, Characters, Actors, Objects):
     line += "{x[{GDoors{g:{x %s{x]" % (
         " ".join(door_exits) if door_exits else "none"
     )
+
+    if self.is_immortal():
+        line += "   "
+        line += "{x[{GSecret{g:{x %s{x]" % (
+            " ".join(secret_exits) if secret_exits else "none"
+        )
+
     self.echo(line)
 
     players = Characters.query({"online": True, "room_id": room.id})
