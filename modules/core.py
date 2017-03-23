@@ -557,6 +557,7 @@ LOOK_ACTOR_FLAGS = (
 
 
 def look_command(self, arguments, Characters, Actors, Objects):
+    minimap_enabled = True
     from settings import SELF_KEYWORDS
 
     def format_actor_flags(actor):
@@ -609,15 +610,16 @@ def look_command(self, arguments, Characters, Actors, Objects):
 
         return
 
-    self.echo("{B%s{x" % room.name)
+    lines = []
+    lines.append("{B%s{x" % room.name)
 
     for index, line in enumerate(room.description):
         if index == 0:
-            self.echo("{x  " + line)
+            lines.append("{x  " + line)
         else:
-            self.echo(line)
+            lines.append(line)
 
-    self.echo()
+    lines.append("")
 
     basic_exits = []
     door_exits = []
@@ -652,21 +654,45 @@ def look_command(self, arguments, Characters, Actors, Objects):
             " ".join(secret_exits) if secret_exits else "none"
         )
 
-    self.echo(line)
+    lines.append(line)
 
     players = Characters.query({"online": True, "room_id": room.id})
     for player in players:
         if player == self:
             continue
-        self.echo(format_actor(player))
+        lines.append(format_actor(player))
 
     actors = Actors.query({"room_id": room.id})
     for actor in actors:
-        self.echo(format_actor(actor))
+        lines.append(format_actor(actor))
 
     objects = Objects.query({"room_id": room.id})
     for obj in objects:
-        self.echo(format_object(obj))
+        lines.append(format_object(obj))
+
+    # Prefix with map, if applicable
+    minimap_height = 8
+    minimap_width = 10
+    minimap_gutter = 2
+    if minimap_enabled:
+        minimap = Map.generate_from_room(room, width=minimap_width,
+                                         height=minimap_height)
+        minimap_lines = minimap.format_lines()
+
+        for x in range(minimap_height - len(lines)):
+            lines.append("")
+
+        for index, line in enumerate(lines):
+            newline = ""
+            newline += minimap_lines[index] if index < minimap_height else \
+                (" " * minimap_width)
+            newline += " " * minimap_gutter
+            newline += line
+
+            lines[index] = newline
+
+    for line in lines:
+        self.echo(line)
 
 
 def quit_command(self, arguments):
