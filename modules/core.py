@@ -486,22 +486,39 @@ def walk_command(self, message):
         self.echo("You can't walk in that direction.")
         return
 
-    room = self.get_room()
-    exit = room.get_exit(direction_id)
+    from_room = self.get_room()
+    exit = from_room.get_exit(direction_id)
 
     if exit is None:
         self.echo("You can't walk in that direction.")
         return
 
-    target_room = exit.get_room()
-    if target_room is None:
+    to_room = exit.get_room()
+
+    walking = self.event_to_room("walking", room=from_room)
+    leaving = self.event_to_room("leaving", room=from_room)
+    entering = self.event_to_room("entering", room=to_room)
+
+    if walking.is_blocked() or leaving.is_blocked() or entering.is_blocked():
+        return
+
+    self.act_to_room("{actor.name} leaves {direction_id}.")
+
+    if to_room is None:
         raise Exception("Room does not exist for exit {} in room {}".format(
             direction_id,
-            room.id
+            to_room.id
         ))
 
-    self.set_room(target_room)
+    self.set_room(to_room)
     self.save()
+
+    self.act_to_room("{actor.name} has arrived.")
+
+    self.event_to_room("walked", room=from_room)
+    self.event_to_room("left", room=from_room)
+    self.event_to_room("entered", room=to_room)
+
     self.handle_command("look")
 
 
@@ -1075,7 +1092,17 @@ for social_id in SOCIALS.keys():
 
 
 class Object(RoomEntity):
-    pass
+    def act_to_room(self, message, exclude=None, include=None):
+        if exclude is None:
+            exclude = [self]
+
+        room = self.get_room()
+        for actor in room.get_actors():
+            if actor in exclude:
+                continue
+            if include and actor not in include:
+                continue
+            actor.echo(message)
 
 
 class Actor(Object):
