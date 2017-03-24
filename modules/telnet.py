@@ -70,9 +70,6 @@ class TelnetClient(Client):
         Characters = game.get_injector("Characters")
         return Characters.find({"name": name})
 
-    def get_cleaned_name(self, name):
-        return name.strip().lower().title()
-
     def is_valid_username(self, username):
         from settings import BANNED_NAMES, BANNED_NAME_PREFIXES
         username = username.lower()
@@ -95,7 +92,8 @@ class TelnetClient(Client):
 
     def handle_login_username_input(self, message):
         """Handle logging in username prompt."""
-        username = self.get_cleaned_name(message)
+        from modules.core import Character
+        username = Character.clean_name(message)
 
         if not self.is_valid_username(username):
             self.writeln("The name you provided is not valid.")

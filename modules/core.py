@@ -559,6 +559,39 @@ LOOK_ACTOR_FLAGS = (
 )
 
 
+def finger_command(self, arguments, Characters):
+    """Look up a Character who may be offline."""
+    from modules.core import Character
+    if not arguments:
+        self.echo("Finger who?")
+        return
+
+    name = Character.clean_name(arguments[0])
+    actor = Characters.find({"name": name})
+    if not actor:
+        self.echo("No such player: {}".format(name))
+        return
+
+    gender = GENDERS[actor.gender_id]["who_name"]
+
+    lines = []
+    lines.append("{B+{b-----------------------{C[ {BWa{bt{8e{wr{8d{be{Bep{RM{rUD {RCharacter Info {C]{b-----------------------{B+{x")
+    lines.append(" {RN{rame %s{x   : %s %s{x" % (gender, actor.name, actor.get("title", "")))
+
+    description = actor.get("description", [])
+    if description:
+        lines.append("{B+{b-------------------------------{B| {CDE{wSC{cRIP{wTI{CON {B|{b-------------------------------{B+{x")
+
+        for line in description:
+            lines.append(line)
+
+    lines.append("{B+{b-----------------------------------------------------------------------------{B+{x")
+    lines.append(" %s's login status is currently unknown." % (actor.name))
+    lines.append("{B+{b-----------------------------------------------------------------------------{B+{x")
+
+    self.echo("\n".join(lines))
+
+
 def look_command(self, arguments, Characters, Actors, Objects):
     minimap_enabled = True
     from settings import SELF_KEYWORDS
@@ -876,6 +909,7 @@ for direction_id in DIRECTIONS.keys():
 
 COMMAND_RESOLVER.update({
     "look": look_command,
+    "finger": finger_command,
     "afk": afk_command,
     "map": map_command,
     "recall": recall_command,
@@ -1098,6 +1132,11 @@ class Actors(Collection):
 
 
 class Character(Actor):
+    @classmethod
+    def clean_name(cls, name):
+        """Return a cleaned version of a name string."""
+        return name.strip().lower().title()
+
     def matches_keywords(self, keywords):
         return self.name.lower().startswith(keywords)
 
