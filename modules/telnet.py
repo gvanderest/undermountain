@@ -10,7 +10,7 @@ from mud.connection import Connection
 from mud.module import Module
 from mud.server import Server
 from utils.ansi import Ansi
-from settings import DEFAULT_TELNET_PROMPT
+from settings import DEFAULT_TELNET_PROMPT, RACES, CLASSES, GENDERS
 
 gevent.monkey.patch_socket()
 
@@ -70,20 +70,12 @@ class TelnetClient(Client):
         Characters = game.get_injector("Characters")
         return Characters.find({"name": name})
 
-    def create_character(self, data):
-        game = self.get_game()
-        Characters = game.get_injector("Characters")
-        return Characters.save(data)
-
     def get_cleaned_name(self, name):
         return name.strip().lower().title()
 
     def is_valid_username(self, username):
-        from settings import BANNED_NAMES
+        from settings import BANNED_NAMES, BANNED_NAME_PREFIXES
         username = username.lower()
-
-        if username in BANNED_NAMES:
-            return False
 
         if len(username) < 3:
             return False
@@ -92,9 +84,16 @@ class TelnetClient(Client):
             if char not in "abcdefghijklmnopqrstuvwxyz":
                 return False
 
+        if username in BANNED_NAMES:
+            return False
+
+        for prefix in BANNED_NAME_PREFIXES:
+            if username.startswith(prefix.lower()):
+                return False
+
         return True
 
-    def handle_login_username(self, message):
+    def handle_login_username_input(self, message):
         """Handle logging in username prompt."""
         username = self.get_cleaned_name(message)
 
@@ -116,39 +115,188 @@ class TelnetClient(Client):
 
         actor = self.get_character(self.name)
 
-        # That Actor is already in the Game, reconnect?
-        if actor:
-            if actor.online:
-                self.write_login_reconnect_confirm_prompt()
-                self.state = "login_reconnect_confirm"
-                return
-
-            actor.online = True
-            actor.save()
-        else:
-            # Create the Character and bind to client
-            # TODO Make this a constant for starting room?
-            data = {
+        # This Character does not exist, go to creation screens
+        if not actor:
+            Characters = self.get_injector("Characters")
+            actor = Characters.save({
                 "name": self.name,
-                "room_id": "market_square",
                 "online": False,
-                "password": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
-                "organizations": {
-                    # "clan": "vector",
-                },
-            }
-            actor = self.create_character(data)
+                "organizations": {},
+            })
+            self.actor_id = actor.id
+            actor.set_client(self)
 
-        self.state = "playing"
-        self.actor_id = actor.id
-        actor.set_client(self)
+            self.writeln("Thanks for providing your name, {}!".format(actor.name))
+            self.writeln()
 
-        self.writeln("Thanks for providing your name, {}!".format(actor.name))
-        self.writeln()
-        self.write_motd_prompt()
+            self.start_race_selection_screen()
+            return
+        else:
+            self.actor_id = actor.id
+            actor.set_client(self)
+
+        # That Actor is already in the Game, reconnect?
+        if actor.online:
+
+            self.write_login_reconnect_confirm_prompt()
+            self.state = "login_reconnect_confirm"
+            return
+
+        self.start_motd_screen()
+
+    def start_race_selection_screen(self):
+        self.state = "race_selection"
+        self.write_race_selection_screen()
+        self.write_race_selection_prompt()
+
+    def write_race_selection_screen(self):
+        self.echo("""
+{B+{b---------------------------{B[ {CPick your Race {B]{b----------------------------{B+
+{x
+  Welcome to the birthing process of your character.  Below you will
+  find a list of available races and their basic stats.  You will gain
+  an additional +2 points on a specific stat depending on your choice
+  of class.  For detailed information see our website located at
+  http://waterdeep.org or type HELP (Name of Race) below.
+
+            {GSTR INT WIS DEX CON                 STR INT WIS DEX CON
+  {CA{cvian     {g17  19  20  16  17      {CH{calfElf     {g17  18  19  18  18
+  {CC{centaur   {g20  17  15  13  21      {CH{calfOrc     {g19  15  15  20  21
+  {CD{craconian {g22  18  16  15  21      {CH{ceucuva     {g25  10  10  25  25
+  {CD{crow      {g18  22  20  23  17      {CH{cuman       {g21  19  19  19  21
+  {CD{cwarf     {g20  18  22  16  21      {CK{cenku       {g19  19  21  20  19
+  {CE{clf       {g16  20  18  21  15      {CM{cinotaur    {g23  16  15  16  22
+  {CE{csper     {g14  21  21  20  14      {CP{cixie       {g14  20  20  23  14
+  {CG{ciant     {g22  15  18  15  20      {CP{codrikev    {g25  18  18  15  25
+  {CG{cnoll     {g20  16  15  20  19      {CT{chri'Kreen  {g17  22  22  16  25
+  {CG{cnome     {g16  23  19  15  15      {CT{citan       {g25  18  18  15  25
+  {CG{coblin    {g16  20  16  19  20      {CS{catyr       {g23  19  10  14  21
+  {CH{calfling  {g15  20  16  21  18
+
+{B+{b-------------------------------------------------------------------------{B+{x
+""")
+
+    def write_race_selection_prompt(self):
+        self.write("Please choose a race: ")
+
+    def handle_race_selection_input(self, message):
+        cleaned = message.lower().strip()
+
+        race_found = None
+
+        if cleaned:
+            for race_id in RACES.keys():
+                if race_id.startswith(cleaned):
+                    race_found = race_id
+                    break
+
+        if not race_found:
+            self.echo("The race you selected is not valid.")
+            self.echo()
+            self.write_race_selection_prompt()
+            return
+
+        actor = self.get_actor()
+        actor.race_id = race_found
+        actor.save()
+
+        self.start_gender_selection_screen()
+
+    def start_gender_selection_screen(self):
+        self.state = "gender_selection"
+        self.write_gender_selection_screen()
+        self.write_gender_selection_prompt()
+
+    def write_gender_selection_screen(self):
+        self.echo("""
+{B+{b--------------------------{B[ {CPick your Gender {B]{g---------------------------{B+
+
+                                  {BMale
+                                  {MFemale
+                                  {xNeutral
+
+{B+{b-------------------------------------------------------------------------{B+{x
+""")
+
+    def write_gender_selection_prompt(self):
+        self.write("Please choose a gender for your character: ")
+
+    def handle_gender_selection_input(self, message):
+        cleaned = self.clean_message(message)
+
+        gender_found = None
+
+        for gender_id in GENDERS.keys():
+            if gender_id.startswith(cleaned):
+                gender_found = gender_id
+                break
+
+        if not gender_found:
+            self.echo("The gender you selected is not available.")
+            self.echo()
+            self.write_gender_selection_prompt()
+            return
+
+        actor = self.get_actor()
+        actor.gender_id = gender_found
+        actor.save()
+        self.start_class_selection_screen()
+
+    def start_class_selection_screen(self):
+        self.state = "class_selection"
+        self.write_class_selection_screen()
+        self.write_class_selection_prompt()
+
+    def write_class_selection_screen(self):
+        self.echo("""
+{B+{b--------------------------{B[ {CPick your Class {B]{b---------------------------{B+{x
+
+  Waterdeep has a 101 level, 2 Tier remorting system.  After the first
+  101 levels you will reroll and be able to choose a new race and class.
+  2nd Tier classes are upgrades from their 1st tier counterparts.
+
+  For more information type HELP (Name of Class) to see their help files.
+
+                               {RM{rage
+                               {RC{rleric
+                               {RT{rhief
+                               {RW{rarrior
+                               {RR{ranger
+                               {RD{rruid
+                               {RV{rampire
+
+{B+{b-------------------------------------------------------------------------{B+{x
+""")
+
+    def write_class_selection_prompt(self):
+        self.write("Select a class or type HELP (Class) for details: ")
+
+    def handle_class_selection_input(self, message):
+        cleaned = self.clean_message(message)
+
+        found_class = None
+
+        for class_id, class_details in CLASSES.items():
+            if class_id.startswith(cleaned) and class_details["tier"] == 1:
+                found_class = class_id
+                break
+
+        if not found_class:
+            self.echo("The class you selected is not valid.")
+            self.write_class_selection_prompt()
+            return
+
+        actor = self.get_actor()
+        actor.class_id = found_class
+        actor.save()
+
+        self.start_motd_screen()
+
+    def start_motd_screen(self):
         self.state = "motd"
+        self.write_motd_screen()
 
-    def write_motd_prompt(self):
+    def write_motd_screen(self):
         self.writeln("""\
 
                                                           __
@@ -193,7 +341,7 @@ class TelnetClient(Client):
 Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
 """)
 
-    def handle_motd(self, message):
+    def handle_motd_input(self, message):
         self.state = "playing"
 
         self.handle_input("look")
@@ -214,8 +362,12 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         self.writeln("That character is already playing.")
         self.write("Would you like to reconnect? [Y/N] ")
 
-    def handle_login_reconnect_confirm(self, message):
-        cleaned = message.strip().lower()
+    @classmethod
+    def clean_message(cls, message):
+        return message.strip().lower()
+
+    def handle_login_reconnect_confirm_input(self, message):
+        cleaned = self.clean_message(message)
 
         if not cleaned:
             self.write_login_reconnect_confirm_prompt()
@@ -377,13 +529,13 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         actor.set_client(self)
         return actor
 
-    def handle_playing(self, message):
+    def handle_playing_input(self, message):
         if message == "!":
             if self.last_command is None:
                 self.writeln("Huh?")
                 self.write_playing_prompt()
             else:
-                self.handle_playing(self.last_command)
+                self.handle_playing_input(self.last_command)
             return
 
         self.last_command = message

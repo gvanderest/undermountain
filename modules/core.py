@@ -13,8 +13,8 @@ from mud.module import Module
 from mud.manager import Manager
 from utils.listify import listify
 import logging
-import random
-from settings import DIRECTIONS, CHANNELS, SOCIALS, IDLE_TIME_TO_DISCONNECT
+from settings import DIRECTIONS, CHANNELS, SOCIALS, IDLE_TIME_TO_DISCONNECT, \
+    RACES, CLASSES, GENDERS
 
 
 class Map(object):
@@ -481,17 +481,20 @@ def who_command(self, arguments, Characters):
             line += who_restring
         else:
             gender_restring = actor.get("who_gender_restring", None)
-            line += gender_restring if gender_restring else "{BM{x"
+            line += gender_restring if gender_restring else \
+                GENDERS[actor.gender_id]["who_name"]
 
             line += " "
 
             race_restring = actor.get("who_race_restring", None)
-            line += race_restring if race_restring else "{CH{cuman"
+            line += race_restring if race_restring else \
+                RACES[actor.race_id]["who_name"]
 
             line += " "
 
             class_restring = actor.get("who_class_restring", None)
-            line += class_restring if class_restring else "{RA{rdv"
+            line += class_restring if class_restring else \
+                CLASSES[actor.class_id]["who_name"]
 
             line += " "
 

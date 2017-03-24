@@ -308,146 +308,198 @@ SOCIALS = {
     }
 }
 
+GENDERS = {
+    "male": {
+        "name": "Male",
+        "who_name": "{BM",
+    },
+    "female": {
+        "name": "Feale",
+        "who_name": "{MF",
+    },
+    "neutral": {
+        "name": "Neutral",
+        "who_name": "{8N",
+    },
+}
 RACES = {
     "human": {
         "name": "Human",
+        "who_name": "{CH{cuman",
     },
     "goblin": {
         "name": "Goblin",
+        "who_name": "{CG{cobln",
     },
     "halfling": {
         "name": "Halfling",
+        "who_name": "{CH{cflng",
     },
     "elf": {
         "name": "Elf",
+        "who_name": "{CE{clf  ",
     },
     "halfelf": {
         "name": "Half-Elf",
+        "who_name": "{CH{c.Elf",
     },
     "halforc": {
         "name": "Half-Orc",
+        "who_name": "{CH{c.Orc",
     },
     "avian": {
         "name": "Avian",
+        "who_name": "{CA{cvian",
     },
     "centaur": {
         "name": "Centaur",
+        "who_name": "{CC{centr",
     },
     "draconian": {
         "name": "Draconian",
+        "who_name": "{CD{cracn",
     },
     "drow": {
         "name": "Drow",
+        "who_name": "{CD{crow ",
     },
     "dwarf": {
         "name": "Dwarf",
+        "who_name": "{CD{cwarf",
     },
     "esper": {
         "name": "Esper",
+        "who_name": "{CE{csper",
     },
     "giant": {
         "name": "Giant",
+        "who_name": "{CG{ciant",
     },
     "gnoll": {
         "name": "Gnoll",
+        "who_name": "{CG{cnoll",
     },
     "gnome": {
         "name": "Gnome",
+        "who_name": "{CG{cnome",
     },
     "heucuva": {
         "name": "Heucuva",
+        "who_name": "{CH{ceucv",
     },
     "kenku": {
         "name": "Kenku",
+        "who_name": "{CK{cenku",
     },
     "minotaur": {
         "name": "Minotaur",
+        "who_name": "{CM{cintr",
     },
     "pixie": {
         "name": "Pixie",
+        "who_name": "{CP{cixie",
     },
     "podrikev": {
         "name": "Podrikev",
+        "who_name": "{CP{codkv",
     },
     "satyr": {
         "name": "Satyr",
+        "who_name": "{CS{catyr",
     },
     "thrikreen": {
         "name": "Thri'Kreen",
+        "who_name": "{CT{chken",
     },
     "titan": {
         "name": "Titan",
+        "who_name": "{CT{citan",
     },
 }
 
 CLASSES = {
     "mage": {
         "name": "Mage",
+        "who_name": "{RM{rag",
         "tier": 1,
     },
     "thief": {
         "name": "Thief",
+        "who_name": "{RT{rhi",
         "tier": 1,
     },
-    "fighter": {
-        "name": "Fighter",
+    "warrior": {
+        "name": "Warrior",
+        "who_name": "{RW{rar",
         "tier": 1,
     },
     "druid": {
         "name": "Druid",
+        "who_name": "{RD{rru",
         "tier": 1,
     },
     "ranger": {
         "name": "Ranger",
+        "who_name": "{RR{ran",
         "tier": 1,
     },
     "cleric": {
         "name": "Cleric",
+        "who_name": "{RC{rle",
         "tier": 1,
     },
     "vampire": {
         "name": "Vampire",
+        "who_name": "{RV{ram",
         "tier": 1,
     },
 
     "wizard": {
         "name": "Wizard",
+        "who_name": "{BW{biz",
         "tier": 2,
         "parent_id": "mage",
     },
     "mercenary": {
         "name": "Mercenary",
+        "who_name": "{BM{ber",
         "tier": 2,
         "parent_id": "thief"
     },
     "gladiator": {
         "name": "Gladiator",
+        "who_name": "{BG{bla",
         "tier": 2,
         "parent_id": "fighter",
     },
     "sage": {
         "name": "Sage",
+        "who_name": "{BS{bag",
         "tier": 2,
         "parent_id": "druid",
     },
     "strider": {
         "name": "Strider",
+        "who_name": "{BS{btr",
         "tier": 2,
         "parent_id": "ranger",
     },
     "priest": {
         "name": "Priest",
+        "who_name": "{BP{bri",
         "tier": 2,
         "parent_id": "cleric",
     },
     "lich": {
         "name": "Lich",
+        "who_name": "{BL{bic",
         "tier": 2,
         "parent_id": "vampire",
     },
 }
 
 SELF_KEYWORDS = ["self"]
+BANNED_NAME_PREFIXES = [] + SELF_KEYWORDS
 BANNED_NAMES = [
     "root",
     "shell",

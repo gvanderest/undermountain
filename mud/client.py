@@ -21,7 +21,7 @@ class Client(object):
         from settings import DEBUG_INPUT_TIMING
 
         game = self.get_game()
-        method_name = "handle_{}".format(self.state)
+        method_name = "handle_{}_input".format(self.state)
 
         if DEBUG_INPUT_TIMING:
             time_started = time.time()
@@ -39,6 +39,9 @@ class Client(object):
         """Quit the game."""
         connection = self.get_connection()
         connection.close()
+
+    def echo(self, *args, **kwargs):
+        self.writeln(*args, **kwargs)
 
     def writeln(self, message=""):
         self.write(message + self.NEWLINE)
