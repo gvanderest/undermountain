@@ -559,6 +559,26 @@ LOOK_ACTOR_FLAGS = (
 )
 
 
+def exits_command(self):
+    """List the exits from the current Room."""
+    from settings import DIRECTIONS
+
+    room = self.get_room()
+    exits = room.get_exits()
+
+    self.echo("Obvious exits:")
+    if not exits:
+        self.echo("None.")
+        return
+
+    for exit in exits:
+        next_room = exit.get_room()
+        self.echo("%s - %s" % (
+            DIRECTIONS[exit.direction_id]["name"],
+            next_room.name
+        ))
+
+
 def finger_command(self, arguments, Characters):
     """Look up a Character who may be offline."""
     from modules.core import Character
@@ -909,6 +929,7 @@ for direction_id in DIRECTIONS.keys():
 
 COMMAND_RESOLVER.update({
     "look": look_command,
+    "exits": exits_command,
     "finger": finger_command,
     "afk": afk_command,
     "map": map_command,
