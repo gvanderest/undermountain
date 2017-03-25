@@ -11,6 +11,7 @@ from mud.module import Module
 from mud.server import Server
 from utils.ansi import Ansi
 from settings import DEFAULT_TELNET_PROMPT, RACES, CLASSES, GENDERS
+from modules.core import Character
 
 gevent.monkey.patch_socket()
 
@@ -20,10 +21,7 @@ class TelnetClient(Client):
     def init(self):
         self.last_command = None
         self.actor_id = None
-        self.name = None
-
-    def hide_next_input(self):
-        self.write("<TODO HIDE> ")
+        self.username = None
 
     def start(self):
         self.write_login_banner()
@@ -92,7 +90,6 @@ class TelnetClient(Client):
 
     def handle_login_username_input(self, message):
         """Handle logging in username prompt."""
-        from modules.core import Character
         username = Character.clean_name(message)
 
         if not self.is_valid_username(username):
@@ -104,43 +101,137 @@ class TelnetClient(Client):
             self.write_login_username_prompt()
             return
 
-        self.name = username
+        self.username = username
 
         if not message:
             self.writeln("Please pick a name, even if it's short.")
             self.write_login_username_prompt()
             return
 
-        actor = self.get_character(self.name)
+        actor = self.get_character(self.username)
 
         # This Character does not exist, go to creation screens
-        if not actor:
-            Characters = self.get_injector("Characters")
-            actor = Characters.save({
-                "name": self.name,
-                "online": False,
-                "organizations": {},
-            })
-            self.actor_id = actor.id
-            actor.set_client(self)
-
-            self.writeln("Thanks for providing your name, {}!".format(actor.name))
-            self.writeln()
-
-            self.start_race_selection_screen()
-            return
+        if actor:
+            self.start_login_password_screen()
         else:
-            self.actor_id = actor.id
-            actor.set_client(self)
+            self.start_name_creation_screen()
 
-        # That Actor is already in the Game, reconnect?
-        if actor.online:
+    def start_login_password_screen(self):
+        self.state = "login_password"
+        self.write_login_password_prompt()
 
-            self.write_login_reconnect_confirm_prompt()
-            self.state = "login_reconnect_confirm"
+    def write_login_password_prompt(self):
+        self.write("Password: ")
+        self.hide_next_input()
+
+    def handle_login_password_input(self, message, Characters):
+        actor = Characters.find({"name": self.username})
+
+        if not actor:
+            self.echo("Somehow, your Character disappeared.")
+            self.state = "login_username"
+            self.write("Who are you again? ")
             return
+
+        password = Character.generate_password(message)
+        if actor.password != password:
+            self.echo("The password you provided is incorrect.")
+            self.connection.destroy()
+            return
+
+        self.set_actor(actor)
+        actor.set_client(self)
 
         self.start_motd_screen()
+
+    def start_name_creation_screen(self):
+        self.state = "name_creation"
+        self.write_name_creation_screen()
+        self.write_name_creation_prompt()
+
+    def write_name_creation_screen(self):
+        self.echo("""
+{B+{b------------------------{B[ {CWelcome to Waterdeep {B]{b-------------------------{B+{x
+
+  We are a roleplaying -encouraged- mud, meaning roleplaying is not
+  required by our players but we do require non-roleplayers abide by a few
+  rules and regulations.  All character names must meet a certain standard
+  of quality in order to foster a more immersive and creative environment.
+  The staff retains the right to make the final judgment of whether a character
+  name meets the standard.
+  Some guidelines:
+
+    {C1{c.{x Do not use names such as Joe, Bob, Larry, Carl and so forth.
+       'Exotic' proper names like 'Xavier' and such -may- be acceptable.
+    {C2{c.{x Do not name yourself after a deity, fictional or otherwise.
+    {C3{c.{x Do not use the names of well-known fictional characters.
+    {C4{c.{x Names should fit with the fantasy/steampunk theme of the mud.
+
+  If we find your name is not suitable for our environment, an immortal
+  staff member will appear before you and offer you a rename.  Please be
+  nice and civil, and we will return with the same. If you need help developing
+  a name for your character there are many websites that generate random names.
+
+{B+{b---------------{B[ {RThis MUD is rated for Mature Audiences {B]{b----------------{B+{x
+""")
+
+    def write_name_creation_prompt(self):
+        self.write("Did I get that right, %s (Y/N)? " % (self.username))
+
+    def handle_name_creation_input(self, message):
+        cleaned = self.clean_message(message)
+        if cleaned.startswith("y"):
+            self.start_password_creation_screen()
+
+        elif cleaned.startswith("n"):
+            self.username = None
+            self.state = "login_username"
+            self.write_login_username_prompt()
+
+        else:
+            self.write_name_creation_prompt()
+
+    def start_password_creation_screen(self):
+        self.state = "password_creation"
+        self.write("Pick your password: ")
+        self.hide_next_input()
+
+    def handle_password_creation_input(self, message):
+        if not message:
+            self.writeln("Password must be provided.")
+            self.write("Pick your password: ")
+            return
+
+        self.password = Character.generate_password(message)
+
+        self.start_password_verification_screen()
+
+    def start_password_verification_screen(self):
+        self.state = "password_verification"
+        self.write("Verify your password: ")
+        self.hide_next_input()
+
+    def handle_password_verification_input(self, message, Characters):
+        password = Character.generate_password(message)
+
+        if password != self.password:
+            self.writeln("The two passwords provided do not match.")
+            self.writeln()
+            self.password = None
+            self.start_password_creation_screen()
+            return
+
+        self.password = None
+
+        actor = Characters.save({
+            "name": self.username,
+            "password": password
+        })
+
+        self.set_actor(actor)
+        actor.set_client(self)
+
+        self.start_race_selection_screen()
 
     def start_race_selection_screen(self):
         self.state = "race_selection"
@@ -377,7 +468,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             return
 
         game = self.get_game()
-        actor = self.get_character(self.name)
+        actor = self.get_character(self.username)
 
         # Cycle through Connections and disconnect existing ones
         connection = None
@@ -403,10 +494,6 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         self.state = "playing"
         self.handle_input("look")
         self.wiznet("connect", "%s has reconnected" % (actor.name))
-
-    def write_login_password_prompt(self):
-        self.write("Password: ")
-        self.hide_next_input()
 
     def get_actor_prompt(self, actor):
         if not actor:
@@ -633,7 +720,7 @@ class TelnetConnection(Connection):
 
     def close(self):
         try:
-            self.handle_flushing_output()
+            self.flush()
         except Exception:
             pass
         try:
@@ -645,7 +732,13 @@ class TelnetConnection(Connection):
         except Exception:
             pass
 
-    def flush(self, message):
+    def flush(self):
+        if not self.output_buffer:
+            return
+
+        message = self.output_buffer
+        self.output_buffer = ""
+
         if self.color:
             message = Ansi.colorize(message)
         else:
@@ -709,7 +802,7 @@ class TelnetServer(Server):
         while self.running:
             for connection in self.connections:
                 connection.handle_next_input()
-                connection.handle_flushing_output()
+                connection.flush()
             gevent.sleep(0.01)
 
 

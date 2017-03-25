@@ -1164,10 +1164,12 @@ class Character(Actor):
     def is_immortal(self):
         return self.has_flag("immortal")
 
+    @classmethod
     def generate_password(self, password):
         """Return a SHA256 hashed password with appropriate salting."""
+        cleaned = password.strip()
         from settings import PASSWORD_SALT_PREFIX, PASSWORD_SALT_SUFFIX
-        salted = PASSWORD_SALT_PREFIX + password + PASSWORD_SALT_SUFFIX
+        salted = PASSWORD_SALT_PREFIX + cleaned + PASSWORD_SALT_SUFFIX
         return hashlib.sha256(salted.encode("utf-8")).hexdigest()
 
     def password_is(self, password):

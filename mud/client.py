@@ -9,6 +9,7 @@ class Client(object):
         self.connection = connection
         self.state = "login_username"
         self.init()
+        self.hiding_next_input = False
 
     def init(self):
         pass
@@ -17,8 +18,21 @@ class Client(object):
         server = self.connection.server
         return server.game
 
+    def hide_next_input(self):
+        self.connection.flush()
+        self.connection.socket.sendall(b"\xFF\xFB\x01")
+        self.hiding_next_input = True
+
+    def show_next_input(self):
+        self.connection.flush()
+        self.connection.socket.sendall(b"\xFF\xFC\x01")
+        self.writeln()
+        self.hiding_next_input = False
+
     def handle_input(self, message):
         from settings import DEBUG_INPUT_TIMING
+        if self.hiding_next_input:
+            self.show_next_input()
 
         game = self.get_game()
         method_name = "handle_{}_input".format(self.state)
@@ -85,7 +99,15 @@ class Client(object):
 
     def filter_input(self, message):
         """Filter out swear words and other things from Player input."""
-        return self.filter_swears(message)
+        cleaned = ""
+
+        for char in message:
+            if ord(char) >= 32:
+                cleaned += char
+
+        message = cleaned
+
+        return self.filter_swears(cleaned)
 
     def filter_output(self, message):
         """Filter out swear words and other things for Player output."""

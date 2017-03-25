@@ -77,13 +77,6 @@ class Connection(object):
             logging.debug("DEBUG RECEIVE: " + repr(message))
         self.input_buffer += message
 
-    def handle_flushing_output(self):
-        """Push output_buffer to socket if present."""
-        if not self.output_buffer:
-            return
-        self.flush(self.output_buffer)
-        self.output_buffer = ""
-
     def get_next_input(self):
         """Return the line for the next command."""
         if self.NEWLINE not in self.input_buffer:
@@ -141,7 +134,7 @@ class Connection(object):
     def destroy(self, clean=False):
         self.clean_shutdown = clean
         self.running = False
-        self.handle_flushing_output()
+        self.flush()
         self.close()
         self.server.remove_connection(self)
 
