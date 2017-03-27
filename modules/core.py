@@ -24,7 +24,94 @@ class Map(object):
         self.width = width
         self.height = height
 
-    def format_lines(self):
+    """
+    --- --- --- ---
+    . . . . . . . . . .
+    --- ---         ---
+           |. . . .|
+    """
+    def format_walls(self):
+        origin = self.origin or (None, None)
+        origin_y, origin_x = origin
+
+        rows = len(self.data)
+        columns = len(self.data[0]) if rows else 0
+        if rows == 0 or columns == 0:
+            return ""
+
+        inflated_height = rows * 2
+        inflated_width = columns * 4
+
+        formatted = self.get_grid(inflated_height, inflated_width, value=" ")
+        grid = self.data
+        for y, row in enumerate(grid):
+            for x, room in enumerate(row):
+
+                if room is None:
+                    continue
+
+                actual_y = y * 2
+                actual_x = x * 4
+
+                # If there is no north exit, draw a wall
+                if not room.get_exit("north"):
+                    formatted[actual_y - 1][actual_x - 1] = "-"
+                    formatted[actual_y - 1][actual_x] = "-"
+                    formatted[actual_y - 1][actual_x + 1] = "-"
+                    if room.id == "temple_square":
+                        print("NO NORTH")
+
+                # If there is no north exit, draw a wall
+                if not room.get_exit("south"):
+                    formatted[actual_y + 1][actual_x - 1] = "-"
+                    formatted[actual_y + 1][actual_x] = "-"
+                    formatted[actual_y + 1][actual_x + 1] = "-"
+                    if room.id == "temple_square":
+                        print("NO SOUTH")
+
+                # If there is no east exit, draw a wall
+                if not room.get_exit("east"):
+                    # formatted[actual_y - 1][actual_x + 2] = "+"
+                    formatted[actual_y][actual_x + 2] = "|"
+                    # formatted[actual_y + 1][actual_x + 2] = "+"
+                    if room.id == "temple_square":
+                        print("NO EAST")
+
+                # If there is no west exit, draw a wall
+                if not room.get_exit("west"):
+                    # formatted[actual_y - 1][actual_x - 2] = "+"
+                    formatted[actual_y][actual_x - 2] = "|"
+                    # formatted[actual_y + 1][actual_x - 2] = "+"
+                    if room.id == "temple_square":
+                        print("NO WEST")
+
+                # The room we're in
+                formatted[actual_y][actual_x - 1] = "."
+                formatted[actual_y][actual_x + 1] = "."
+
+                if x == origin_x and y == origin_y:
+                    formatted[actual_y][actual_x] = "{R@{x"
+
+        # Add some end-caps to walls
+        for y, row in enumerate(formatted):
+            for x, symbol in enumerate(row):
+                if symbol == "|":
+                    try:
+                        if formatted[y+2][x] == symbol:
+                            formatted[y+1][x] = symbol
+                    except IndexError:  # We went off the map, but that's okay
+                        pass
+
+
+        top_padding = math.floor((inflated_height - self.height) / 2)
+        left_padding = math.floor((inflated_width - self.width) / 2)
+        cropped = [
+            row[left_padding:left_padding + self.width] for row in
+            formatted[top_padding:top_padding + self.height]
+        ]
+        return cropped
+
+    def format_normal(self):
         origin = self.origin or (None, None)
 
         rows = len(self.data)
@@ -33,7 +120,6 @@ class Map(object):
             return ""
 
         formatted = self.get_grid(rows * 2, columns * 2, value=" ")
-        output = ""
         grid = self.data
         for y, row in enumerate(grid):
             for x, room in enumerate(row):
@@ -59,6 +145,13 @@ class Map(object):
                 formatted[actual_y][actual_x] = \
                     "{R@{x" if (origin[0] == y and origin[1] == x) else "{C#{x"
 
+        return formatted
+
+    def format_lines(self, style="walls"):
+        if style == "walls":
+            formatted = self.format_walls()
+        else:
+            formatted = self.format_normal()
         return ["".join(row[:self.width]) for row in formatted[:self.height]]
 
     def format_string(self):
@@ -669,7 +762,8 @@ def look_command(self, arguments, Characters, Actors, Objects):
     lines = []
     lines.append("{B%s{x" % room.name)
 
-    for index, line in enumerate(room.description):
+    description = room.get_description()
+    for index, line in enumerate(description):
         if index == 0:
             lines.append("{x  " + line)
         else:
@@ -728,7 +822,7 @@ def look_command(self, arguments, Characters, Actors, Objects):
 
     # Prefix with map, if applicable
     minimap_height = 8
-    minimap_width = 10
+    minimap_width = 16
     minimap_gutter = 2
     if minimap_enabled:
         minimap = Map.generate_from_room(room, width=minimap_width,
@@ -901,6 +995,10 @@ class Room(Entity):
 
         exit_room = Rooms.get(raw_exit["room_id"])
         return RoomExit(raw_exit, exit_room, self)
+
+    def get_description(self):
+        """Return the list of description lines."""
+        return self.get("description", [])
 
 
 class Rooms(Collection):

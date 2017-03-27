@@ -73,14 +73,37 @@ class Game(object):
                     "description": tol_desc,
                     "area_id": "westbridge",
                     "exits": {
-                        "north": {"room_id": "tol123", "flags": [
-                            "secret", "door", "closed"
-                        ]},
-                        "east": {"room_id": "tol123"},
+                        "south": {"room_id": "temple_square"},
+                    },
+                },
+                "temple_square": {
+                    "id": "temple_square",
+                    "name": "Temple Square",
+                    "vnum": "westbridge:temple_square",
+                    "area_id": "westbridge",
+                    "exits": {
+                        "north": {"room_id": "tol123"},
+                        "east": {"room_id": "healing_wound_inn"},
+                        "west": {"room_id": "church_steps"},
                         "south": {"room_id": "room_0"},
-                        "west": {"room_id": "tol123"},
-                        "up": {"room_id": "tol123"},
-                        "down": {"room_id": "cop321"},
+                    },
+                },
+                "healing_wound_inn": {
+                    "id": "healing_wound_inn",
+                    "name": "Healing Wound Inn",
+                    "vnum": "westbridge:healing_wound_inn",
+                    "area_id": "westbridge",
+                    "exits": {
+                        "west": {"room_id": "temple_square"},
+                    },
+                },
+                "church_steps": {
+                    "id": "church_steps",
+                    "name": "The Steps of the Church",
+                    "vnum": "westbridge:church_steps",
+                    "area_id": "westbridge",
+                    "exits": {
+                        "east": {"room_id": "temple_square"},
                     },
                 },
                 "cop321": {
@@ -103,7 +126,7 @@ class Game(object):
             if x > 0:
                 exits["north"] = {"room_id": "room_{}".format(x - 1)}
             else:
-                exits["north"] = {"room_id": "tol123"}
+                exits["north"] = {"room_id": "temple_square"}
 
             if x < rooms - 1:
                 exits["south"] = {"room_id": "room_{}".format(x + 1)}
