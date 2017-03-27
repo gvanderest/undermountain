@@ -73,7 +73,17 @@ class Game(object):
                     "description": tol_desc,
                     "area_id": "westbridge",
                     "exits": {
+                        "west": {"room_id": "donation_pit"},
                         "south": {"room_id": "temple_square"},
+                    },
+                },
+                "donation_pit": {
+                    "id": "donation_pit",
+                    "name": "Donation Pit",
+                    "vnum": "westbridge:donation_pit",
+                    "area_id": "westbridge",
+                    "exits": {
+                        "east": {"room_id": "tol123"},
                     },
                 },
                 "temple_square": {

@@ -30,7 +30,7 @@ class Map(object):
     --- ---         ---
            |. . . .|
     """
-    def format_walls(self):
+    def format_walls(self, endcaps=False):
         origin = self.origin or (None, None)
         origin_y, origin_x = origin
 
@@ -58,32 +58,20 @@ class Map(object):
                     formatted[actual_y - 1][actual_x - 1] = "-"
                     formatted[actual_y - 1][actual_x] = "-"
                     formatted[actual_y - 1][actual_x + 1] = "-"
-                    if room.id == "temple_square":
-                        print("NO NORTH")
 
                 # If there is no north exit, draw a wall
                 if not room.get_exit("south"):
                     formatted[actual_y + 1][actual_x - 1] = "-"
                     formatted[actual_y + 1][actual_x] = "-"
                     formatted[actual_y + 1][actual_x + 1] = "-"
-                    if room.id == "temple_square":
-                        print("NO SOUTH")
 
                 # If there is no east exit, draw a wall
                 if not room.get_exit("east"):
-                    # formatted[actual_y - 1][actual_x + 2] = "+"
                     formatted[actual_y][actual_x + 2] = "|"
-                    # formatted[actual_y + 1][actual_x + 2] = "+"
-                    if room.id == "temple_square":
-                        print("NO EAST")
 
                 # If there is no west exit, draw a wall
                 if not room.get_exit("west"):
-                    # formatted[actual_y - 1][actual_x - 2] = "+"
                     formatted[actual_y][actual_x - 2] = "|"
-                    # formatted[actual_y + 1][actual_x - 2] = "+"
-                    if room.id == "temple_square":
-                        print("NO WEST")
 
                 # The room we're in
                 formatted[actual_y][actual_x - 1] = "."
@@ -99,8 +87,41 @@ class Map(object):
                     try:
                         if formatted[y+2][x] == symbol:
                             formatted[y+1][x] = symbol
-                    except IndexError:  # We went off the map, but that's okay
+                    except IndexError:
                         pass
+
+                    if endcaps:
+                        try:
+                            if formatted[y+1][x+1] == "-":
+                                formatted[y+1][x] = "+"
+                        except IndexError:
+                            pass
+
+                        try:
+                            if formatted[y+1][x-1] == "-":
+                                formatted[y+1][x] = "+"
+                        except IndexError:
+                            pass
+
+                elif symbol == "-":
+                    try:
+                        if formatted[y][x+2] == symbol:
+                            formatted[y][x+1] = symbol
+                    except IndexError:
+                        pass
+
+                    if endcaps:
+                        try:
+                            if formatted[y+1][x-1] == "|":
+                                formatted[y][x-1] = "+"
+                        except IndexError:
+                            pass
+
+                        try:
+                            if formatted[y+1][x+1] == "|":
+                                formatted[y][x+1] = "+"
+                        except IndexError:
+                            pass
 
 
         top_padding = math.floor((inflated_height - self.height) / 2)
