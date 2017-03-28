@@ -842,7 +842,7 @@ def look_command(self, arguments, Characters, Actors, Objects):
         lines.append(format_object(obj))
 
     # Prefix with map, if applicable
-    minimap_height = 8
+    minimap_height = 9
     minimap_width = 16
     minimap_gutter = 2
     if minimap_enabled:
