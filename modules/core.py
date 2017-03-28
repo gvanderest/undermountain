@@ -289,7 +289,7 @@ def walk_command(self, message):
     if walking.is_blocked() or leaving.is_blocked() or entering.is_blocked():
         return
 
-    self.act_to_room("{actor.name} leaves {direction_id}.", {
+    self.act_to_room("[actor.name] leaves [direction_id].", {
         "direction_id": direction_id
     })
 
@@ -302,7 +302,7 @@ def walk_command(self, message):
     self.set_room(to_room)
     self.save()
 
-    self.act_to_room("{actor.name} has arrived.")
+    self.act_to_room("[actor.name] has arrived.")
 
     self.event_to_room("walked", room=from_room)
     self.event_to_room("left", room=from_room)
@@ -925,11 +925,14 @@ for social_id in SOCIALS.keys():
 
 class Object(RoomEntity):
     def format_act_message(self, message, data=None):
+        """Return a replaced out message."""
+
         if data is None:
             data = {}
 
         for key, value in data.items():
-            pattern = "{%s}" % key
+            pattern = "[%s]" % key
+
             if pattern in message:
                 message = message.replace(pattern, value)
 
@@ -943,17 +946,17 @@ class Object(RoomEntity):
             exclude = [self]
 
         room = self.get_room()
+
         for target in room.query_actors():
             if target in exclude:
                 continue
             if include and target not in include:
                 continue
 
-            target_data = dict(data).update({
-                "actor.name": "Someone" if target.can_see(self) else self.name
-            })
+            data["actor.name"] = self.name if target.can_see(self) else \
+                "Someone"
 
-            message = self.format_act_message(message, target_data)
+            message = self.format_act_message(message, data)
 
             target.echo(message)
 
