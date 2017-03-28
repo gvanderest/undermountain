@@ -85,6 +85,11 @@ if random(0, 1) == 1:
                     "vnum": "westbridge:temple_of_life",
                     "description": tol_desc,
                     "area_id": "westbridge",
+                    "flags": [
+                        "safe",
+                        "law",
+                        "noloot"
+                    ],
                     "exits": {
                         "west": {"room_id": "donation_pit"},
                         "south": {"room_id": "temple_square"},

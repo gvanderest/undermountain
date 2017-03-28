@@ -542,6 +542,29 @@ def finger_command(self, arguments, Characters):
     self.echo("\n".join(lines))
 
 
+def kill_command(self, arguments, Characters, Actors):
+    """Attack an Actor within the Room."""
+    if not arguments:
+        self.echo("Attack who?")
+        return
+
+    # FIXME support multiple arguments and querying
+    target = self.find_room_actor(arguments[0])
+
+    if not target:
+        self.echo("You can't find them.")
+        return
+
+    attacking = self.event_to_room("attacking", {"target": target})
+
+    if attacking.is_blocked():
+        return
+
+    self.attack(target)
+
+    self.event_to_room("attacked", {"target": target})
+
+
 def look_command(self, arguments, Characters, Actors, Objects):
     minimap_enabled = True
     from settings import SELF_KEYWORDS
@@ -588,6 +611,7 @@ def look_command(self, arguments, Characters, Actors, Objects):
             return
 
         # TODO Look at objects too
+        # TODO support multiple arguments and positionals
         target = self.find_room_actor(keyword)
         if target:
             look_at_actor(target)
@@ -597,7 +621,18 @@ def look_command(self, arguments, Characters, Actors, Objects):
         return
 
     lines = []
-    lines.append("{B%s{x" % room.name)
+    name_line = "{B%s{x " % room.name
+
+    if room.has_flag("safe"):
+        name_line += "{R[{WSAFE{R]{x "
+
+    if room.has_flag("noloot"):
+        name_line += "{R[{WNOLOOT{R]{x "
+
+    if room.has_flag("law"):
+        name_line += "{w[{WLAW{w]{x "
+
+    lines.append(name_line)
 
     description = room.get_description()
     for index, line in enumerate(description):
@@ -851,6 +886,11 @@ class RoomExit(Entity):
 
 
 class Room(Entity):
+    def has_flag(self, flag):
+        """Return Whether the Room has a flag or not."""
+        flags = self.get("flags", [])
+        return flag in flags
+
     def query_actors(self):
         """Generate the list of Characters/Actors."""
         Characters, Actors = self.get_injectors("Characters", "Actors")
@@ -868,6 +908,13 @@ class Room(Entity):
         """Pass the Event to the Room occupants and return it."""
         Actors, Objects = self.get_injectors(
             "Actors", "Objects")
+
+        # TODO Add "SAFE" room flag to prevent
+        if event.type == "attacking" and self.has_flag("safe"):
+            actor = event.data["source"]
+            actor.echo("You can't do that here.")
+            event.block()
+            return event
 
         for actor in Actors.query({"room_id": self.id}):
             event = actor.handle_event(event)
@@ -933,6 +980,7 @@ for direction_id in DIRECTIONS.keys():
 
 COMMAND_RESOLVER.update({
     "look": look_command,
+    "kill": kill_command,
     "exits": exits_command,
     "finger": finger_command,
     "afk": afk_command,
@@ -960,7 +1008,7 @@ for social_id in SOCIALS.keys():
 
 
 class Object(RoomEntity):
-    def format_act_message(self, message, data=None):
+    def format_act_message(self, message, data=None, target=None):
         """Return a replaced out message."""
 
         if data is None:
@@ -970,6 +1018,8 @@ class Object(RoomEntity):
             pattern = "[%s]" % key
 
             if pattern in message:
+                if callable(value):
+                    value = value(target)
                 message = message.replace(pattern, value)
 
         return message
@@ -989,10 +1039,9 @@ class Object(RoomEntity):
             if include and target not in include:
                 continue
 
-            data["actor.name"] = self.name if target.can_see(self) else \
-                "Someone"
+            data["actor.name"] = self.format_name_to
 
-            message = self.format_act_message(message, data)
+            message = self.format_act_message(message, data, target=target)
 
             target.echo(message)
 
@@ -1005,6 +1054,12 @@ class Actor(Object):
         "=": "cgossip",
         "?": "help",
     }
+
+    def attack(self, target):
+        """Initiate combat with a target."""
+        self.act_to_room("[actor.name] strikes out at [target.name].", {
+            "target.name": target.format_name_to
+        })
 
     def is_race(self, race_id):
         """Return whether Actors is of Race provided."""
