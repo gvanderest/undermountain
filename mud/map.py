@@ -65,7 +65,32 @@ class Map(object):
                     formatted[actual_y][actual_x] = "{R@{x"
                 else:
                     for actor in room.query_actors():
-                        formatted[actual_y][actual_x] = "{RX{x"
+                        if actor.is_race("skeleton"):
+                            formatted[actual_y][actual_x] = "{Ws{x"
+                        elif actor.is_race("green_dragon"):
+                            formatted[actual_y][actual_x] = "{GD{x"
+                        elif actor.is_race("red_dragon"):
+                            formatted[actual_y][actual_x] = "{RD{x"
+                        elif actor.is_race("blue_dragon"):
+                            formatted[actual_y][actual_x] = "{BD{x"
+                        elif actor.is_race("black_dragon"):
+                            formatted[actual_y][actual_x] = "{8D{x"
+                        elif actor.is_race("white_dragon"):
+                            formatted[actual_y][actual_x] = "{WD{x"
+                        elif actor.is_race("drow"):
+                            formatted[actual_y][actual_x] = "{8d{x"
+                        elif actor.is_race("goblin"):
+                            formatted[actual_y][actual_x] = "{GG{x"
+                        elif actor.is_race("elf"):
+                            formatted[actual_y][actual_x] = "{Ge{x"
+                        elif actor.is_race("dwarf"):
+                            formatted[actual_y][actual_x] = "{yd{x"
+                        elif actor.is_race("human"):
+                            formatted[actual_y][actual_x] = "{wh{x"
+                        elif actor.is_race("pixie"):
+                            formatted[actual_y][actual_x] = "{Mp{x"
+                        else:
+                            formatted[actual_y][actual_x] = "{rx{x"
                         break
 
         # Add some end-caps to walls

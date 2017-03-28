@@ -165,6 +165,9 @@ if random(0, 1) == 1:
                 "exits": exits
             }
 
+        races = ["green_dragon", "red_dragon", "skeleton", "blue_dragon",
+                 "white_dragon", "goblin", "dwarf", "drow", "elf", "human",
+                 "pixie", "black_dragon"]
         import random
         actors = 100
         for x in range(actors):
@@ -175,7 +178,8 @@ if random(0, 1) == 1:
                 "name": "Actor {}".format(x),
                 "room_name": "Actor {}".format(x),
                 "description": [],
-                "room_id": "room_{}".format(random.randint(0, rooms))
+                "room_id": "room_{}".format(random.randint(0, rooms)),
+                "race_id": random.choice(races)
             }
 
         objects = 100

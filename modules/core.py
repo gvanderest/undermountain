@@ -1006,6 +1006,10 @@ class Actor(Object):
         "?": "help",
     }
 
+    def is_race(self, race_id):
+        """Return whether Actors is of Race provided."""
+        return self.race_id == race_id
+
     def is_online(self):
         return True
 
