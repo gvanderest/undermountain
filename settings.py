@@ -208,7 +208,8 @@ CHANNELS = {
     "say": {
         "name": "Say",
         "format": "{{M{actor.name}{{M says {{x'{{m{message}{{x'",
-        "self_format": "{{MYou say {{x'{{m{message}{{x'"
+        "self_format": "{{MYou say {{x'{{m{message}{{x'",
+        "receive_check": lambda a, t: a.room_id == t.room_id
     },
     "immtalk": {
         "name": "Immortal Talk",

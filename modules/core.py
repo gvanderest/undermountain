@@ -201,7 +201,11 @@ def wizlist_command(self, Characters):
     self.echo(scrollify(names, header="Gods and Rulers Of Waterdeep"))
 
 
-def channel_command(self, message):
+def default_receive_check(a, t):
+    return True
+
+
+def channel_command(self, message, Characters):
     """Echo a Channel to the Game."""
     parts = message.split(" ")
     channel_name = parts.pop(0)
@@ -218,7 +222,12 @@ def channel_command(self, message):
             break
 
     template = channel.get("format", "")
-    self.gecho(template.format(actor=self, message=message), exclude=self)
+    for char in Characters.query({"online": True}):
+        receive_check = channel.get("receive_check", default_receive_check)
+        if self == char:
+            continue
+        if receive_check(self, char):
+            char.echo(template.format(actor=self, message=message))
 
     self_template = channel.get("self_format", template)
     self.echo(self_template.format(actor=self, message=message))
