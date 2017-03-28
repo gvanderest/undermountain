@@ -56,7 +56,19 @@ class Game(object):
                     "description": [
                         "This is the biggest dragon you have ever seen. It has five heads, one of",
                         "each chromatic dragon color.",
-                    ]
+                    ],
+                    "subroutines": {
+                        "leaving": [
+                            """
+if random(0, 1) == 1:
+    self.say("Sorry {}, I feel like you should stick around.".format(target.name))
+    event.block()
+                            """
+                        ],
+                        "entered": [
+                            "self.say('Hey there, {}!'.format(target.name))"
+                        ]
+                    }
                 }
             },
             "areas": {

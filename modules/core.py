@@ -5,6 +5,7 @@ from datetime import datetime
 import hashlib
 import json
 import math
+import random
 from glob import glob
 from utils.ansi import Ansi
 from mud.collection import Collection, Entity
@@ -291,9 +292,9 @@ def walk_command(self, message):
 
     to_room = exit.get_room()
 
-    walking = self.event_to_room("walking", room=from_room)
-    leaving = self.event_to_room("leaving", room=from_room)
-    entering = self.event_to_room("entering", room=to_room)
+    walking = self.event_to_room("walking", room=from_room, blockable=True)
+    leaving = self.event_to_room("leaving", room=from_room, blockable=True)
+    entering = self.event_to_room("entering", room=to_room, blockable=True)
 
     if walking.is_blocked() or leaving.is_blocked() or entering.is_blocked():
         return
@@ -311,13 +312,13 @@ def walk_command(self, message):
     self.set_room(to_room)
     self.save()
 
+    self.handle_command("look")
+
     self.act_to_room("[actor.name] has arrived.")
 
     self.event_to_room("walked", room=from_room)
     self.event_to_room("left", room=from_room)
     self.event_to_room("entered", room=to_room)
-
-    self.handle_command("look")
 
 
 def sockets_command(self):
@@ -694,16 +695,40 @@ def me_command(self, arguments):
     self.gecho(message, emote=True)
 
 
+def random_range(bottom, top):
+    return random.randint(bottom, top)
+
+
 class RoomEntity(Entity):
+    def say(self, message):
+        self.handle_command("say " + message)
+
     def handle_event(self, event):
         """Handle the Event being passed to it and return it."""
+        all_subroutines = self.get("subroutines", {})
+        subroutines_for_event = all_subroutines.get(event.type, [])
+        for index, subroutine in enumerate(subroutines_for_event):
+            filename = "{}:{}:{}".format(self.id, event.type, index)
+            compiled = compile(subroutine, filename, "exec")
+            target = event.data["source"]
+            # self_proxy = self.get_subroutine_proxy()
+            # target_proxy = event.data["source"].get_subroutine_proxy()
+
+            variables = {
+                "random": random_range,
+                "self": self,
+                "target": target,
+                "event": event
+            }
+            exec(compiled, variables, variables)
+
         return event
 
     def set_room(self, room):
         """Set the Room for the RoomEntity."""
         self.room_id = room.id
 
-    def event_to_room(self, type, data=None, room=None):
+    def event_to_room(self, type, data=None, room=None, blockable=True):
         """Pass an Event to be handled by the Room and return it."""
         if data is None:
             data = {}
@@ -713,7 +738,7 @@ class RoomEntity(Entity):
         if room is None:
             room = self.get_room()
 
-        event = Event(type, data)
+        event = Event(type, data, blockable=blockable)
         return room.handle_event(event)
 
     def get_room(self):
