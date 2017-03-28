@@ -10,9 +10,9 @@ class Map(object):
 
     """
     --- --- --- ---
-    . . . . . . . . . .
+    . . . . .X. . . . .
     --- ---         ---
-           |. . . .|
+           |.@. . .|
     """
     def format_walls(self, endcaps=False):
         origin = self.origin or (None, None)
@@ -63,6 +63,10 @@ class Map(object):
 
                 if x == origin_x and y == origin_y:
                     formatted[actual_y][actual_x] = "{R@{x"
+                else:
+                    for actor in room.query_actors():
+                        formatted[actual_y][actual_x] = "{RX{x"
+                        break
 
         # Add some end-caps to walls
         for y, row in enumerate(formatted):
