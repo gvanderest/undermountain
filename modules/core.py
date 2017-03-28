@@ -502,7 +502,9 @@ def walk_command(self, message):
     if walking.is_blocked() or leaving.is_blocked() or entering.is_blocked():
         return
 
-    self.act_to_room("{actor.name} leaves {direction_id}.")
+    self.act_to_room("{actor.name} leaves {direction_id}.", {
+        "direction_id": direction_id
+    })
 
     if to_room is None:
         raise Exception("Room does not exist for exit {} in room {}".format(
@@ -897,9 +899,26 @@ def me_command(self, arguments):
 
 
 class RoomEntity(Entity):
+    def handle_event(self, event):
+        """Handle the Event being passed to it and return it."""
+        return event
+
     def set_room(self, room):
         """Set the Room for the RoomEntity."""
         self.room_id = room.id
+
+    def event_to_room(self, type, data=None, room=None):
+        """Pass an Event to be handled by the Room and return it."""
+        if data is None:
+            data = {}
+
+        data["source"] = self
+
+        if room is None:
+            room = self.get_room()
+
+        event = Event(type, data)
+        return room.handle_event(event)
 
     def get_room(self):
         """Return the Room that the RoomEntity is in."""
@@ -1009,9 +1028,35 @@ class RoomExit(Entity):
 
 
 class Room(Entity):
+    def query_actors(self):
+        """Generate the list of Characters/Actors."""
+        Characters, Actors = self.get_injectors("Characters", "Actors")
+        for char in Characters.query_by_room(self.id):
+            yield char
+
+        for actor in Actors.query_by_room(self.id):
+            yield actor
+
     def get_area(self):
         Areas = self.get_injector("Areas")
         return Areas.find(self.area_id)
+
+    def handle_event(self, event):
+        """Pass the Event to the Room occupants and return it."""
+        Actors, Objects = self.get_injectors(
+            "Actors", "Objects")
+
+        for actor in Actors.query({"room_id": self.id}):
+            event = actor.handle_event(event)
+            if event.is_blocked():
+                return event
+
+        for obj in Objects.query({"room_id": self.id}):
+            event = obj.handle_event(event)
+            if event.is_blocked():
+                return event
+
+        return event
 
     def get_exits(self):
         """Return dict of exits."""
@@ -1092,17 +1137,38 @@ for social_id in SOCIALS.keys():
 
 
 class Object(RoomEntity):
-    def act_to_room(self, message, exclude=None, include=None):
+    def format_act_message(self, message, data=None):
+        if data is None:
+            data = {}
+
+        for key, value in data.items():
+            pattern = "{%s}" % key
+            if pattern in message:
+                message = message.replace(pattern, value)
+
+        return message
+
+    def act_to_room(self, message, data=None, exclude=None, include=None):
+        if data is None:
+            data = {}
+
         if exclude is None:
             exclude = [self]
 
         room = self.get_room()
-        for actor in room.get_actors():
-            if actor in exclude:
+        for target in room.query_actors():
+            if target in exclude:
                 continue
-            if include and actor not in include:
+            if include and target not in include:
                 continue
-            actor.echo(message)
+
+            target_data = dict(data).update({
+                "actor.name": "Someone" if target.can_see(self) else self.name
+            })
+
+            message = self.format_act_message(message, target_data)
+
+            target.echo(message)
 
 
 class Actor(Object):
@@ -1297,6 +1363,20 @@ class Actors(Collection):
         Index("room_id"),
     ]
 
+    def query_by_room(self, room, spec=None):
+        """Generate Actors in a Room."""
+        if spec is None:
+            spec = {}
+
+        if isinstance(room, str):
+            room_id = room
+        else:
+            room_id = room.id
+
+        spec.update({"room_id": room_id})
+        for actor in self.query(spec):
+            yield actor
+
 
 class Character(Actor):
     @classmethod
@@ -1331,6 +1411,13 @@ class Characters(Actors):
     INDEXES = Actors.INDEXES + [
         Index("online")
     ]
+
+    def query_by_room(self, room):
+        """Generate Actors in a Room."""
+        for char in super(Characters, self).query_by_room(
+                room, {"online": True}):
+
+            yield char
 
 
 class ExampleManager(Manager):
