@@ -63,7 +63,8 @@ class Game(object):
 if random(0, 1) == 1:
     self.say("Sorry {}, I feel like you should stick around.".format(target.name))
     event.block()
-                            """
+                            """,
+                            "self.say('Seeya, {}!'.format(target.name))"
                         ],
                         "entered": [
                             "self.say('Hey there, {}!'.format(target.name))"

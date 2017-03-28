@@ -721,6 +721,8 @@ class RoomEntity(Entity):
                 "event": event
             }
             exec(compiled, variables, variables)
+            if event.is_blocked():
+                return event
 
         return event
 
