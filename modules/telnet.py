@@ -730,10 +730,10 @@ class TelnetConnection(Connection):
         actor = self.get_actor()
         if actor and actor.is_online():
             prompt = self.client.get_actor_prompt()
-            if not prompt.endswith("\n"):
-                message = "\n\n" + message
-            else:
+            if message.endswith("\n"):
                 message = "\n" + message
+            else:
+                message = "\n\n" + message
             message += "\n" + prompt
 
         if self.color:
