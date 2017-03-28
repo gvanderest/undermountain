@@ -979,6 +979,9 @@ class Actor(Object):
         "?": "help",
     }
 
+    def is_online(self):
+        return True
+
     def is_afk(self):
         return self.has_flag("afk")
 
@@ -1178,6 +1181,9 @@ class Actors(Collection):
 
 
 class Character(Actor):
+    def is_online(self):
+        return self.online is True
+
     @classmethod
     def clean_name(cls, name):
         """Return a cleaned version of a name string."""

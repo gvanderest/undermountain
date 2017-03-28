@@ -495,7 +495,8 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         self.handle_input("look")
         self.wiznet("connect", "%s has reconnected" % (actor.name))
 
-    def get_actor_prompt(self, actor):
+    def get_actor_prompt(self):
+        actor = self.get_actor()
         if not actor:
             return ""
 
@@ -575,17 +576,6 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
 
         return prompt
 
-    def write_playing_prompt(self):
-        conn = self.connection
-        if conn.output_buffer and \
-                conn.output_buffer[-2:] != (2 * self.NEWLINE):
-            self.writeln()
-
-        actor = self.get_actor()
-
-        prompt = self.get_actor_prompt(actor)
-        self.write(prompt)
-
     def no_handler(self, arguments):
         self.writeln("Invalid command.")
 
@@ -618,7 +608,6 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         if message == "!":
             if self.last_command is None:
                 self.writeln("Huh?")
-                self.write_playing_prompt()
             else:
                 self.handle_playing_input(self.last_command)
             return
@@ -631,8 +620,6 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             message=message,
             ignore_aliases=False
         )
-
-        self.write_playing_prompt()
 
     def gecho(self, message, emote=False):
         this_conn = self.connection
@@ -738,6 +725,16 @@ class TelnetConnection(Connection):
 
         message = self.output_buffer
         self.output_buffer = ""
+
+        # Prefix with newlines and append prompt
+        actor = self.get_actor()
+        if actor and actor.is_online():
+            prompt = self.client.get_actor_prompt()
+            if not prompt.endswith("\n"):
+                message = "\n\n" + message
+            else:
+                message = "\n" + message
+            message += "\n" + prompt
 
         if self.color:
             message = Ansi.colorize(message)
