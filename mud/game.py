@@ -76,6 +76,9 @@ if random(0, 1) == 1:
                 "westbridge": {
                     "name": "Westbridge City",
                 },
+                "random_dungeon": {
+                    "name": "Random Dungeon",
+                }
             },
             "objects": {},
             "rooms": {
@@ -162,6 +165,7 @@ if random(0, 1) == 1:
             room_id = "room_{}".format(x)
             self.state["rooms"][room_id] = {
                 "id": room_id,
+                "area_id": "random_dungeon",
                 "vnum": room_id,
                 "name": "Room {}".format(x),
                 "description": [
@@ -338,7 +342,11 @@ if random(0, 1) == 1:
             data = {}
 
         event = Event(event_type, data)
+        event = self.handle_event(event)
 
+        return event
+
+    def handle_event(self, event):
         for manager in self.managers:
             # Skip past any unhandled events, if list provided
             if manager.HANDLE_EVENTS is not None:
@@ -346,6 +354,9 @@ if random(0, 1) == 1:
                     continue
 
             event = self.inject(manager.handle_event, event=event)
+            if event is None:
+                raise Exception("Manager {} did not return an Event from its"
+                                "handle_event method".format(manager))
             if event.is_blocked():
                 break
 

@@ -500,6 +500,8 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         if not actor:
             return ""
 
+        lines = []
+
         if actor.is_afk():
             prompt = "<AFK>"
         else:
@@ -574,7 +576,20 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         if "%z" in prompt:
             prompt = prompt.replace("%R", area.name)
 
-        return prompt
+        # If in combat, add information on the target
+        if actor.is_fighting():
+            primary_target = actor.get_targets()[0]
+            hp = actor.get_stat_total("hp")
+            current_hp = actor.get_stat_total("current_hp")
+            percent = (current_hp / hp) if hp != 0 else 0
+            lines.append("{R%s {Ris in excellent condition. {x[{G%0.1f%%{x]" % (
+                primary_target.format_name_to(actor),
+                percent
+            ))
+
+        lines.append(prompt)
+
+        return "\n\n".join(lines)
 
     def no_handler(self, arguments):
         self.writeln("Invalid command.")

@@ -59,6 +59,24 @@ MAP_META = [
 ]
 
 
+def flee_command(self):
+    """Run away from Combat."""
+    if not self.is_fighting():
+        self.echo("You aren't fighting anyone.")
+        return
+
+    # Pick a random exit
+    room = self.get_room()
+    exits = room.get_exits()
+    random_exit = random.choice(exits)
+
+    # Go to that room
+    self.targets = []
+    self.save()
+
+    self.handle_command(random_exit.direction_id)
+
+
 def afk_command(self):
     if self.is_afk():
         self.remove_flag("afk")
@@ -561,6 +579,7 @@ def kill_command(self, arguments, Characters, Actors):
         return
 
     self.attack(target)
+    target.attack(self)
 
     self.event_to_room("attacked", {"target": target})
 
@@ -776,6 +795,7 @@ class RoomEntity(Entity):
             room = self.get_room()
 
         event = Event(type, data, blockable=blockable)
+
         return room.handle_event(event)
 
     def get_room(self):
@@ -826,7 +846,11 @@ class RoomEntity(Entity):
 
 
 class Area(Entity):
-    pass
+    def handle_event(self, event):
+        game = self.get_game()
+        event = game.handle_event(event)
+
+        return event
 
 
 class Areas(Collection):
@@ -874,17 +898,6 @@ class RoomExit(Entity):
         return not self.is_closed()
 
 
-# class RoomExits(Collection):
-#     WRAPPER_CLASS = RoomExit
-#
-#     NAME = "room_exits"
-#     INDEXES = [
-#         Index("id", required=True, unique=True),
-#         Index("direction_id"),
-#         Index("room_id"),
-#     ]
-
-
 class Room(Entity):
     def has_flag(self, flag):
         """Return Whether the Room has a flag or not."""
@@ -925,6 +938,9 @@ class Room(Entity):
             event = obj.handle_event(event)
             if event.is_blocked():
                 return event
+
+        area = self.get_area()
+        event = area.handle_event(event)
 
         return event
 
@@ -980,6 +996,7 @@ for direction_id in DIRECTIONS.keys():
 
 COMMAND_RESOLVER.update({
     "look": look_command,
+    "flee": flee_command,
     "kill": kill_command,
     "exits": exits_command,
     "finger": finger_command,
@@ -1055,11 +1072,59 @@ class Actor(Object):
         "?": "help",
     }
 
+    def get_stats(self):
+        """Return the dict of stats."""
+        return self.get("stats", {})
+
+    def get_stat_base(self, stat_id):
+        """Return the base value of a stat."""
+        return self.get_stat(stat_id).get("base", 0)
+
+    def get_stat_bonus(self, stat_id):
+        """Return the bonus value of a stat."""
+        return self.get_stat(stat_id).get("bonus", 0)
+
+    def get_stat(self, stat_id):
+        """Return the detailed object of a stat."""
+        return self.get_stats().get(stat_id, {})
+
+    def get_stat_total(self, stat_id):
+        """Return the detailed object of a stat."""
+        return self.get_stat_base(stat_id) + self.get_stat_bonus(stat_id)
+
     def attack(self, target):
         """Initiate combat with a target."""
-        self.act_to_room("[actor.name] strikes out at [target.name].", {
-            "target.name": target.format_name_to
-        })
+        self.targets = self.get("targets", [])
+
+        if target.id not in self.targets:
+            self.targets.append(target.id)
+
+        self.save()
+
+    def get_targets(self):
+        """Return a list of Actors."""
+        Actors, Characters = self.get_injectors("Actors", "Characters")
+
+        outputs = []
+
+        for target_id in self.get_target_ids():
+            actor = Actors.get(target_id) or Characters.get(target_id)
+            outputs.append(actor)
+
+        return outputs
+
+    def get_target_ids(self):
+        return self.get("targets", [])
+
+    def is_fighting(self, target=None):
+        """Return whether the Actor is fighting."""
+
+        target_ids = self.get_target_ids()
+
+        if target is not None:
+            return target.id in target_ids
+
+        return len(target_ids) > 0
 
     def is_race(self, race_id):
         """Return whether Actors is of Race provided."""
@@ -1249,6 +1314,7 @@ class Actors(Collection):
         Index("id", required=True, unique=True),
         Index("name", required=True, unique=True),
         Index("room_id"),
+        Index("fighting"),
     ]
 
     def query_by_room(self, room, spec=None):
@@ -1300,7 +1366,8 @@ class Characters(Actors):
     NAME = "characters"
 
     INDEXES = Actors.INDEXES + [
-        Index("online")
+        Index("online"),
+        Index("fighting"),
     ]
 
     def query_by_room(self, room):
@@ -1380,6 +1447,17 @@ class IdleManager(Manager):
                     conn.destroy()
 
 
+class CombatManager(Manager):
+    def handle_event(self, event):
+        if event.type == "walking":
+            actor = event.data.get("source", None)
+            if actor.is_fighting():
+                actor.echo("No way!  You are still fighting!")
+                event.block()
+
+        return event
+
+
 class Core(Module):
     MODULE_NAME = "Core"
     VERSION = "0.1.0"
@@ -1396,4 +1474,5 @@ class Core(Module):
         CharactersManager,
         ExampleManager,
         IdleManager,
+        CombatManager,
     ]

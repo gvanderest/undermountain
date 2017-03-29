@@ -19,6 +19,12 @@ class Collection(EntityCollection):
         wrapped._game = self.game
         return wrapped
 
+    def get_game(self):
+        """Return the Game."""
+        return self.game
+
 
 class Entity(CollectionEntity):
-    pass
+    def get_game(self):
+        """Return the Game."""
+        return self._game
