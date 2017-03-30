@@ -59,6 +59,48 @@ MAP_META = [
 ]
 
 
+def description_command(self, arguments):
+    """Set and view your own description."""
+
+    def output_desc():
+        self.echo("Your description is:")
+        for line in desc:
+            self.echo(line)
+
+    desc = self.get_description()
+
+    if not arguments:
+        output_desc()
+        return
+
+    # Append to the description
+    if arguments[0] == "+":
+        arguments = arguments[1:]
+        line = " ".join(arguments)
+        desc.append(line)
+
+    # Remove from the description
+    elif arguments[0] == "-":
+        if not desc:
+            self.echo("You don't have any description lines to remove.")
+            return
+
+        desc.pop()
+
+    # Remove the entire description
+    elif arguments[0] == "clear":
+        desc = []
+
+    # Set the description to a line
+    else:
+        line = " ".join(arguments)
+        desc = [line]
+
+    self.set_description(desc)
+    self.save()
+    output_desc()
+
+
 def flee_command(self):
     """Run away from Combat."""
     if not self.is_fighting():
@@ -995,6 +1037,7 @@ for direction_id in DIRECTIONS.keys():
     COMMAND_RESOLVER.add(direction_id, walk_command)
 
 COMMAND_RESOLVER.update({
+    "description": description_command,
     "look": look_command,
     "flee": flee_command,
     "kill": kill_command,
@@ -1025,6 +1068,14 @@ for social_id in SOCIALS.keys():
 
 
 class Object(RoomEntity):
+    def get_description(self):
+        """Return the list of description lines."""
+        return self.description or []
+
+    def set_description(self, description):
+        """Set the list of description lines."""
+        self.description = description or []
+
     def format_act_message(self, message, data=None, target=None):
         """Return a replaced out message."""
 
