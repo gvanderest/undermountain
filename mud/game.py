@@ -29,177 +29,180 @@ class Game(object):
         return cls.VERSION
 
     def __init__(self, modules=None, injectors=None):
-        tol_desc = [
-            "This is the interior of a large white marble temple.  A pipe "
-            "organ",
-            "plays in the background as people sing a hymn of peacefulness.  "
-            "A",
-            "priest up front tells the story of the forces of the realms, be "
-            "it Life,",
-            "the force that gives breath and a heartbeat, and Death, the "
-            "force that",
-            "steals these gifts away.  There is a guard standing watch, "
-            "keeping the",
-            "peace.  To the south is the Temple Square and to the west is "
-            "the donation",
-            "room.  To the east is the City Morgue and a newer section of "
-            "Main Street",
-            "heads off to the north.",
-        ]
-        self.state = {
-            "actors": {
-                "abc123": {
-                    "room_id": "tol123",
-                    "keywords": "tchazzar",
-                    "name": "{8Tchazzar, {rthe Dragon Queen",
-                    "room_name": "{8Tchazzar, {rThe Dragon Queen{x rests on her throne here.",
-                    "description": [
-                        "This is the biggest dragon you have ever seen. It has five heads, one of",
-                        "each chromatic dragon color.",
-                    ],
-                    "subroutines": {
-                        "leaving": [
-                            """
-if random(0, 1) == 1:
-    self.say("Sorry {}, I feel like you should stick around.".format(target.name))
-    event.block()
-                            """,
-                            "self.say('Seeya, {}!'.format(target.name))"
+        self.state = {}
+
+        if False:
+            tol_desc = [
+                "This is the interior of a large white marble temple.  A pipe "
+                "organ",
+                "plays in the background as people sing a hymn of peacefulness.  "
+                "A",
+                "priest up front tells the story of the forces of the realms, be "
+                "it Life,",
+                "the force that gives breath and a heartbeat, and Death, the "
+                "force that",
+                "steals these gifts away.  There is a guard standing watch, "
+                "keeping the",
+                "peace.  To the south is the Temple Square and to the west is "
+                "the donation",
+                "room.  To the east is the City Morgue and a newer section of "
+                "Main Street",
+                "heads off to the north.",
+            ]
+            self.state = {
+                "actors": {
+                    "abc123": {
+                        "room_id": "tol123",
+                        "keywords": "tchazzar",
+                        "name": "{8Tchazzar, {rthe Dragon Queen",
+                        "room_name": "{8Tchazzar, {rThe Dragon Queen{x rests on her throne here.",
+                        "description": [
+                            "This is the biggest dragon you have ever seen. It has five heads, one of",
+                            "each chromatic dragon color.",
                         ],
-                        "entered": [
-                            "self.say('Hey there, {}!'.format(target.name))"
-                        ]
+                        "subroutines": {
+                            "leaving": [
+                                """
+    if random(0, 1) == 1:
+        self.say("Sorry {}, I feel like you should stick around.".format(target.name))
+        event.block()
+                                """,
+                                "self.say('Seeya, {}!'.format(target.name))"
+                            ],
+                            "entered": [
+                                "self.say('Hey there, {}!'.format(target.name))"
+                            ]
+                        }
                     }
-                }
-            },
-            "areas": {
-                "westbridge": {
-                    "name": "Westbridge City",
                 },
-                "random_dungeon": {
-                    "name": "Random Dungeon",
-                }
-            },
-            "objects": {},
-            "rooms": {
-                "tol123": {
-                    "id": "tol123",
-                    "name": "The Temple of Life",
-                    "vnum": "westbridge:temple_of_life",
-                    "description": tol_desc,
-                    "area_id": "westbridge",
-                    "flags": [
-                        "safe",
-                        "law",
-                        "noloot"
+                "areas": {
+                    "westbridge": {
+                        "name": "Westbridge City",
+                    },
+                    "random_dungeon": {
+                        "name": "Random Dungeon",
+                    }
+                },
+                "objects": {},
+                "rooms": {
+                    "tol123": {
+                        "id": "tol123",
+                        "name": "The Temple of Life",
+                        "vnum": "westbridge:temple_of_life",
+                        "description": tol_desc,
+                        "area_id": "westbridge",
+                        "flags": [
+                            "safe",
+                            "law",
+                            "noloot"
+                        ],
+                        "exits": {
+                            "west": {"room_id": "donation_pit"},
+                            "south": {"room_id": "temple_square"},
+                        },
+                    },
+                    "donation_pit": {
+                        "id": "donation_pit",
+                        "name": "Donation Pit",
+                        "vnum": "westbridge:donation_pit",
+                        "area_id": "westbridge",
+                        "exits": {
+                            "east": {"room_id": "tol123"},
+                        },
+                    },
+                    "temple_square": {
+                        "id": "temple_square",
+                        "name": "Temple Square",
+                        "vnum": "westbridge:temple_square",
+                        "area_id": "westbridge",
+                        "exits": {
+                            "north": {"room_id": "tol123"},
+                            "east": {"room_id": "healing_wound_inn"},
+                            "west": {"room_id": "church_steps"},
+                            "south": {"room_id": "room_0"},
+                        },
+                    },
+                    "healing_wound_inn": {
+                        "id": "healing_wound_inn",
+                        "name": "Healing Wound Inn",
+                        "vnum": "westbridge:healing_wound_inn",
+                        "area_id": "westbridge",
+                        "exits": {
+                            "west": {"room_id": "temple_square"},
+                        },
+                    },
+                    "church_steps": {
+                        "id": "church_steps",
+                        "name": "The Steps of the Church",
+                        "vnum": "westbridge:church_steps",
+                        "area_id": "westbridge",
+                        "exits": {
+                            "east": {"room_id": "temple_square"},
+                        },
+                    },
+                    "cop321": {
+                        "id": "cop321",
+                        "name": "Coliseum Of Pain",
+                        "vnum": "westbridge:coliseum_entrance",
+                        "description": [],
+                        "area_id": "westbridge",
+                        "exits": {
+                            "up": {"room_id": "tol123"},
+                        },
+                    },
+                },
+            }
+
+            # Makea lot of rooms
+            rooms = 100
+            for x in range(rooms):
+                exits = {}
+                if x > 0:
+                    exits["north"] = {"room_id": "room_{}".format(x - 1)}
+                else:
+                    exits["north"] = {"room_id": "temple_square"}
+
+                if x < rooms - 1:
+                    exits["south"] = {"room_id": "room_{}".format(x + 1)}
+
+                room_id = "room_{}".format(x)
+                self.state["rooms"][room_id] = {
+                    "id": room_id,
+                    "area_id": "random_dungeon",
+                    "vnum": room_id,
+                    "name": "Room {}".format(x),
+                    "description": [
+                        "You're in room {}".format(x)
                     ],
-                    "exits": {
-                        "west": {"room_id": "donation_pit"},
-                        "south": {"room_id": "temple_square"},
-                    },
-                },
-                "donation_pit": {
-                    "id": "donation_pit",
-                    "name": "Donation Pit",
-                    "vnum": "westbridge:donation_pit",
-                    "area_id": "westbridge",
-                    "exits": {
-                        "east": {"room_id": "tol123"},
-                    },
-                },
-                "temple_square": {
-                    "id": "temple_square",
-                    "name": "Temple Square",
-                    "vnum": "westbridge:temple_square",
-                    "area_id": "westbridge",
-                    "exits": {
-                        "north": {"room_id": "tol123"},
-                        "east": {"room_id": "healing_wound_inn"},
-                        "west": {"room_id": "church_steps"},
-                        "south": {"room_id": "room_0"},
-                    },
-                },
-                "healing_wound_inn": {
-                    "id": "healing_wound_inn",
-                    "name": "Healing Wound Inn",
-                    "vnum": "westbridge:healing_wound_inn",
-                    "area_id": "westbridge",
-                    "exits": {
-                        "west": {"room_id": "temple_square"},
-                    },
-                },
-                "church_steps": {
-                    "id": "church_steps",
-                    "name": "The Steps of the Church",
-                    "vnum": "westbridge:church_steps",
-                    "area_id": "westbridge",
-                    "exits": {
-                        "east": {"room_id": "temple_square"},
-                    },
-                },
-                "cop321": {
-                    "id": "cop321",
-                    "name": "Coliseum Of Pain",
-                    "vnum": "westbridge:coliseum_entrance",
+                    "exits": exits
+                }
+
+            races = ["green_dragon", "red_dragon", "skeleton", "blue_dragon",
+                     "white_dragon", "goblin", "dwarf", "drow", "elf", "human",
+                     "pixie", "black_dragon"]
+            import random
+            actors = 100
+            for x in range(actors):
+                actor_id = "actor_{}".format(x)
+                self.state["actors"][actor_id] = {
+                    "id": actor_id,
+                    "keywords": "actor {}".format(x),
+                    "name": "Actor {}".format(x),
+                    "room_name": "Actor {}".format(x),
                     "description": [],
-                    "area_id": "westbridge",
-                    "exits": {
-                        "up": {"room_id": "tol123"},
-                    },
-                },
-            },
-        }
+                    "room_id": "room_{}".format(random.randint(0, rooms)),
+                    "race_id": random.choice(races)
+                }
 
-        # Makea lot of rooms
-        rooms = 100
-        for x in range(rooms):
-            exits = {}
-            if x > 0:
-                exits["north"] = {"room_id": "room_{}".format(x - 1)}
-            else:
-                exits["north"] = {"room_id": "temple_square"}
-
-            if x < rooms - 1:
-                exits["south"] = {"room_id": "room_{}".format(x + 1)}
-
-            room_id = "room_{}".format(x)
-            self.state["rooms"][room_id] = {
-                "id": room_id,
-                "area_id": "random_dungeon",
-                "vnum": room_id,
-                "name": "Room {}".format(x),
-                "description": [
-                    "You're in room {}".format(x)
-                ],
-                "exits": exits
-            }
-
-        races = ["green_dragon", "red_dragon", "skeleton", "blue_dragon",
-                 "white_dragon", "goblin", "dwarf", "drow", "elf", "human",
-                 "pixie", "black_dragon"]
-        import random
-        actors = 100
-        for x in range(actors):
-            actor_id = "actor_{}".format(x)
-            self.state["actors"][actor_id] = {
-                "id": actor_id,
-                "keywords": "actor {}".format(x),
-                "name": "Actor {}".format(x),
-                "room_name": "Actor {}".format(x),
-                "description": [],
-                "room_id": "room_{}".format(random.randint(0, rooms)),
-                "race_id": random.choice(races)
-            }
-
-        objects = 100
-        for x in range(objects):
-            object_id = "object_{}".format(x)
-            self.state["objects"][object_id] = {
-                "id": object_id,
-                "name": "Object {}".format(x),
-                "room_id": "room_{}".format(random.randint(0, rooms)),
-                "description": []
-            }
+            objects = 100
+            for x in range(objects):
+                object_id = "object_{}".format(x)
+                self.state["objects"][object_id] = {
+                    "id": object_id,
+                    "name": "Object {}".format(x),
+                    "room_id": "room_{}".format(random.randint(0, rooms)),
+                    "description": []
+                }
 
         self.running = False
         self.modules = []

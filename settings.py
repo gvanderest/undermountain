@@ -25,7 +25,7 @@ IDLE_TIME_TO_DISCONNECT = 60 * 10
 DEFAULT_TELNET_PROMPT = "{8[{R%h{8/{r%H{8h {B%m{8/{b%M{8m {M%v{8v " \
     "{W%N{8({Y%X{8) {W%r{8({w%q{8/{w%t{8) {W%a{8]"
 
-DEFAULT_ROOM_VNUM = "westbridge:temple_of_life"
+DEFAULT_ROOM_VNUM = "westbridge:3001"
 
 TELNET_PORTS = (
     {"host": "0.0.0.0", "port": 4201},

@@ -8,7 +8,7 @@ import math
 import random
 from glob import glob
 from utils.ansi import Ansi
-from mud.collection import Collection, Entity
+from mud.collection import FileCollection, Collection, Entity
 from utils.collection import Index
 from mud.module import Module
 from mud.manager import Manager
@@ -895,7 +895,7 @@ class Area(Entity):
         return event
 
 
-class Areas(Collection):
+class Areas(FileCollection):
     WRAPPER_CLASS = Area
 
     NAME = "areas"
@@ -1429,36 +1429,6 @@ class Characters(Actors):
             yield char
 
 
-class ExampleManager(Manager):
-    HANDLE_EVENTS = [
-        "GAME_TICK",
-    ]
-
-    def tick(self, Characters, Rooms, Areas):
-        return
-        chars = Characters.query({"room_id": "market_square", "online": True})
-
-        logging.debug("Characters in room market_square:")
-        if chars:
-            for actors in chars:
-                if actors:
-                    for char in actors:
-                        count = char.get("count", 0)
-                        count += 1
-                        char.count = count
-                        char.save()
-                        room = char.get_room()
-                        area = room.get_area()
-                        logging.debug("* {} - {} - {} - {}".format(
-                            char.name,
-                            room.name,
-                            area.name,
-                            char.count
-                    ))
-        else:
-            logging.debug("No characters at market_square")
-
-
 class Entities(Collection):
     pass
 
@@ -1523,7 +1493,6 @@ class Core(Module):
 
     MANAGERS = [
         CharactersManager,
-        ExampleManager,
         IdleManager,
         CombatManager,
     ]

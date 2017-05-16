@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 """Import ROT Areas to Undermountain."""
-import sys
-sys.path.append("..")
+# import sys
+# sys.path.append("..")
 
 from glob import glob
-from settings import ROT_DATA_FOLDER
+from settings import ROT_DATA_PATH
+from utils.hash import get_random_hash
+
 
 all_areas = {}
 
 
 def generate_hash():
-    return "abc213"
+    return get_random_hash()
+
 
 def parse_mobile(filename, lines):
     mobile = {
@@ -131,20 +134,172 @@ def parse_area(filename, lines):
             print("UNHANDLED", line)
     return area
 
+
 def parse_object(filename, lines):
     return None
 
+
 def parse_room(filename, lines):
-    return None
+    """Convert areafile lines into dict representing Room."""
+    state = "id"
+    room = {
+        "description": [],
+        "extra_descriptions": {}
+    }
+
+    DIRECTION_MAPPINGS = ["north", "east", "south", "west", "up", "down"]
+
+    for index, line in enumerate(lines):
+        try:
+            if state == "id":
+                if line.startswith("#"):
+                    room["id"] = line[1:]
+                    state = "name"
+                else:
+                    raise Exception("Invalid room format")
+
+            elif state == "name":
+                room["name"] = line.rstrip("~")
+                state = "unknown"
+
+            elif state == "unknown":
+                state = "description"
+
+            elif state == "description":
+                if line.endswith("~"):
+                    state = "flags1"
+                else:
+                    room["description"].append(line)
+
+            elif state == "flags1":
+                print("TODO: Parse room flags1")
+                room["raw_flags1"] = line
+                state = "flags2"
+
+            elif state == "flags2":
+                print("TODO: Parse room flags2")
+                room["raw_flags2"] = line
+                state = "meta"
+
+            elif state == "meta":
+                # Special?
+                if line.startswith("S"):
+                    print("TODO: Parse 'S' lines")
+
+                # Direction
+                elif line.startswith("D"):
+                    state = "exit_description"
+                    direction_index = int(line[1])
+                    direction_id = DIRECTION_MAPPINGS[direction_index]
+                    room_exit = {
+                        "direction_id": direction_id,
+                        "description": []
+                    }
+
+                # Extra Description
+                elif line.startswith("E"):
+                    state = "extra_desc_name"
+                    extra_desc = {
+                        "description": []
+                    }
+                # Mana and HP Healing
+                elif line.startswith("M"):
+                    print("TODO: Properly parse mana/hp heal")
+                    room["raw_mana_heal"] = line
+
+                # Mobprogs/Subroutines
+                elif line.startswith("X"):
+                    print("TODO: Attach mobprogs properly")
+
+                # O? Unknown
+                elif line.startswith("O"):
+                    print("TODO: Figure out what a room's O meta does")
+
+                # Q? Unknown
+                elif line.startswith("Q"):
+                    print("TODO: Figure out what a room's Q meta does, quest?")
+
+                # B? Unknown
+                elif line.startswith("B"):
+                    print("TODO: Figure out what a room's B meta does")
+
+                # Z? Unknown
+                elif line.startswith("Z"):
+                    print("TODO: Figure out what a room's Z meta does")
+
+                # Y? Unknown
+                elif line.startswith("Y"):
+                    print("TODO: Figure out what a room's Y meta does")
+
+                # R? Unknown
+                elif line.startswith("R"):
+                    print("TODO: Figure out what a room's R meta does")
+
+                # T? Unknown
+                elif line.startswith("T"):
+                    print("TODO: Figure out what a room's T meta does")
+
+                # Clan ownership
+                elif line.startswith("C"):
+                    room["clan_id"] = line[2:-1]
+
+                # Whitespace is allowed
+                elif not line:
+                    pass
+
+                # Error
+                else:
+                    raise Exception("Invalid meta section")
+
+            elif state == "extra_desc_name":
+                extra_desc["keywords"] = line[:-1]
+                state = "extra_desc_desc"
+
+            elif state == "extra_desc_desc":
+                if line.endswith("~"):
+                    keywords = extra_desc["keywords"]
+                    room["extra_descriptions"][keywords] = extra_desc
+                    state = "meta"
+                else:
+                    extra_desc["description"].append(line)
+
+            elif state == "exit_description":
+                if line.endswith("~"):
+                    state = "exit_something_else"
+                else:
+                    room_exit["description"].append(line)
+
+            elif state == "exit_something_else":
+                print("TODO: Figure out what exit_something_else is")
+                state = "exit_flags"
+
+            elif state == "exit_flags":
+                print("TODO: Parse exit flags")
+                room["raw_flags"] = line
+                state = "meta"
+
+            else:
+                raise Exception("Unhandled room line")
+
+        except Exception as e:
+            print("Exception state:{} file:{} index:{} line:{}".format(
+                state, filename, index, line))
+            raise
+
+    return room
+
 
 def parse_special(filename, lines):
     return None
 
+
 def parse_reset(filename, lines):
     return None
 
+
 def parse_shop(filename, lines):
     return None
+
 
 def parse_mobprog(filename, lines):
     return None
@@ -207,17 +362,35 @@ for filename in glob(ROT_DATA_PATH + "/area/*.are"):
             parts = line.lower().split(' ')
             if line.startswith("#") and parts[0] not in \
                     ignore_lines_starting_with:
+
+                # Some room descriptions contain hash symbols
+                if line.startswith("##"):
+                    continue
+
                 if line == "#0":
                     continue
 
                 if section is not None and content:
-                    function = functions[section]
-                    result = function(filename, content)
+                    try:
+                        function = functions[section]
+                        result = function(filename, content)
+                    except Exception as e:
+                        print("EXCEPTION {} SECTION {}".format(
+                            filename, section))
+                        for index, line in enumerate(content):
+                            print("{}: {}".format(index, line))
+
+                        print("=" * 79)
+                        raise
                     # if result is None:
                         # print("Incomplete: {} {} {}".format(
                             # filename, section, content[0]
                         # ))
                     # print(section, function(filename, content))
+                    print("*" * 79)
+                    print(section)
+                    print(result)
+                    print("*" * 79)
 
                 content = []
 
