@@ -149,7 +149,8 @@ def map_command(self):
 def recall_command(self, Rooms):
     """Move Actor to the stating Room."""
     from settings import DEFAULT_ROOM_VNUM
-    room = Rooms.find({"vnum": DEFAULT_ROOM_VNUM})
+    area_vnum, room_vnum = DEFAULT_ROOM_VNUM.split(":")
+    room = Rooms.find({"area_vnum": area_vnum, "vnum": room_vnum})
     self.set_room(room)
     self.save()
     self.handle_command("look")
@@ -843,13 +844,14 @@ class RoomEntity(Entity):
     def get_room(self):
         """Return the Room that the RoomEntity is in."""
         from settings import DEFAULT_ROOM_VNUM
+        area_vnum, room_vnum = DEFAULT_ROOM_VNUM.split(":")
 
         Rooms = self.get_injector("Rooms")
 
         room = Rooms.find(self.room_id)
 
         if not room:
-            room = Rooms.find({"vnum": DEFAULT_ROOM_VNUM})
+            room = Rooms.find({"area_vnum": area_vnum, "vnum": room_vnum})
 
             if not room:
                 raise Exception(
@@ -903,6 +905,19 @@ class Areas(FileCollection):
         Index("id", required=True, unique=True),
         Index("name", required=True, unique=True),
     ]
+
+    def deserialize(self, contents):
+        """Extract the Rooms and attach to game."""
+        game = self.get_game()
+        Rooms = game.get_injector("Rooms")
+
+        area = super(Areas, self).deserialize(contents)
+        rooms = area.get("rooms", [])
+
+        for room in rooms:
+            Rooms.save(room)
+
+        return area
 
 
 class RoomExit(Entity):
@@ -1019,7 +1034,8 @@ class Rooms(Collection):
     INDEXES = [
         Index("id", required=True, unique=True),
         Index("vnum", required=True, unique=True),
-        Index("name", required=True, unique=True),
+        Index("name", required=True),
+        Index("area_vnum"),
         Index("area_id"),
     ]
 
@@ -1484,11 +1500,11 @@ class Core(Module):
     VERSION = "0.1.0"
 
     INJECTORS = {
-        "Areas": Areas,
         "Rooms": Rooms,
         "Objects": Objects,
         "Actors": Actors,
         "Characters": Characters,
+        "Areas": Areas,
     }
 
     MANAGERS = [

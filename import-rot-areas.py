@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 """Import ROT Areas to Undermountain."""
-# import sys
-# sys.path.append("..")
 
 from glob import glob
-from settings import ROT_DATA_PATH
+from settings import ROT_DATA_PATH, DATA_PATH
 from utils.hash import get_random_hash
+from utils.json import json
 
 
-all_areas = {}
+areas = {}
+rooms = {}
+objects = {}
+subroutines = {}
+actors = {}
 
 
 def generate_hash():
@@ -132,6 +135,8 @@ def parse_area(filename, lines):
             area["zone_id"] = int(parts[1])
         else:
             print("UNHANDLED", line)
+
+    areas[area["vnum"]] = area
     return area
 
 
@@ -141,8 +146,10 @@ def parse_object(filename, lines):
 
 def parse_room(filename, lines):
     """Convert areafile lines into dict representing Room."""
-    state = "id"
+    state = "vnum"
     room = {
+        "id": generate_hash(),
+        "area_vnum": filename,
         "description": [],
         "extra_descriptions": {}
     }
@@ -151,9 +158,9 @@ def parse_room(filename, lines):
 
     for index, line in enumerate(lines):
         try:
-            if state == "id":
+            if state == "vnum":
                 if line.startswith("#"):
-                    room["id"] = line[1:]
+                    room["vnum"] = line[1:]
                     state = "name"
                 else:
                     raise Exception("Invalid room format")
@@ -188,10 +195,11 @@ def parse_room(filename, lines):
 
                 # Direction
                 elif line.startswith("D"):
-                    state = "exit_description"
+                    state = "exit_name"
                     direction_index = int(line[1])
                     direction_id = DIRECTION_MAPPINGS[direction_index]
                     room_exit = {
+                        "name": "",
                         "direction_id": direction_id,
                         "description": []
                     }
@@ -200,8 +208,10 @@ def parse_room(filename, lines):
                 elif line.startswith("E"):
                     state = "extra_desc_name"
                     extra_desc = {
+                        "keywords": "",
                         "description": []
                     }
+
                 # Mana and HP Healing
                 elif line.startswith("M"):
                     print("TODO: Properly parse mana/hp heal")
@@ -213,31 +223,39 @@ def parse_room(filename, lines):
 
                 # O? Unknown
                 elif line.startswith("O"):
-                    print("TODO: Figure out what a room's O meta does")
+                    print("TODO: Figure out what a room's O meta does", line)
 
                 # Q? Unknown
                 elif line.startswith("Q"):
-                    print("TODO: Figure out what a room's Q meta does, quest?")
+                    print("TODO: Figure out what a room's Q meta does", line)
 
                 # B? Unknown
                 elif line.startswith("B"):
-                    print("TODO: Figure out what a room's B meta does")
+                    print("TODO: Figure out what a room's B meta does", line)
 
                 # Z? Unknown
                 elif line.startswith("Z"):
-                    print("TODO: Figure out what a room's Z meta does")
+                    print("TODO: Figure out what a room's Z meta does", line)
 
                 # Y? Unknown
                 elif line.startswith("Y"):
-                    print("TODO: Figure out what a room's Y meta does")
+                    print("TODO: Figure out what a room's Y meta does", line)
 
                 # R? Unknown
                 elif line.startswith("R"):
-                    print("TODO: Figure out what a room's R meta does")
+                    print("TODO: Figure out what a room's R meta does", line)
 
                 # T? Unknown
                 elif line.startswith("T"):
-                    print("TODO: Figure out what a room's T meta does")
+                    print("TODO: Figure out what a room's T meta does", line)
+
+                # V? Unknown
+                elif line.startswith("V"):
+                    print("TODO: Figure out what a room's V meta does", line)
+
+                # P? Unknown
+                elif line.startswith("P"):
+                    print("TODO: Figure out what a room's P meta does", line)
 
                 # Clan ownership
                 elif line.startswith("C"):
@@ -252,8 +270,10 @@ def parse_room(filename, lines):
                     raise Exception("Invalid meta section")
 
             elif state == "extra_desc_name":
-                extra_desc["keywords"] = line[:-1]
-                state = "extra_desc_desc"
+                if line.endswith("~"):
+                    state = "extra_desc_desc"
+                else:
+                    extra_desc["keywords"] += line
 
             elif state == "extra_desc_desc":
                 if line.endswith("~"):
@@ -263,18 +283,20 @@ def parse_room(filename, lines):
                 else:
                     extra_desc["description"].append(line)
 
+            elif state == "exit_name":
+                if line.endswith("~"):
+                    state = "exit_description"
+                else:
+                    room_exit["name"] += " " + line
+
             elif state == "exit_description":
                 if line.endswith("~"):
-                    state = "exit_something_else"
+                    state = "exit_flags"
                 else:
                     room_exit["description"].append(line)
 
-            elif state == "exit_something_else":
-                print("TODO: Figure out what exit_something_else is")
-                state = "exit_flags"
-
             elif state == "exit_flags":
-                print("TODO: Parse exit flags")
+                print("TODO: Parse exit flags", line)
                 room["raw_flags"] = line
                 state = "meta"
 
@@ -286,6 +308,7 @@ def parse_room(filename, lines):
                 state, filename, index, line))
             raise
 
+    rooms[room["vnum"]] = room
     return room
 
 
@@ -351,20 +374,24 @@ ignore_lines_starting_with = [
     '#moonshaequest',
 ]
 
-for filename in glob(ROT_DATA_PATH + "/area/*.are"):
+for path in glob(ROT_DATA_PATH + "/area/*.are"):
     section = None
     content = []
-    print("Processing {}..".format(filename))
+    print("Processing {}..".format(path))
+    filename = path.split("/")[-1].split(".")[0]
+
+    if "westbridge" not in path:
+        continue
 
     try:
-        for line in open(filename, "r"):
+        for line in open(path, "r"):
             line = line.rstrip("\r\n")
             parts = line.lower().split(' ')
             if line.startswith("#") and parts[0] not in \
                     ignore_lines_starting_with:
 
                 # Some room descriptions contain hash symbols
-                if line.startswith("##"):
+                if line.startswith("##") or line.startswith("#@"):
                     continue
 
                 if line == "#0":
@@ -382,15 +409,6 @@ for filename in glob(ROT_DATA_PATH + "/area/*.are"):
 
                         print("=" * 79)
                         raise
-                    # if result is None:
-                        # print("Incomplete: {} {} {}".format(
-                            # filename, section, content[0]
-                        # ))
-                    # print(section, function(filename, content))
-                    print("*" * 79)
-                    print(section)
-                    print(result)
-                    print("*" * 79)
 
                 content = []
 
@@ -411,6 +429,19 @@ for filename in glob(ROT_DATA_PATH + "/area/*.are"):
                 elif line == "#MOBPROGS":
                     section = "mobprog"
 
-            content.append(line)
+            if line not in ["#AREADATA", "#ROOMS"]:
+                content.append(line)
+
     except Boop:
         continue
+
+for area in areas.values():
+    area["rooms"] = [
+        room
+        for room in rooms.values()
+        if room["area_vnum"] == area["vnum"]
+    ]
+
+    output_path = "{}/{}/{}.json".format(DATA_PATH, "areas", area["vnum"])
+    with open(output_path, "w") as fh:
+        fh.write(json.dumps(area))

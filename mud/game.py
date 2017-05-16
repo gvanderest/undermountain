@@ -7,6 +7,7 @@ import inspect
 import logging
 import sys
 import traceback
+from settings import DATA_PATH
 from utils.event import Event
 from utils.ansi import Ansi
 
@@ -211,6 +212,10 @@ class Game(object):
         self.connections = []
 
         self.set_modules(modules)
+
+    def get_data_path(self):
+        """Return the folder path to the DATA directory."""
+        return DATA_PATH
 
     def get_actor_connection(self, actor):
         # FIXME Make this a dictionary

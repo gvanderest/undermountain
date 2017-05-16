@@ -1,6 +1,7 @@
 from utils.collection import EntityCollection, CollectionEntity
 import logging
 import json
+from glob import glob
 
 
 class Collection(EntityCollection):
@@ -27,14 +28,40 @@ class Collection(EntityCollection):
 
 class FileCollection(Collection):
     FILE_FORMAT = "json"
+    FILENAME_FIELD = "id"
 
     def __init__(self, game):
         super(FileCollection, self).__init__(game)
-        logging.info('FILE COLLECTION BOYEE')
+        self.load_from_files()
+
+    def load_from_files(self):
+        """Go to the data directory and load the files available."""
+        print("LOADING FROM FILES")
+        for file_path in self.query_files_list():
+            filename = file_path.split("/")[-1]
+            with open(file_path, "r") as fh:
+                contents = fh.read()
+                self.ingest_contents(contents, filename)
+
+    def ingest_contents(self, contents, name):
+        """Process the contents of a file into the Collection."""
+        record = self.deserialize(contents)
+        hydrated = self.hydrate(record)
+        self.save(hydrated)
+
+    def query_files_list(self):
+        """Yield the paths to the file documents."""
+        data_path = "{}/{}/*.{}".format(
+            self.game.get_data_path(),
+            self.NAME,
+            self.FILE_FORMAT)
+
+        for path in glob(data_path):
+            yield path
 
     def get_record_filename(self, record):
         """Return the filename that represents a record."""
-        return record["id"] + self.FILE_FORMAT
+        return record[self.FILENAME_FIELD] + self.FILE_FORMAT
 
     def dehydrate(self, record):
         """Return a dehydrated version of the record for serializing."""
