@@ -780,7 +780,13 @@ def look_command(self, arguments, Characters, Actors, Objects):
 
 
 def quit_command(self, arguments):
-    self.echo("You are quitting.")
+    self.echo("""
+{RYou feel a hand grab you, you begin to fly upwards!
+{BYou pass through the clouds and out of the world!
+{GYou have rejoined Reality!
+
+{WFor {RNews{W, {CRoleplaying{W and {MInfo{W, Visit our website!
+{Ch{cttp://{Cw{cww.{Cw{caterdeep.{Co{crg{x""")
     client = self.get_client()
     if not client:
         return
