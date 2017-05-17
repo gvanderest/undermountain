@@ -180,7 +180,7 @@ class Map(object):
 
         return formatted
 
-    def format_lines(self, style="walls"):
+    def format_lines(self, style="normal"):
         if style == "walls":
             formatted = self.format_walls()
         else:
@@ -236,7 +236,7 @@ class Map(object):
                 if next_x > 0 and next_x < columns and \
                         next_y > 0 and next_y < rows:
                     next_room = exit.get_room()
-                    if next_room.id in room_ids:
+                    if not next_room or next_room.id in room_ids:
                         continue
                     stack.append((next_y, next_x, next_room))
 

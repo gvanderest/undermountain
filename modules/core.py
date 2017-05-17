@@ -903,7 +903,7 @@ class Areas(FileCollection):
     NAME = "areas"
     INDEXES = [
         Index("id", required=True, unique=True),
-        Index("name", required=True, unique=True),
+        Index("name"),
     ]
 
     def deserialize(self, contents):
@@ -1019,7 +1019,12 @@ class Room(Entity):
 
         raw_exit["direction_id"] = direction_id
 
-        exit_room = Rooms.get(raw_exit["room_id"])
+        room_id = raw_exit.get("room_id", None)
+        if not room_id:
+            logging.error("Room {} {} exit does not exist".format(
+                self.vnum, direction_id))
+
+        exit_room = Rooms.get(room_id)
         return RoomExit(raw_exit, exit_room, self)
 
     def get_description(self):
@@ -1034,7 +1039,7 @@ class Rooms(Collection):
     INDEXES = [
         Index("id", required=True, unique=True),
         Index("vnum", required=True, unique=True),
-        Index("name", required=True),
+        Index("name"),
         Index("area_vnum"),
         Index("area_id"),
     ]

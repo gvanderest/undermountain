@@ -12,6 +12,7 @@ rooms = {}
 objects = {}
 subroutines = {}
 actors = {}
+exits = {}
 
 
 def generate_hash():
@@ -151,7 +152,8 @@ def parse_room(filename, lines):
         "id": generate_hash(),
         "area_vnum": filename,
         "description": [],
-        "extra_descriptions": {}
+        "extra_descriptions": {},
+        "exits": {}
     }
 
     DIRECTION_MAPPINGS = ["north", "east", "south", "west", "up", "down"]
@@ -297,7 +299,11 @@ def parse_room(filename, lines):
 
             elif state == "exit_flags":
                 print("TODO: Parse exit flags", line)
-                room["raw_flags"] = line
+                parts = line.split(" ")
+                room_exit["raw_flags1"] = parts[0]
+                room_exit["raw_flags2"] = parts[1]
+                room_exit["room_vnum"] = parts[2]
+                room["exits"][room_exit["direction_id"]] = room_exit
                 state = "meta"
 
             else:
@@ -380,9 +386,6 @@ for path in glob(ROT_DATA_PATH + "/area/*.are"):
     print("Processing {}..".format(path))
     filename = path.split("/")[-1].split(".")[0]
 
-    if "westbridge" not in path:
-        continue
-
     try:
         for line in open(path, "r"):
             line = line.rstrip("\r\n")
@@ -434,6 +437,18 @@ for path in glob(ROT_DATA_PATH + "/area/*.are"):
 
     except Boop:
         continue
+
+for room in rooms.values():
+    room["area_id"] = areas[room["area_vnum"]]["id"]
+
+    for room_exit in room["exits"].values():
+        room_vnum = room_exit["room_vnum"]
+        room_for_exit = rooms.get(room_vnum, None)
+
+        if room_for_exit:
+            room_exit["room_id"] = room_for_exit["id"]
+        else:
+            print("ROOM NOT FOUND FOR EXIT", room_vnum)
 
 for area in areas.values():
     area["rooms"] = [

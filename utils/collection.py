@@ -119,6 +119,10 @@ class Collection(object):
 
     def get(self, id, skip_wrap=False):
         """Get a specific record by its ID as a dictionary."""
+
+        if not id:
+            return None
+
         record = self.records.get(id, None)
 
         # Not found
