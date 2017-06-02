@@ -148,7 +148,22 @@ def map_command(self):
 
 def recall_command(self):
     """Move Actor to the stating Room."""
+    self.echo("You pray for transportation!")
+    self.act("[actor.name] prays for transportation!")
+
+    if not self.can_recall():
+        return self.echo("You cannot recall from this room.")
+
+    self.echo("You disappear in a flash!")
+    self.act("[actor.name] disappears in a flash!")
+
     self.recall()
+    self.save()
+
+    self.echo("You appear suddenly in a new place..")
+    self.act("[actor.name] appears suddenly!")
+
+    self.handle_command("look")
 
 
 def prompt_command(self, arguments):
@@ -628,10 +643,10 @@ def kill_command(self, arguments, Characters, Actors):
 
     self.event_to_room("attacked", {"target": target})
 
-    self.perform_combat_round_attacks()
-
     self.save()
     target.save()
+
+    self.perform_combat_round_attacks()
 
 
 def look_command(self, arguments, Characters, Actors, Objects):
@@ -857,6 +872,17 @@ class RoomEntity(Entity):
 
         return room.handle_event(event)
 
+    def logout(self):
+        self.online = False
+
+    def login(self):
+        self.online = True
+        self.perform_integrity_check()
+
+    def perform_integrity_check(self):
+        room = self.get_room()
+        self.room_id = room.id
+
     def get_room(self):
         """Return the Room that the RoomEntity is in."""
         from settings import DEFAULT_ROOM_VNUM
@@ -873,12 +899,7 @@ class RoomEntity(Entity):
                 raise Exception(
                     "RoomEntity {} fallback room {} cannot be found.".format(
                         self.id,
-                        DEFAULT_ROOM_VNUM
-                    )
-                )
-
-            self.room_id = room.id
-            self.save()
+                        DEFAULT_ROOM_VNUM))
 
         return room
 
@@ -1167,11 +1188,13 @@ class Actor(Object):
         "?": "help",
     }
 
-    def recall(self, silent=False):
-        if not silent:
-            self.echo("You pray for transportation!")
-            self.act("[actor.name] prays for transportation!")
+    def can_recall(self):
+        """Return whether the Actor can recall home or not."""
+        # TODO implement this
+        room = self.get_room()
+        return not (room.area_vnum == "westbridge" and room.vnum == "3001")
 
+    def recall(self, silent=False):
         from settings import DEFAULT_ROOM_VNUM
         Rooms = self.get_injector("Rooms")
 
@@ -1179,13 +1202,7 @@ class Actor(Object):
 
         room = Rooms.find({"area_vnum": area_vnum, "vnum": room_vnum})
 
-        if not silent:
-            self.echo("You disappear in a flash!")
-            self.act("[actor.name] disappears in a flash!")
-
         self.set_room(room)
-        self.save()
-        self.handle_command("look")
 
     def get_stats(self):
         """Return the dict of stats."""
@@ -1234,18 +1251,18 @@ class Actor(Object):
 
             # handle the target dying because of attacks
             if target.is_dead():
+                target.remove_flag("dead")
+                target.save()
+
                 if not targets:
                     break
                 target = targets.pop(0)
-                target.remove_flag("dead")
 
             amount = random.randint(1, 10)
             self.echo("{BYour punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {B%s{B! -{R={C%d{R={B-{x" % (target.format_name_to(self), amount))
             self.act("{c[actor.name]'s punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {c[target.name]{c! {B-{R={C%d{R={B-{x" % (amount), target=target, exclude=[self, target])
             self.act_to(target, "{c[actor.name]'s punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {cyou! -{R={C%d{R={B-{x" % (amount))
             target.receive_damage(amount, self)
-
-        for target in targets:
             target.save()
 
     def receive_damage(self, amount, attacker):
@@ -1266,12 +1283,17 @@ class Actor(Object):
     def leave_combat(self):
         self.targets = []
 
-    def die(self, attacker):
+        room = self.get_room()
+        for actor in room.query_actors():
+            actor.remove_combat_target(self)
+
+    def die(self, killer):
         """Handle death."""
         self.leave_combat()
 
         self.act("[actor.name] has been killed!")
         self.echo("You have been killed!")
+        self.gecho("*** %s has been killed by %s" % (self.name, killer.name))
         self.add_flag("dead")
         self.recall(silent=True)
 
@@ -1578,7 +1600,6 @@ class EntityManager(Manager):
 
     def start(self):
         Entities = self.game.get_injector(self.INJECTOR_NAME)
-        logging.debug("ENTITY MANAGER STARTED")
         for path in glob(self.DATA_PATH + "/*"):
             data = json.loads(open(path).read())
             Entities.save(data)

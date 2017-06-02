@@ -438,7 +438,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         self.handle_input("version")
 
         actor = self.get_actor()
-        actor.online = True
+        actor.login()
         actor.save()
 
         self.wiznet("connect", "%s has connected" % (actor.name))
@@ -676,7 +676,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
     def quit(self):
         # Remove the Actor from the Game
         actor = self.get_actor()
-        actor.online = False
+        actor.logout()
         actor.save()
         self.set_actor(None)
 
