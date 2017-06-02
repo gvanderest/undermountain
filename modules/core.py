@@ -146,14 +146,9 @@ def map_command(self):
         self.echo(meta + " " + map_line)
 
 
-def recall_command(self, Rooms):
+def recall_command(self):
     """Move Actor to the stating Room."""
-    from settings import DEFAULT_ROOM_VNUM
-    area_vnum, room_vnum = DEFAULT_ROOM_VNUM.split(":")
-    room = Rooms.find({"area_vnum": area_vnum, "vnum": room_vnum})
-    self.set_room(room)
-    self.save()
-    self.handle_command("look")
+    self.recall()
 
 
 def prompt_command(self, arguments):
@@ -697,6 +692,9 @@ def look_command(self, arguments, Characters, Actors, Objects):
     lines = []
     name_line = "{B%s{x " % room.name
 
+    # TODO Remove this, it's for debugging only
+    name_line += "(%s:%s) " % (room.area_vnum, room.vnum)
+
     if room.has_flag("safe"):
         name_line += "{R[{WSAFE{R]{x "
 
@@ -1058,7 +1056,7 @@ class Rooms(Collection):
         Index("id", required=True, unique=True),
         Index("vnum", required=True, unique=True),
         Index("name"),
-        Index("area_vnum"),
+        Index("area_vnum", required=True),
         Index("area_id"),
     ]
 
@@ -1169,6 +1167,26 @@ class Actor(Object):
         "?": "help",
     }
 
+    def recall(self, silent=False):
+        if not silent:
+            self.echo("You pray for transportation!")
+            self.act("[actor.name] prays for transportation!")
+
+        from settings import DEFAULT_ROOM_VNUM
+        Rooms = self.get_injector("Rooms")
+
+        area_vnum, room_vnum = DEFAULT_ROOM_VNUM.split(":")
+
+        room = Rooms.find({"area_vnum": area_vnum, "vnum": room_vnum})
+
+        if not silent:
+            self.echo("You disappear in a flash!")
+            self.act("[actor.name] disappears in a flash!")
+
+        self.set_room(room)
+        self.save()
+        self.handle_command("look")
+
     def get_stats(self):
         """Return the dict of stats."""
         return self.get("stats", {})
@@ -1211,37 +1229,70 @@ class Actor(Object):
         if not targets:
             return
 
-        target = targets[0]
+        target = targets.pop(0)
         for _ in range(8):
+
+            # handle the target dying because of attacks
+            if target.is_dead():
+                if not targets:
+                    break
+                target = targets.pop(0)
+                target.remove_flag("dead")
+
             amount = random.randint(1, 10)
             self.echo("{BYour punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {B%s{B! -{R={C%d{R={B-{x" % (target.format_name_to(self), amount))
             self.act("{c[actor.name]'s punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {c[target.name]{c! {B-{R={C%d{R={B-{x" % (amount), target=target, exclude=[self, target])
             self.act_to(target, "{c[actor.name]'s punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {cyou! -{R={C%d{R={B-{x" % (amount))
-            target.receive_damage(amount, source=self)
+            target.receive_damage(amount, self)
 
-    def receive_damage(self, amount, source=None):
+        for target in targets:
+            target.save()
+
+    def receive_damage(self, amount, attacker):
         """Handle receiving damage."""
         hp = self.get_stat_base('current_hp')
         new_hp = hp - amount
 
         if new_hp <= 0:
             self.set_stat_base('current_hp', 0)
-            self.die()
+            self.die(attacker)
         else:
             self.set_stat_base('current_hp', new_hp)
 
-    def die(self):
+    def is_dead(self):
+        """Return whether you are dead or not."""
+        return self.has_flag("dead")
+
+    def leave_combat(self):
+        self.targets = []
+
+    def die(self, attacker):
         """Handle death."""
+        self.leave_combat()
+
+        self.act("[actor.name] has been killed!")
+        self.echo("You have been killed!")
+        self.add_flag("dead")
+        self.recall(silent=True)
 
     def attack(self, target):
         """Initiate combat with a target."""
+        self.add_combat_target(target)
+        if not target.is_fighting(self):
+            target.attack(self)
+
+    def add_combat_target(self, target):
         self.targets = self.get("targets", [])
 
         if target.id not in self.targets:
             self.targets.append(target.id)
 
-        if not target.is_fighting(self):
-            target.attack(self)
+    def remove_combat_target(self, target):
+        self.targets = self.get("targets", [])
+
+        target_id = target.id
+        if target_id in self.targets:
+            self.targets.remove(target_id)
 
     def get_targets(self):
         """Return a list of Actors."""
