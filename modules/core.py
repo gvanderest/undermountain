@@ -360,7 +360,7 @@ def walk_command(self, message):
     if walking.is_blocked() or leaving.is_blocked() or entering.is_blocked():
         return
 
-    self.act_to_room("[actor.name] leaves [direction_id].", {
+    self.act("[actor.name] leaves [direction_id].", {
         "direction_id": direction_id
     })
 
@@ -375,7 +375,7 @@ def walk_command(self, message):
 
     self.handle_command("look")
 
-    self.act_to_room("[actor.name] has arrived.")
+    self.act("[actor.name] has arrived.")
 
     self.event_to_room("walked", room=from_room)
     self.event_to_room("left", room=from_room)
@@ -1127,7 +1127,7 @@ class Object(RoomEntity):
 
         return message
 
-    def act_to_room(self, message, data=None, exclude=None, include=None):
+    def act(self, message, target=None, data=None, exclude=None, include=None):
         if data is None:
             data = {}
 
@@ -1136,15 +1136,16 @@ class Object(RoomEntity):
 
         room = self.get_room()
 
-        for target in room.query_actors():
+        for act_target in room.query_actors():
             if target in exclude:
                 continue
             if include and target not in include:
                 continue
 
             data["actor.name"] = self.format_name_to
+            data["target.name"] = act_target.format_name_to
 
-            message = self.format_act_message(message, data, target=target)
+            message = self.format_act_message(message, data, target=act_target)
 
             target.echo(message)
 
@@ -1166,6 +1167,21 @@ class Actor(Object):
         """Return the base value of a stat."""
         return self.get_stat(stat_id).get("base", 0)
 
+    def set_stat(self, stat_id, stat):
+        """Set the value of a base stat."""
+        stats = self.get_stats()
+
+        existing = self.get_stat(stat_id)
+        existing.update(stat)
+
+        stats[stat_id] = existing
+
+    def set_stat_base(self, stat_id, value):
+        """Set the value of a base stat."""
+        stat = self.get_stat(stat_id)
+        stat["base"] = value
+        self.set_stat(stat_id, stat)
+
     def get_stat_bonus(self, stat_id):
         """Return the bonus value of a stat."""
         return self.get_stat(stat_id).get("bonus", 0)
@@ -1178,6 +1194,33 @@ class Actor(Object):
         """Return the detailed object of a stat."""
         return self.get_stat_base(stat_id) + self.get_stat_bonus(stat_id)
 
+    def combat_round(self):
+        """Handle a combat round for this Actor."""
+        targets = self.get_targets()
+
+        if not targets:
+            return
+
+        target = targets[0]
+        for _ in range(8):
+            self.echo("{BYour cleave {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {B%s{B! -{R={C69{R={B-{x" % target.format_name_to(self))
+            self.act("{c[actor.name]'s cleave {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {c[target.name]{c! {B-{R={C69{R={B-{x", target=target)
+            target.receive_damage(69, source=self)
+
+    def receive_damage(self, amount, source=None):
+        """Handle receiving damage."""
+        hp = self.get_stat_base('current_hp')
+        new_hp = hp - amount
+
+        if new_hp <= 0:
+            self.set_stat_base('current_hp', 0)
+            self.die()
+        else:
+            self.set_stat_base('current_hp', new_hp)
+
+    def die(self):
+        """Handle death."""
+
     def attack(self, target):
         """Initiate combat with a target."""
         self.targets = self.get("targets", [])
@@ -1185,6 +1228,7 @@ class Actor(Object):
         if target.id not in self.targets:
             self.targets.append(target.id)
 
+        self.combat_round()
         self.save()
 
     def get_targets(self):
@@ -1302,9 +1346,6 @@ class Actor(Object):
         if not client:
             return
         client.writeln(message)
-
-    def act_around(self, message, *args, **kwargs):
-        self.gecho(message, *args, **kwargs)
 
     def gecho(self, message, exclude=None):
         exclude = listify(exclude)
