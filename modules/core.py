@@ -630,9 +630,13 @@ def kill_command(self, arguments, Characters, Actors):
         return
 
     self.attack(target)
-    target.attack(self)
 
     self.event_to_room("attacked", {"target": target})
+
+    self.perform_combat_round_attacks()
+
+    self.save()
+    target.save()
 
 
 def look_command(self, arguments, Characters, Actors, Objects):
@@ -1111,7 +1115,7 @@ class Object(RoomEntity):
         """Set the list of description lines."""
         self.description = description or []
 
-    def receive_act_message(self, message, data=None):
+    def format_received_act_message(self, message, data=None):
         """Return a replaced out message."""
 
         if data is None:
@@ -1127,6 +1131,10 @@ class Object(RoomEntity):
 
         return message
 
+    def act_to(self, target, *args, **kwargs):
+        kwargs["include"] = [target]
+        return self.act(*args, **kwargs)
+
     def act(self, message, data=None, target=None, exclude=None, include=None):
         if data is None:
             data = {}
@@ -1134,22 +1142,22 @@ class Object(RoomEntity):
         if exclude is None:
             exclude = [self]
 
-        room = self.get_room()
+        if include:
+            included_actors = include
+        else:
+            room = self.get_room()
+            included_actors = room.query_actors()
 
-        for room_actor in room.query_actors():
-            if room_actor in exclude:
-                continue
-
-            if include and room_actor not in include:
+        for actor in included_actors:
+            if actor in exclude:
                 continue
 
             data["actor.name"] = self.format_name_to
             if target:
                 data["target.name"] = target.format_name_to
 
-            message = room_actor.receive_act_message(message, data)
-
-            room_actor.echo(message)
+            message = actor.format_received_act_message(message, data)
+            actor.echo(message)
 
 
 class Actor(Object):
@@ -1196,7 +1204,7 @@ class Actor(Object):
         """Return the detailed object of a stat."""
         return self.get_stat_base(stat_id) + self.get_stat_bonus(stat_id)
 
-    def combat_round(self):
+    def perform_combat_round_attacks(self):
         """Handle a combat round for this Actor."""
         targets = self.get_targets()
 
@@ -1205,9 +1213,11 @@ class Actor(Object):
 
         target = targets[0]
         for _ in range(8):
-            self.echo("{BYour cleave {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {B%s{B! -{R={C69{R={B-{x" % target.format_name_to(self))
-            self.act("{c[actor.name]'s cleave {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {c[target.name]{c! {B-{R={C69{R={B-{x", target=target)
-            target.receive_damage(69, source=self)
+            amount = random.randint(1, 10)
+            self.echo("{BYour punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {B%s{B! -{R={C%d{R={B-{x" % (target.format_name_to(self), amount))
+            self.act("{c[actor.name]'s punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {c[target.name]{c! {B-{R={C%d{R={B-{x" % (amount), target=target, exclude=[self, target])
+            self.act_to(target, "{c[actor.name]'s punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {cyou! -{R={C%d{R={B-{x" % (amount))
+            target.receive_damage(amount, source=self)
 
     def receive_damage(self, amount, source=None):
         """Handle receiving damage."""
@@ -1230,8 +1240,8 @@ class Actor(Object):
         if target.id not in self.targets:
             self.targets.append(target.id)
 
-        self.combat_round()
-        self.save()
+        if not target.is_fighting(self):
+            target.attack(self)
 
     def get_targets(self):
         """Return a list of Actors."""
