@@ -125,6 +125,17 @@ ORGANIZATION_TYPES = {
     }
 }
 ORGANIZATIONS = {
+    "black_rose": {
+        "type_id": "faction",
+        "name": "{8Black {rRose",
+        "who_name": "{8B{rR",
+        "rank_names": {
+            "leader": "Leader",
+            "officer": "Officer",
+            "member": "Citizen",
+            "recruit": "Initiate",
+        }
+    },
     "vector": {
         "type_id": "clan",
         "name": "{MV{mectorian {ME{mmpire",

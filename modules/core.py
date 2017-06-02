@@ -512,12 +512,20 @@ def who_command(self, arguments, Characters):
         if actor.is_afk():
             line += "[{yAFK{x] "
 
+        prefix = actor.get("prefix", None)
+        if prefix:
+            line += prefix + " "
+
         line += actor.name
 
         if actor.title:
             if actor.title[0] not in ",.":
                 line += " "
             line += ("{x%s{x" % actor.title) if actor.title else ""
+
+        faction = actor.get_organization("faction")
+        if faction:
+            line += " {x[%s{x|%s{x]" % ("{RL", faction.who_name)
 
         for bracket in actor.get("who_brackets", []):
             line += (" {x[%s{x]" % bracket)
