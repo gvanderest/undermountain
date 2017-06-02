@@ -1111,7 +1111,7 @@ class Object(RoomEntity):
         """Set the list of description lines."""
         self.description = description or []
 
-    def format_act_message(self, message, data=None, target=None):
+    def receive_act_message(self, message, data=None):
         """Return a replaced out message."""
 
         if data is None:
@@ -1122,12 +1122,12 @@ class Object(RoomEntity):
 
             if pattern in message:
                 if callable(value):
-                    value = value(target)
+                    value = value(self)
                 message = message.replace(pattern, value)
 
         return message
 
-    def act(self, message, target=None, data=None, exclude=None, include=None):
+    def act(self, message, data=None, target=None, exclude=None, include=None):
         if data is None:
             data = {}
 
@@ -1136,18 +1136,20 @@ class Object(RoomEntity):
 
         room = self.get_room()
 
-        for act_target in room.query_actors():
-            if target in exclude:
+        for room_actor in room.query_actors():
+            if room_actor in exclude:
                 continue
-            if include and target not in include:
+
+            if include and room_actor not in include:
                 continue
 
             data["actor.name"] = self.format_name_to
-            data["target.name"] = act_target.format_name_to
+            if target:
+                data["target.name"] = target.format_name_to
 
-            message = self.format_act_message(message, data, target=act_target)
+            message = room_actor.receive_act_message(message, data)
 
-            target.echo(message)
+            room_actor.echo(message)
 
 
 class Actor(Object):
@@ -1238,7 +1240,7 @@ class Actor(Object):
         outputs = []
 
         for target_id in self.get_target_ids():
-            actor = Actors.get(target_id) or Characters.get(target_id)
+            actor = Actors.find(target_id) or Characters.find(target_id)
             outputs.append(actor)
 
         return outputs
