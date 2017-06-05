@@ -514,25 +514,28 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         area = room.get_area()
 
         if "%h" in prompt:
-            prompt = prompt.replace("%h", actor.get("current_hp", str(0)))
+            prompt = prompt.replace(
+                "%h", str(actor.get_stat_total('current_hp')))
 
         if "%H" in prompt:
-            prompt = prompt.replace("%H", actor.get("hp", str(0)))
+            prompt = prompt.replace("%H", str(actor.get_stat_total('hp')))
 
         if "%m" in prompt:
-            prompt = prompt.replace("%m", actor.get("current_mana", str(0)))
+            prompt = prompt.replace(
+                "%m", str(actor.get_stat_total('current_mana')))
 
         if "%M" in prompt:
-            prompt = prompt.replace("%M", actor.get("mana", str(0)))
+            prompt = prompt.replace("%M", str(actor.get_stat_total('mana')))
 
         if "%c" in prompt:
             prompt = prompt.replace("%c", "\n")
 
         if "%v" in prompt:
-            prompt = prompt.replace("%v", actor.get("current_moves", str(0)))
+            prompt = prompt.replace(
+                "%v", str(actor.get_stat_total('current_moves')))
 
         if "%V" in prompt:
-            prompt = prompt.replace("%V", actor.get("moves", str(0)))
+            prompt = prompt.replace("%V", str(actor.get_stat_total('moves')))
 
         if "%x" in prompt:
             prompt = prompt.replace("%x", str(0))

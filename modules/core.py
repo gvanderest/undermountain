@@ -883,6 +883,17 @@ class RoomEntity(Entity):
         room = self.get_room()
         self.room_id = room.id
 
+        # FIXME do not leave in
+        # FIXME do not leave in
+        self.set_stat_base('hp', 100)
+        self.set_stat_base('current_hp', 100)
+        self.set_stat_base('mana', 100)
+        self.set_stat_base('current_mana', 100)
+        self.echo("INTEGRITY CHECKING")
+        # FIXME do not leave in
+        # FIXME do not leave in
+        self.echo("STATS: %s" % repr(self.get_stats()))
+
     def get_room(self):
         """Return the Room that the RoomEntity is in."""
         from settings import DEFAULT_ROOM_VNUM
@@ -1215,11 +1226,8 @@ class Actor(Object):
     def set_stat(self, stat_id, stat):
         """Set the value of a base stat."""
         stats = self.get_stats()
-
-        existing = self.get_stat(stat_id)
-        existing.update(stat)
-
-        stats[stat_id] = existing
+        stats[stat_id] = stat
+        self.stats = stats
 
     def set_stat_base(self, stat_id, value):
         """Set the value of a base stat."""
@@ -1237,7 +1245,8 @@ class Actor(Object):
 
     def get_stat_total(self, stat_id):
         """Return the detailed object of a stat."""
-        return self.get_stat_base(stat_id) + self.get_stat_bonus(stat_id)
+        stat = self.get_stat(stat_id)
+        return stat.get("base", 0) + stat.get("bonus", 0)
 
     def perform_combat_round_attacks(self):
         """Handle a combat round for this Actor."""
@@ -1296,6 +1305,10 @@ class Actor(Object):
         self.gecho("*** %s has been killed by %s" % (self.name, killer.name))
         self.add_flag("dead")
         self.recall(silent=True)
+
+        # FIXME do not leave here
+        self.set_stat_base("current_hp", 100)
+        # FIXME do not leave here
 
     def attack(self, target):
         """Initiate combat with a target."""
