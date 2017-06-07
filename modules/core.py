@@ -103,20 +103,30 @@ def description_command(self, arguments):
 
 def flee_command(self):
     """Run away from Combat."""
+
     if not self.is_fighting():
         self.echo("You aren't fighting anyone.")
-        return
+        return False
 
     # Pick a random exit
     room = self.get_room()
     exits = room.get_exits()
     random_exit = random.choice(exits)
 
-    # Go to that room
-    self.targets = []
-    self.save()
+    fleeing = self.event_to_room("fleeing")
+    if fleeing.is_blocked():
+        self.echo("You try to run, but your path is blocked!")
+        return False
 
-    self.handle_command(random_exit.direction_id)
+    walk_command(self, random_exit.direction_id, fleeing=True)
+
+    new_room = self.get_room()
+    if new_room != room:
+        self.leave_combat()
+        self.act("[actor.name] has fled!")
+        self.event_to_room("fled")
+
+    self.save()
 
 
 def afk_command(self):
@@ -336,13 +346,13 @@ def social_command(self, message):
     self.gecho(social["actor_to_me"].format(actor=self, me=target))
 
 
-def walk_command(self, message):
+def walk_command(self, message, fleeing=False):
     """Walk in a direction."""
     arguments = message.split(" ")
 
     if not arguments:
         self.echo("Walk where?")
-        return
+        return False
 
     direction = None
     for direction_id, entry in DIRECTIONS.items():
@@ -352,23 +362,23 @@ def walk_command(self, message):
 
     if direction is None:
         self.echo("You can't walk in that direction.")
-        return
+        return False
 
     from_room = self.get_room()
     exit = from_room.get_exit(direction_id)
 
     if exit is None:
         self.echo("You can't walk in that direction.")
-        return
+        return False
 
     to_room = exit.get_room()
 
-    walking = self.event_to_room("walking", room=from_room, blockable=True)
-    leaving = self.event_to_room("leaving", room=from_room, blockable=True)
-    entering = self.event_to_room("entering", room=to_room, blockable=True)
-
-    if walking.is_blocked() or leaving.is_blocked() or entering.is_blocked():
-        return
+    data = {"fleeing": fleeing}
+    for event_id in ["walking", "leaving", "entering"]:
+        event = self.event_to_room(
+            event_id, data, room=from_room, blockable=True)
+        if event.is_blocked():
+            return False
 
     self.act("[actor.name] leaves [direction_id].", {
         "direction_id": direction_id
@@ -381,15 +391,15 @@ def walk_command(self, message):
         ))
 
     self.set_room(to_room)
+
     self.save()
 
     self.handle_command("look")
 
     self.act("[actor.name] has arrived.")
 
-    self.event_to_room("walked", room=from_room)
-    self.event_to_room("left", room=from_room)
-    self.event_to_room("entered", room=to_room)
+    for event_id in ["walked", "left", "entered"]:
+        self.event_to_room(event_id, room=to_room)
 
 
 def sockets_command(self):
@@ -1287,11 +1297,9 @@ class Actor(Object):
         self.get_stat_base('current_hp') <= 0
 
     def leave_combat(self):
-        self.targets = []
-
-        room = self.get_room()
-        for actor in room.query_actors():
-            actor.remove_combat_target(self)
+        for target in self.get_targets():
+            target.remove_combat_target(self)
+            self.remove_combat_target(target)
 
     def die(self, killer):
         """Handle death."""
@@ -1649,8 +1657,9 @@ class IdleManager(Manager):
 class CombatManager(Manager):
     def handle_event(self, event):
         if event.type == "walking":
+            fleeing = event.data.get("fleeing", False)
             actor = event.data.get("source", None)
-            if actor.is_fighting():
+            if actor.is_fighting() and not fleeing:
                 actor.echo("No way!  You are still fighting!")
                 event.block()
 
