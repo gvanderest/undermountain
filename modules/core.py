@@ -1263,11 +1263,14 @@ class Actor(Object):
         if not targets:
             return
 
+        room = self.get_room()
+
         target = targets.pop(0)
         for _ in range(8):
 
-            # handle the target dying because of attacks
-            if target.is_dead():
+            # Target died, or moved away somehow
+            target_room = target.get_room()
+            if target.is_dead() or target_room != room:
                 target.save()
 
                 if not targets:
@@ -1659,6 +1662,9 @@ class IdleManager(Manager):
 
 
 class CombatManager(Manager):
+    def init(self):
+        self.ticks = 0
+
     def handle_event(self, event):
         if event.type == "walking":
             fleeing = event.data.get("fleeing", False)
@@ -1668,6 +1674,14 @@ class CombatManager(Manager):
                 event.block()
 
         return event
+
+    def tick(self, Characters):
+        # FIXME use constants for this
+        self.ticks += 1
+
+        if self.ticks % 5 == 0:
+            for character in Characters.query():
+                character.perform_combat_round_attacks()
 
 
 class Core(Module):
