@@ -1264,7 +1264,7 @@ class Actor(Object):
                     break
                 target = targets.pop(0)
 
-            amount = random.randint(1, 10)
+            amount = random.randint(100, 300)
             self.echo("{BYour punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {B%s{B! -{R={C%d{R={B-{x" % (target.format_name_to(self), amount))
             self.act("{c[actor.name]'s punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {c[target.name]{c! {B-{R={C%d{R={B-{x" % (amount), target=target, exclude=[self, target])
             self.act_to(target, "{c[actor.name]'s punch {r*{R*{r* {bDE{BV{wASTA{BT{bES {r*{R*{r* {cyou! -{R={C%d{R={B-{x" % (amount))

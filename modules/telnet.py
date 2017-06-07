@@ -585,10 +585,19 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             hp = primary_target.get_stat_total("hp")
             current_hp = primary_target.get_stat_total("current_hp")
             percent = (current_hp / hp) if hp != 0 else 0
-            lines.append("{R%s {Ris in excellent condition. {x[{G%0.1f%%{x]" % (
+
+            if percent <= 0.333:
+                color = "{R"
+            elif percent <= 0.666:
+                color = "{Y"
+            else:
+                color = "{G"
+
+            line = "{R%s {Ris in excellent condition. {x[%s%0.1f%%{x]" % (
                 primary_target.format_name_to(actor),
-                percent * 100
-            ))
+                color,
+                percent * 100)
+            lines.append(line)
 
         lines.append(prompt)
 
