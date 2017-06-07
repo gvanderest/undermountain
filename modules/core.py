@@ -483,7 +483,8 @@ def who_command(self, arguments, Characters):
         if level_restring:
             line += level_restring + "{x"
         else:
-            line += "{RIMM{x" if actor.is_immortal() else "{x  1{x"
+            line += "{RIMM{x" if actor.is_immortal() else \
+                "{x%s{x" % (str(actor.get_level()).rjust(3))
 
         line += " "
 
