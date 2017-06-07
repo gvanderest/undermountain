@@ -708,7 +708,7 @@ def look_command(self, arguments, Characters, Actors, Objects):
     name_line = "{B%s{x " % room.name
 
     # TODO Remove this, it's for debugging only
-    name_line += "(%s:%s) " % (room.area_vnum, room.vnum)
+    name_line += "(%s:%s/%s) " % (room.area_vnum, room.vnum, room.id)
 
     if room.has_flag("safe"):
         name_line += "{R[{WSAFE{R]{x "
@@ -889,10 +889,8 @@ class RoomEntity(Entity):
         self.set_stat_base('current_hp', 100)
         self.set_stat_base('mana', 100)
         self.set_stat_base('current_mana', 100)
-        self.echo("INTEGRITY CHECKING")
         # FIXME do not leave in
         # FIXME do not leave in
-        self.echo("STATS: %s" % repr(self.get_stats()))
 
     def get_room(self):
         """Return the Room that the RoomEntity is in."""
@@ -1552,7 +1550,8 @@ class Actors(Collection):
         else:
             room_id = room.id
 
-        spec.update({"room_id": room_id})
+        spec["room_id"] = room_id
+
         for actor in self.query(spec):
             yield actor
 
