@@ -645,7 +645,8 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         game.inject(
             actor.handle_command,
             message=message,
-            ignore_aliases=False
+            ignore_aliases=False,
+            save=True
         )
 
     def gecho(self, message, emote=False):
