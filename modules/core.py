@@ -892,9 +892,33 @@ class RoomEntity(Entity):
 
     def login(self):
         self.online = True
-        self.perform_integrity_check()
+        self.check_integrity()
 
-    def perform_integrity_check(self):
+    def get_experience(self):
+        """Return the current amount of experience the Actor has."""
+        return self.experience
+
+    def get_experience_per_level(self):
+        """Return the amount of experience the Actor needs per level."""
+        return self.experience_per_level
+
+    def get_level_experience_remaining(self):
+        """Return the amount of experience the Actor needs to reach level."""
+        return self.experience_per_level - self.experience
+
+    def gain_experience(self, amount):
+        """Apply an experience gain to the Actor."""
+        self.experience += amount
+        while self.experience >= self.experience_per_level:
+            self.level += 1
+            self.experience -= amount
+
+    def get_level(self):
+        """Return the Actor's level."""
+        # FIXME use constants
+        return min(101, self.level)
+
+    def check_integrity(self):
         room = self.get_room()
         self.room_id = room.id
 
@@ -904,6 +928,9 @@ class RoomEntity(Entity):
         self.set_stat_base('current_hp', 9000)
         self.set_stat_base('mana', 9000)
         self.set_stat_base('current_mana', 9000)
+        self.experience = 0
+        self.experience_per_level = 3000
+        self.level = 1
         # FIXME do not leave in
         # FIXME do not leave in
 
@@ -1326,6 +1353,7 @@ class Actor(Object):
 
         # FIXME do not leave here
         self.set_stat_base("current_hp", 100)
+        killer.gain_experience(3000)
         # FIXME do not leave here
 
         self.event_to_room("died", blockable=False)

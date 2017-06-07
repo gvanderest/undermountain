@@ -538,10 +538,11 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             prompt = prompt.replace("%V", str(actor.get_stat_total('moves')))
 
         if "%x" in prompt:
-            prompt = prompt.replace("%x", str(0))
+            prompt = prompt.replace("%x", str(actor.get_experience()))
 
         if "%X" in prompt:
-            prompt = prompt.replace("%X", str(0))
+            prompt = prompt.replace(
+                "%X", str(actor.get_level_experience_remaining()))
 
         if "%r" in prompt:
             prompt = prompt.replace("%r", room.name)
