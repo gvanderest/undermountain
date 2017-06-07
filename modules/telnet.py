@@ -582,12 +582,12 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         # If in combat, add information on the target
         if actor.is_fighting():
             primary_target = actor.get_targets()[0]
-            hp = actor.get_stat_total("hp")
-            current_hp = actor.get_stat_total("current_hp")
+            hp = primary_target.get_stat_total("hp")
+            current_hp = primary_target.get_stat_total("current_hp")
             percent = (current_hp / hp) if hp != 0 else 0
             lines.append("{R%s {Ris in excellent condition. {x[{G%0.1f%%{x]" % (
                 primary_target.format_name_to(actor),
-                percent
+                percent * 100
             ))
 
         lines.append(prompt)

@@ -1258,7 +1258,6 @@ class Actor(Object):
 
             # handle the target dying because of attacks
             if target.is_dead():
-                target.remove_flag("dead")
                 target.save()
 
                 if not targets:
@@ -1285,7 +1284,7 @@ class Actor(Object):
 
     def is_dead(self):
         """Return whether you are dead or not."""
-        return self.has_flag("dead")
+        self.get_stat_base('current_hp') <= 0
 
     def leave_combat(self):
         self.targets = []
@@ -1296,17 +1295,24 @@ class Actor(Object):
 
     def die(self, killer):
         """Handle death."""
+        dying = self.event_to_room("dying")
+
+        # If dying is blocked, and the Actor is not dead, kick out
+        if dying.is_blocked() and not self.is_dead():
+            return
+
         self.leave_combat()
 
         self.act("[actor.name] has been killed!")
         self.echo("You have been killed!")
         self.gecho("*** %s has been killed by %s" % (self.name, killer.name))
-        self.add_flag("dead")
         self.recall(silent=True)
 
         # FIXME do not leave here
         self.set_stat_base("current_hp", 100)
         # FIXME do not leave here
+
+        self.event_to_room("died", blockable=False)
 
     def attack(self, target):
         """Initiate combat with a target."""
