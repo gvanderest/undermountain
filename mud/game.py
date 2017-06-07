@@ -180,10 +180,13 @@ if random(0, 1) == 1:
         if overrides is not None:
             injectors.update(overrides)
 
-        arg_names = inspect.getargspec(method)[0]
+        arg_spec = inspect.getargspec(method)
+        arg_names = arg_spec[0]
+        arg_defaults = arg_spec[3] or ()
 
         values = {}
-        for name in arg_names:
+        args_without_defaults = len(arg_names) - len(arg_defaults)
+        for index, name in enumerate(arg_names):
 
             # Allow overriding of "_self"->"self" injector
             internal_name = name
@@ -192,11 +195,20 @@ if random(0, 1) == 1:
                     continue
                 internal_name = "_self"
 
-            try:
+            # Use method defaults, if they are available
+            arg_index = index - args_without_defaults
+            arg_has_default = arg_index >= 0
+            arg_default = arg_defaults[arg_index] if arg_index >= 0 else None
+
+            if internal_name in injectors:
                 values[name] = injectors[internal_name]
-            except KeyError as e:
-                raise KeyError("Injector '{}' in {} not found for {}".format(
-                    name, arg_names, method))
+            else:
+                if arg_has_default:
+                    values[name] = arg_default
+                else:
+                    raise KeyError(
+                        "Injector '{}' in {} not found for {}".format(
+                            name, arg_names, method))
 
         try:
             return method(**values)
