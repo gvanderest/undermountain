@@ -645,6 +645,10 @@ def kill_command(self, arguments, Characters, Actors):
         self.echo("You can't find them.")
         return
 
+    if target == self:
+        self.echo("Suicide is a mortal sin.")
+        return
+
     attacking = self.event_to_room("attacking", {"target": target})
 
     if attacking.is_blocked():
