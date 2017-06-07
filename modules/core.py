@@ -885,10 +885,10 @@ class RoomEntity(Entity):
 
         # FIXME do not leave in
         # FIXME do not leave in
-        self.set_stat_base('hp', 100)
-        self.set_stat_base('current_hp', 100)
-        self.set_stat_base('mana', 100)
-        self.set_stat_base('current_mana', 100)
+        self.set_stat_base('hp', 9000)
+        self.set_stat_base('current_hp', 9000)
+        self.set_stat_base('mana', 9000)
+        self.set_stat_base('current_mana', 9000)
         # FIXME do not leave in
         # FIXME do not leave in
 
