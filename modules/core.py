@@ -17,7 +17,7 @@ from utils.listify import listify
 from utils.event import Event
 import logging
 from settings import DIRECTIONS, CHANNELS, SOCIALS, IDLE_TIME_TO_DISCONNECT, \
-    RACES, CLASSES, GENDERS
+    RACES, CLASSES, GENDERS, MAX_LEVEL
 
 
 MAP_META = [
@@ -99,6 +99,25 @@ def description_command(self, arguments):
     self.set_description(desc)
     self.save()
     output_desc()
+
+
+def advance_command(self, arguments, Characters):
+    if len(arguments) < 2:
+        self.echo("Advance who to what level?")
+        return False
+
+    game = self.get_game()
+    name = arguments[0]
+    game
+    level = int(arguments[1])
+    actor = Characters.find({"name": name})
+
+    if actor.get_level() > level:
+        self.echo("Sorry, can't delevel a player.")
+        return False
+
+    actor.set_level(level)
+    actor.save()
 
 
 def flee_command(self):
@@ -483,8 +502,12 @@ def who_command(self, arguments, Characters):
         if level_restring:
             line += level_restring + "{x"
         else:
-            line += "{RIMM{x" if actor.is_immortal() else \
-                "{x%s{x" % (str(actor.get_level()).rjust(3))
+            if actor.is_immortal():
+                line += "{RIMM{x"
+            elif actor.is_max_level():
+                line += "{GHRO{x"
+            else:
+                line += "{x%s{x" % (str(actor.get_level()).rjust(3))
 
         line += " "
 
@@ -910,13 +933,28 @@ class RoomEntity(Entity):
         """Apply an experience gain to the Actor."""
         self.experience += amount
         while self.experience >= self.experience_per_level:
-            self.level += 1
+            self.gain_level()
             self.experience -= amount
+
+    def set_level(self, level):
+        diff = level - self.level
+        for x in range(diff):
+            self.gain_level()
+
+    def gain_level(self):
+        self.level += 1
+        self.level = min(MAX_LEVEL, self.level)
+        self.echo("You have gained a level!  You are now level {}!".format(
+            self.level))
+        self.echo("Your stats have improved: X hp, Y mana, Z training points!")
+
+    def is_max_level(self):
+        """Return if the Actor is at max level."""
+        return self.level == MAX_LEVEL
 
     def get_level(self):
         """Return the Actor's level."""
-        # FIXME use constants
-        return min(101, self.level)
+        return min(MAX_LEVEL, self.level)
 
     def check_integrity(self):
         room = self.get_room()
@@ -1167,6 +1205,7 @@ COMMAND_RESOLVER.update({
     "score": score_command,
     "force": force_command,
     "prompt": prompt_command,
+    "advance": advance_command,
 })
 
 for channel_id in CHANNELS.keys():

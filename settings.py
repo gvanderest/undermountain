@@ -521,3 +521,5 @@ BANNED_NAMES = [
     "god",
     "bash",
 ]
+
+MAX_LEVEL = 101
