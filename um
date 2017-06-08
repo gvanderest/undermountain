@@ -92,7 +92,6 @@ if arg == "start":
         logging.info("Type CTRL+C to kill the process immediately.")
         try:
             game.shutdown()
-            logging.info("Clean shutdown complete.")
         except KeyboardInterrupt:
             print()
             logging.info("The process has been killed.")

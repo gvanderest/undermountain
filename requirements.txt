@@ -1,2 +1,3 @@
 gevent
 gevent-websocket
+ujson

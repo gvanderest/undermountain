@@ -1,4 +1,5 @@
 import json as pyjson
+import ujson
 
 
 class json(object):
@@ -8,4 +9,4 @@ class json(object):
 
     @classmethod
     def loads(self, c):
-        return pyjson.loads(c)
+        return ujson.loads(c)

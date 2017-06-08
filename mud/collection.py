@@ -1,6 +1,7 @@
 from utils.collection import EntityCollection, CollectionEntity
-import logging
 import json
+import logging
+from utils import timing
 from glob import glob
 
 
@@ -12,7 +13,6 @@ class Collection(EntityCollection):
         records = state.get(self.NAME, {})
         state[self.NAME] = records
         self.game.set_state(state)
-        logging.info("LOADED {} OBJECTS".format(len(records)))
 
         super(Collection, self).__init__(records)
 
@@ -36,12 +36,25 @@ class FileCollection(Collection):
 
     def load_from_files(self):
         """Go to the data directory and load the files available."""
-        print("LOADING FROM FILES")
+        timing.start("load_areas")
+
+        count = 0
         for file_path in self.query_files_list():
+            timing.start("load_area")
+            count += 1
             filename = file_path.split("/")[-1]
             with open(file_path, "r") as fh:
+                file_elapsed = timing.stop("load_area")
+                logging.info("Loaded {} {} in {}".format(
+                    self.WRAPPER_CLASS.__name__, filename, file_elapsed))
                 contents = fh.read()
                 self.ingest_contents(contents, filename)
+
+        total_elapsed = timing.stop("load_areas")
+        logging.info("Loaded {} {} in {}".format(
+            count, self.__class__.__name__, total_elapsed))
+
+
 
     def ingest_contents(self, contents, name):
         """Process the contents of a file into the Collection."""
