@@ -15,6 +15,8 @@ from mud.manager import Manager
 from mud.map import Map
 from utils.listify import listify
 from utils.event import Event
+from utils.columnify import columnify
+from mud.command_resolver import CommandResolver
 import logging
 from settings import DIRECTIONS, CHANNELS, SOCIALS, IDLE_TIME_TO_DISCONNECT, \
     RACES, CLASSES, GENDERS, MAX_LEVEL
@@ -1176,14 +1178,10 @@ class Organization(Entity):
         return self.hidden is True
 
 
-from mud.command_resolver import CommandResolver
 
 COMMAND_RESOLVER = CommandResolver()
 
-for direction_id in DIRECTIONS.keys():
-    COMMAND_RESOLVER.add(direction_id, walk_command)
-
-COMMAND_RESOLVER.update({
+COMMANDS = {
     "description": description_command,
     "look": look_command,
     "flee": flee_command,
@@ -1206,13 +1204,31 @@ COMMAND_RESOLVER.update({
     "force": force_command,
     "prompt": prompt_command,
     "advance": advance_command,
-})
+}
+
+
+for direction_id in DIRECTIONS.keys():
+    COMMANDS[direction_id] = walk_command
 
 for channel_id in CHANNELS.keys():
-    COMMAND_RESOLVER.add(channel_id, channel_command)
+    COMMANDS[channel_id] = channel_command
 
 for social_id in SOCIALS.keys():
-    COMMAND_RESOLVER.add(social_id, social_command)
+    COMMANDS[social_id] = social_command
+
+
+def commands_command(self):
+    """List out the available commands."""
+    # TODO add checks to filter out available commands
+    lines = columnify(COMMANDS.keys(), return_lines=True)
+    for line in lines:
+        self.echo(line)
+
+
+COMMANDS['commands'] = commands_command
+
+
+COMMAND_RESOLVER.update(COMMANDS)
 
 
 class Object(RoomEntity):
