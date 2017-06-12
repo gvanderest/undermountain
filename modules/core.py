@@ -1586,7 +1586,7 @@ class Actor(Object):
         client = self.get_client()
         client.quit()
 
-    def handle_command(self, message, ignore_aliases=False, save=True):
+    def handle_command(self, message, ignore_aliases=False):
         message = message.rstrip()
 
         if not message:
@@ -1632,10 +1632,6 @@ class Actor(Object):
         except Exception as e:
             game.handle_exception(e)
             self.echo("Huh?!  (Code bug detected and reported.)")
-
-        # TODO Verify this is a good idea
-        if save:
-            self.save()
 
 
 class Objects(Collection):
