@@ -2,6 +2,7 @@
 CORE MODULE
 """
 from datetime import datetime
+import gevent
 import hashlib
 import json
 import math
@@ -324,6 +325,13 @@ def channel_command(self, message, Characters):
             channel = entry
             break
 
+    event_data = {"message": message}
+
+    pre_event_name = channel.get("pre_event", channel_id + "ing")
+    pre_event = self.event_to_room(pre_event_name, event_data)
+    if pre_event.is_blocked():
+        return
+
     template = channel.get("format", "")
     for char in Characters.query({"online": True}):
         receive_check = channel.get("receive_check", default_receive_check)
@@ -334,6 +342,9 @@ def channel_command(self, message, Characters):
 
     self_template = channel.get("self_format", template)
     self.echo(self_template.format(actor=self, message=message))
+
+    post_event_name = channel.get("post_event", channel_id + "ing")
+    self.event_to_room(post_event_name, event_data)
 
 
 def social_command(self, message):
@@ -884,23 +895,30 @@ class RoomEntity(Entity):
 
     def handle_event(self, event):
         """Handle the Event being passed to it and return it."""
+        target = event.data["source"]
+
+        # You cannot trigger events off of yourself
+        if target == self:
+            return event
+
         all_subroutines = self.get("subroutines", {})
         subroutines_for_event = all_subroutines.get(event.type, [])
         for index, subroutine in enumerate(subroutines_for_event):
             filename = "{}:{}:{}".format(self.id, event.type, index)
             compiled = compile(subroutine, filename, "exec")
-            target = event.data["source"]
-            # self_proxy = self.get_subroutine_proxy()
-            # target_proxy = event.data["source"].get_subroutine_proxy()
 
             variables = {
                 "random": random_range,
                 "self": self,
                 "target": target,
-                "event": event
+                "event": event,
+                "sleep": gevent.sleep,
+                "wait": gevent.sleep
             }
-            exec(compiled, variables, variables)
-            if event.is_blocked():
+
+            gevent.spawn(exec, compiled, variables, variables)
+
+            if event.is_blockable() and event.is_blocked():
                 return event
 
         return event
@@ -1189,8 +1207,8 @@ class Organization(Entity):
         return self.hidden is True
 
 
-
 COMMAND_RESOLVER = CommandResolver()
+
 
 COMMANDS = {
     "description": description_command,
@@ -1218,16 +1236,6 @@ COMMANDS = {
 }
 
 
-for direction_id in DIRECTIONS.keys():
-    COMMANDS[direction_id] = walk_command
-
-for channel_id in CHANNELS.keys():
-    COMMANDS[channel_id] = channel_command
-
-for social_id in SOCIALS.keys():
-    COMMANDS[social_id] = social_command
-
-
 def commands_command(self):
     """List out the available commands."""
     # TODO add checks to filter out available commands
@@ -1237,6 +1245,16 @@ def commands_command(self):
 
 
 COMMANDS['commands'] = commands_command
+
+
+for direction_id in DIRECTIONS.keys():
+    COMMAND_RESOLVER.add(direction_id, walk_command)
+
+for channel_id in CHANNELS.keys():
+    COMMAND_RESOLVER.add(channel_id, channel_command)
+
+for social_id in SOCIALS.keys():
+    COMMAND_RESOLVER.add(social_id, social_command)
 
 
 COMMAND_RESOLVER.update(COMMANDS)
@@ -1304,6 +1322,19 @@ class Actor(Object):
         "=": "cgossip",
         "?": "help",
     }
+
+    def start_cinematic(self):
+        """
+        Start cinematic mode, which removes player from most things, but
+        allows them to see echos and "animations."
+        """
+        self.add_flag("cinematic")
+
+    def end_cinematic(self):
+        """
+        End a cinematic scene.
+        """
+        self.remove_flag("cinematic")
 
     def can_recall(self):
         """Return whether the Actor can recall home or not."""

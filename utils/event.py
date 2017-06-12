@@ -2,9 +2,12 @@
 EVENT
 A method for passing around Events and their data.
 """
+
+
 class Unblockable(Exception):
     """Exception to raise if an unblockable Event attempts blocking."""
     pass
+
 
 class Event(object):
     """An Event which can occur, and sometimes can be blocked."""
@@ -16,6 +19,9 @@ class Event(object):
         self.data = data
         self.blocked = False
         self.blockable = blockable
+
+    def is_blockable(self):
+        return self.blockable
 
     def is_blocked(self):
         return self.blocked

@@ -43,20 +43,21 @@ class Game(object):
                 "each chromatic dragon color.",
             ],
             "subroutines": {
-                "dying": [
+                "died": [
                     """
-self.say("One cannot die in this room.")
-event.block()
-target.set_stat_base("current_hp", 100)
+target.start_cinematic()
+target.echo("Your limbs feel heavy, as your body fails you..")
+sleep(2.0)
+target.echo("Your breath slows, and you feel the wrap of death take you..")
+sleep(2.0)
+target.echo("You awaken in a haze, blinking your eyes, and the world returning to sight..")
+sleep(2.0)
+target.end_cinematic()
+self.say("Welcome back to the land of the living.")
                     """
                 ],
                 "leaving": [
-                    """
-if random(0, 1) == 1:
-    self.say("Sorry {}, I feel like you should stick around.".format(target.name))
-    event.block()
-                    """,
-                    "self.say('Seeya, {}!'.format(target.name))"
+                    "self.say('Goodbye, {}!'.format(target.name))"
                 ],
                 "entered": [
                     "self.say('Hey there, {}!'.format(target.name))"

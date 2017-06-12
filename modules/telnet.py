@@ -500,6 +500,9 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         if not actor:
             return ""
 
+        if actor.has_flag("cinematic"):
+            return ""
+
         lines = []
 
         if actor.is_afk():
