@@ -1805,13 +1805,27 @@ class CombatManager(Manager):
 
         return event
 
+    def perform_regeneration(self, actor):
+        if actor.is_fighting():
+            return
+
+        total_hp = actor.get_stat_total("hp")
+        current_hp = actor.get_stat_total("current_hp")
+
+        current_hp += int(total_hp * 0.1)
+
+        current_hp = min(current_hp, total_hp)
+
+        actor.set_stat_base("current_hp", current_hp)
+        actor.save()
+
     def tick(self, Characters):
-        # FIXME use constants for this
         self.ticks += 1
 
         if self.ticks % 5 == 0:
             for character in Characters.query():
                 character.perform_combat_round_attacks()
+                self.perform_regeneration(character)
 
 
 class Core(Module):
