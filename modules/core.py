@@ -62,6 +62,16 @@ MAP_META = [
 ]
 
 
+def version_command(self):
+    """Get the version of the game."""
+    game = self.get_game()
+    output = "This is Waterdeep [Version {C%s{x] [{M%s{x]" % (
+        game.get_version(),
+        game.get_release_date()
+    )
+    self.echo(output)
+
+
 def description_command(self, arguments):
     """Set and view your own description."""
 
@@ -1235,6 +1245,7 @@ COMMANDS = {
     "force": force_command,
     "prompt": prompt_command,
     "advance": advance_command,
+    "version": version_command
 }
 
 

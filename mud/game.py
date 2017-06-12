@@ -2,11 +2,13 @@
 GAME
 The World in which we play.
 """
+from datetime import datetime
 import gevent
 import inspect
 import logging
 import sys
 import traceback
+from os.path import getmtime
 from settings import DATA_PATH
 from utils.event import Event
 from utils.ansi import Ansi
@@ -16,6 +18,22 @@ class Game(object):
     """An instance of the Game."""
 
     VERSION = None
+    RELEASE_DATE = None
+
+    @classmethod
+    def get_release_date(cls):
+        """Return the version file's modification date."""
+        if cls.RELEASE_DATE is not None:
+            return cls.RELEASE_DATE
+
+        try:
+            mtime = getmtime("VERSION")
+        except OSError:
+            mtime = 0
+
+        cls.RELEASE_DATE = datetime.fromtimestamp(mtime)
+
+        return cls.RELEASE_DATE
 
     @classmethod
     def get_version(cls):
