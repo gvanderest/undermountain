@@ -481,7 +481,15 @@ def title_command(self, arguments):
     self.save()
 
 
+def get_actor_sort_values(actor):
+    """Provide values, which are always sorted descending."""
+    return (
+        1 if actor.is_immortal() else 0,
+        actor.get_level()
+    )
+
 def who_command(self, arguments, Characters):
+
     total_count = 0
     visible_count = 0
     top_count = 999
@@ -490,9 +498,11 @@ def who_command(self, arguments, Characters):
     self.echo("{g" + ("-" * 79))
 
     actors = list(Characters.query({"online": True}))
-    actors = sorted(actors, key=lambda a: a.is_immortal(), reverse=True)
+    actors = sorted(actors, key=get_actor_sort_values, reverse=True)
+
     for actor in actors:
         total_count += 1
+
         if not self.can_see(actor):
             continue
 
