@@ -1,6 +1,3 @@
-import math
-
-
 def columnify(strings, return_lines=False, return_serialized=False,
               max_length=None, screen_width=79, gutter_width=1):
     """
