@@ -46,13 +46,14 @@ class Game(object):
                 "died": [
                     """
 target.start_cinematic()
-target.echo("Your limbs feel heavy, as your body fails you..")
+target.echo("{WYour limbs feel heavy, as your body fails you..")
 sleep(2.0)
-target.echo("Your breath slows, and you feel the wrap of death take you..")
+target.echo("{wYour breath slows, and you feel the wrap of death take you..")
 sleep(2.0)
-target.echo("You awaken in a haze, blinking your eyes, and the world returning to sight..")
+target.echo("{8You awaken in a haze, blinking your eyes, and the world returning to sight..")
 sleep(2.0)
 target.end_cinematic()
+target.set_stat_base("current_hp", 100)
 self.say("Welcome back to the land of the living.")
                     """
                 ],

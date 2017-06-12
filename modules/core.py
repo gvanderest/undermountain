@@ -916,10 +916,12 @@ class RoomEntity(Entity):
                 "wait": gevent.sleep
             }
 
-            gevent.spawn(exec, compiled, variables, variables)
-
-            if event.is_blockable() and event.is_blocked():
-                return event
+            if event.is_blockable():
+                exec(compiled, variables, variables)
+                if event.is_blocked():
+                    return event
+            else:
+                gevent.spawn(exec, compiled, variables, variables)
 
         return event
 
@@ -1426,7 +1428,7 @@ class Actor(Object):
 
     def is_dead(self):
         """Return whether you are dead or not."""
-        self.get_stat_base('current_hp') <= 0
+        return self.get_stat_total("current_hp") <= 0
 
     def leave_combat(self):
         for target in self.get_targets():
@@ -1449,7 +1451,6 @@ class Actor(Object):
         self.recall(silent=True)
 
         # FIXME do not leave here
-        self.set_stat_base("current_hp", 100)
         killer.gain_experience(3000)
         # FIXME do not leave here
 
