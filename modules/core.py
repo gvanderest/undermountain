@@ -488,8 +488,9 @@ def get_actor_sort_values(actor):
         actor.get_level()
     )
 
-def who_command(self, arguments, Characters):
 
+def who_command(self, arguments, Characters):
+    """Display a list of which Characters are online."""
     total_count = 0
     visible_count = 0
     top_count = 999
