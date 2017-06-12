@@ -972,8 +972,11 @@ class RoomEntity(Entity):
         """Return the amount of experience the Actor needs to reach level."""
         return self.experience_per_level - self.experience
 
-    def gain_experience(self, amount):
+    def gain_experience(self, amount, silent=False):
         """Apply an experience gain to the Actor."""
+        if not silent:
+            self.echo("You gain {Y%d{x experience!" % amount)
+
         self.experience += amount
         while self.experience >= self.experience_per_level:
             self.gain_level()
