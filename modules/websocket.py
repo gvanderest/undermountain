@@ -127,7 +127,7 @@ class WebsocketConnection(Connection):
         return decoded
 
     def send_upgrade_protocol_response(self, request):
-        if request["headers"].get("Connection") == "Upgrade" and \
+        if "Upgrade" in request["headers"].get("Connection") and \
                 request["headers"].get("Upgrade") == "websocket":
 
             key = request["headers"].get("Sec-WebSocket-Key", "")
