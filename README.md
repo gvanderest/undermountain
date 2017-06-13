@@ -70,3 +70,146 @@ in the `backups` folder) or the direct path to a file.
 
 If a filename matching both a direct path and `backups` folder are found, the
 direct path will win.
+
+
+# Engine Documentation
+
+## Subroutines
+
+In the Undermountain game engine, most things fire Events which can be hooked
+into by Entities (Actors, Rooms, Objects, etc.) to react with scripts.  These
+scripts are written in Python3, but some support for OLC Mobprogs may exist
+for a period of time until the game is fully ported over from ROT.
+
+Most events will come in pairs, typically with a pre-event that is blockable
+by the script, and a post-event that is not blockable.
+
+### Example Subroutine
+
+Just as an early example of a subroutine, we might attach the following
+"entered" script to a goblin standing in the room.
+
+    if random_number(0, 10) > 5:  # 50% chance of ..
+
+        self.say("I kill you!", language="goblin")  # .. saying this message
+        self.attack(target)  # .. and attacking
+
+### Creating Subroutines
+
+TBD
+
+### Attaching Subroutines to Entities
+
+TBD
+
+### Event Types
+
+This area will detail the types of events that can fire, when to expect them,
+ability to be blocked, and example data that should be available with them.
+Events that are blockable will be noted.
+
+
+#### acting (blockable) -> acted
+
+TBD
+
+
+#### attacking (blockable) -> attacked
+
+TBD
+
+
+#### casting (blockable) -> cast
+> @param {Actor} target - The target that is casting.
+
+> @param {Ability} ability - The skill or spell being used.
+
+TBD
+
+
+#### despawning
+
+TBD - When an Entity is going to be removed from the Game.
+
+Note: This cannot be blocked.
+
+
+#### drinking (blockable) -> drank
+
+TBD
+
+
+#### dying (blockable) -> died
+> @param {Actor} target - The target that is dying.
+
+When an Actor's health is reduced to zero, or they are outright killed by
+some other means, the *dying* event will fire in the Room where the
+death is occurring.
+
+If an Actor is not saved from *dying*, they will fire a *died* event in the
+Room that they respawn in (often their recall).
+
+Note: If *dying* is blocked, the Actor's "current_hp" stat must be changed
+to a positive value in order for it to truly be blocked.  This may be
+automatically enforced in the future.
+
+
+#### eating (blockable) -> ate
+
+TBD
+
+
+#### inputting (blockable) -> inputted
+
+TBD - Handle raw input of a player
+Might be renamed to commanding, commanded?
+
+
+#### killing (blockable) -> killed
+
+TBD
+
+
+#### messaging (blockable) -> messaged
+
+TBD - Channel messages.
+
+
+#### respawning (blockable) -> respawned
+
+TBD - This is what happens when an area resets or regenerates from inactivity.
+
+
+#### skilling (blockable) -> skill
+
+See: casting -> cast
+
+
+#### spawned
+
+TBD - When Entity is created
+
+Note: This cannot be blocked.
+
+
+#### walking (blockable) -> walked
+> @param {Actor} target - The target that is walking or walked.
+
+> @param {Direction} direction - The direction that the target walked or
+> entered from.
+
+When an Actor is trying to walk out of a Room, this will fire in the Room that
+the *walking* was initiated in.
+
+When an Actor arrives in the Room, this will will fire in the Room that the
+*walked* arrives in.
+
+See: leaving -> left, entering -> entered
+
+
+### Methods Available
+
+In addition to the basic functionality that Python provides, there are various
+helper functions that are made available to you in subroutines.
+
+#### random_number
