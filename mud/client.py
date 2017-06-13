@@ -8,8 +8,8 @@ class Client(object):
     def __init__(self, connection):
         self.connection = connection
         self.state = "login_username"
+        self.hiding_next_input = True
         self.init()
-        self.hiding_next_input = False
 
     def init(self):
         pass
@@ -19,14 +19,9 @@ class Client(object):
         return server.game
 
     def hide_next_input(self):
-        self.connection.flush()
-        self.connection.socket.sendall(b"\xFF\xFB\x01")
         self.hiding_next_input = True
 
     def show_next_input(self):
-        self.connection.flush()
-        self.connection.socket.sendall(b"\xFF\xFC\x01")
-        self.writeln()
         self.hiding_next_input = False
 
     def handle_input(self, message):

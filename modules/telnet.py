@@ -23,6 +23,17 @@ class TelnetClient(Client):
         self.actor_id = None
         self.username = None
 
+    def hide_next_input(self):
+        super(TelnetClient, self).hide_next_input()
+        self.connection.flush()
+        self.connection.hide_next_input()
+
+    def show_next_input(self):
+        super(TelnetClient, self).show_next_input()
+        self.connection.flush()
+        self.connection.show_next_input()
+        self.writeln()
+
     def start(self):
         self.write_login_banner()
         self.write_login_username_prompt()
@@ -715,6 +726,12 @@ class TelnetConnection(Connection):
         self.ip = socket.gethostbyname(addr[0])  # Connection IP
         self.hostname = addr[0]  # Connection hostname
         self.port = addr[1]  # Connection port
+
+    def hide_next_input(self):
+        self.connection.socket.sendall(b"\xFF\xFB\x01")
+
+    def show_next_input(self):
+        self.connection.socket.sendall(b"\xFF\xFC\x01")
 
     def enable_color(self):
         self.color = True

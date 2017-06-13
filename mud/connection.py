@@ -27,6 +27,12 @@ class Connection(object):
 
         self.update_last_input_date()
 
+    def hide_next_input(self):
+        pass
+
+    def show_next_input(self):
+        pass
+
     def update_last_input_date(self):
         """Update the last Player input date."""
         self.last_input_date = datetime.now()

@@ -1,22 +1,15 @@
 """
 WEBSOCKET MODULE
 """
-from gevent import pywsgi
-from geventwebsocket.handler import WebSocketHandler
 import base64
-import logging
 import gevent
 import socket
 import gevent.monkey
 import hashlib
-import zlib
 from mud.module import Module
-from mud.server import Server
-from mud.client import Client
 from mud.connection import Connection
-from modules.telnet import TelnetConnection, TelnetClient, TelnetServer
+from modules.telnet import TelnetClient, TelnetServer
 from utils.ansi import Ansi
-from utils.hash import get_random_hash
 
 gevent.monkey.patch_socket()
 
@@ -55,16 +48,16 @@ class WebsocketConnection(Connection):
 
         return encoded
 
-    def encode_frame(self, message):
+    def encode_frames(self, message):
         if self.encoding == "base64":
-            message = base64.b64encode(message.encode()).decode("utf-8")
+            encoded = base64.b64encode(message.encode()).decode("utf-8")
 
-        packet = []
+        packet = bytearray()
 
-        header = 0b10000001
-        packet.append(header)
+        # Indexes:      01234567
+        packet.append(0b10000001)
 
-        length = len(message)
+        length = len(encoded)
         if length < 126:
             packet.append(length)
         else:
@@ -72,11 +65,9 @@ class WebsocketConnection(Connection):
             packet.append(length >> 8)
             packet.append(length % 2**8)
 
-        packet += [ord(c) for c in message]
+        packet += bytearray(ord(c) for c in encoded)
 
-        frame = bytearray(packet)
-
-        return frame
+        return packet
 
     def decode_frame(self, frame):
         """Return a frame converted to a utf-8 message."""
@@ -176,10 +167,7 @@ class WebsocketConnection(Connection):
     def read(self):
         try:
             message = self.socket.recv(self.READ_SIZE)
-        except Exception:
-            message = None
-
-        if not message:
+        except Exception as e:
             return None
 
         if not self.upgraded:
@@ -189,6 +177,9 @@ class WebsocketConnection(Connection):
             return ""
 
         message = self.decode_frame(message)
+        if not message:
+            return ""
+
         return message
 
     def close(self):
@@ -198,7 +189,13 @@ class WebsocketConnection(Connection):
             pass
         self.socket.close()
 
-    def flush(self, message):
+    def flush(self):
+        if not self.output_buffer:
+            return
+
+        message = self.output_buffer
+        self.output_buffer = ""
+
         if self.color:
             message = Ansi.colorize(message)
         else:
@@ -206,7 +203,8 @@ class WebsocketConnection(Connection):
 
         try:
             if self.upgraded:
-                self.socket.sendall(self.encode_frame(message))
+                frames = self.encode_frames(message)
+                self.socket.sendall(frames)
             else:
                 self.socket.sendall(message.encode())
         except OSError:
