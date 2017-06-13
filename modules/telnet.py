@@ -728,10 +728,10 @@ class TelnetConnection(Connection):
         self.port = addr[1]  # Connection port
 
     def hide_next_input(self):
-        self.connection.socket.sendall(b"\xFF\xFB\x01")
+        self.socket.sendall(b"\xFF\xFB\x01")
 
     def show_next_input(self):
-        self.connection.socket.sendall(b"\xFF\xFC\x01")
+        self.socket.sendall(b"\xFF\xFC\x01")
 
     def enable_color(self):
         self.color = True
