@@ -150,10 +150,37 @@ class TelnetClient(Client):
             self.connection.destroy()
             return
 
+        if actor.online:
+            self.start_login_reconnect_screen()
+            return
+
         self.set_actor(actor)
         actor.set_client(self)
 
         self.start_motd_screen()
+
+    def start_login_reconnect_screen(self):
+        self.echo("That character is already logged in.")
+        self.write("Would you like to replace them? [y/N] ")
+        self.state = "login_reconnect"
+
+    def handle_login_reconnect_input(self, message, Characters):
+        game = self.get_game()
+        actor = Characters.find({"name": self.username})
+
+        if message.lower().startswith('y'):
+            self.echo("Attempting reconnect..")
+            existing_connection = game.get_actor_connection(actor)
+            existing_actor = existing_connection.get_actor()
+
+            existing_actor.set_client(self)
+            self.set_actor(existing_actor)
+
+            existing_connection.destroy()
+            self.state = 'playing'
+        else:
+            self.write("Who are you? ")
+            self.state = "login_username"
 
     def start_name_creation_screen(self):
         self.state = "name_creation"

@@ -97,7 +97,6 @@ self.say("Welcome back to the land of the living.")
         return DATA_PATH
 
     def get_actor_connection(self, actor):
-        # FIXME Make this a dictionary
         for connection in self.connections:
             if connection.client.actor_id == actor.id:
                 return connection
