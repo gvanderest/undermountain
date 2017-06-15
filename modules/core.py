@@ -1021,6 +1021,13 @@ class RoomEntity(Entity):
         # FIXME do not leave in
         # FIXME do not leave in
 
+    def get_area(self):
+        """Return the Area that the RoomEntity is in."""
+        room = self.get_room()
+        if not room:
+            return None
+        return room.get_area()
+
     def get_room(self):
         """Return the Room that the RoomEntity is in."""
         from settings import DEFAULT_ROOM_VNUM
