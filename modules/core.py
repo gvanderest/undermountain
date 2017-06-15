@@ -329,11 +329,14 @@ def channel_command(self, message, Characters):
         self.echo("Channel toggling is not yet supported.")
         return
 
+    # Find the channel
     channel = None
     for channel_id, entry in CHANNELS.items():
-        if channel_id.startswith(channel_name):
-            channel = entry
-            break
+        keywords = [channel_id] + entry.get("aliases", [])
+        for keyword in keywords:
+            if keyword.startswith(channel_name):
+                channel = entry
+                break
 
     event_data = {"message": message}
 
@@ -1266,8 +1269,10 @@ COMMANDS['commands'] = commands_command
 for direction_id in DIRECTIONS.keys():
     COMMAND_RESOLVER.add(direction_id, walk_command)
 
-for channel_id in CHANNELS.keys():
-    COMMAND_RESOLVER.add(channel_id, channel_command)
+for channel_id, channel in CHANNELS.items():
+    aliases = [channel_id] + channel.get("aliases", [])
+    for keyword in aliases:
+        COMMAND_RESOLVER.add(keyword, channel_command)
 
 for social_id in SOCIALS.keys():
     COMMAND_RESOLVER.add(social_id, social_command)
