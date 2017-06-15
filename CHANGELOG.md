@@ -1,6 +1,20 @@
 # CHANGELOG
 
-## VERSION 0.2.0 (fight-club) - 2017-06-12T22:53:48
+## VERSION 0.3.0 (websock-it-to-me) - 2017-06-15T18:05
+
+* Websocket native support - Some bugs still remain from time to time
+* Area yell/shout commands
+* Start Documentation
+* Toggle coloring
+* Emote and pmote commands
+* Make all "attack" commands the same: battle/murder/kill/attack
+* Make combat no longer pass through cinematic mode
+* Whisper other players
+* Basic subroutine support on mobiles with basic (enter/leave/death)
+  event hooking and event blocking -- preventing dying, for example
+
+
+## VERSION 0.2.0 (fight-club) - 2017-06-12T22:53
 
 * Basics of a Combat system
 * Added basic "kill" command which is spammable to do damage to a target
@@ -21,7 +35,7 @@
 * Listing "who" is online and setting of title
 
 
-## VERSION 0.1.0 (genesis) - 2017-04-01T17:44:49
+## VERSION 0.1.0 (genesis) - 2017-04-01T17:44
 
 * Module system for grouping services/features
 * Managers for modules that handle areas of the game
