@@ -748,7 +748,6 @@ class TelnetConnection(Connection):
 
         self.socket = the_socket  # Raw socket
         self.client = TelnetClient(self)
-        self.color = True
 
         self.ip = socket.gethostbyname(addr[0])  # Connection IP
         self.hostname = addr[0]  # Connection hostname
@@ -759,12 +758,6 @@ class TelnetConnection(Connection):
 
     def show_next_input(self):
         self.socket.sendall(b"\xFF\xFC\x01")
-
-    def enable_color(self):
-        self.color = True
-
-    def disable_color(self):
-        self.color = False
 
     def read(self):
         try:
@@ -811,7 +804,8 @@ class TelnetConnection(Connection):
                 message = "\n\n" + message
             message += "\n" + prompt
 
-        if self.color:
+        # Include or strip colors as needed
+        if actor and actor.has_color():
             message = Ansi.colorize(message)
         else:
             message = Ansi.decolorize(message)

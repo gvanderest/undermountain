@@ -319,6 +319,18 @@ def default_receive_check(a, t):
     return True
 
 
+def color_command(self):
+    """Toggle your ANSI color support."""
+    self.toggle_color()
+
+    if self.has_color():
+        self.echo("Color has been {Re{rn{ya{Yb{Cl{ce{Gd{x!")
+    else:
+        self.echo("Color has been disabled.")
+
+    self.save()
+
+
 def channel_command(self, message, Characters):
     """Echo a Channel to the Game."""
     parts = message.split(" ")
@@ -1236,6 +1248,7 @@ COMMAND_RESOLVER = CommandResolver()
 
 
 COMMANDS = {
+    "color": color_command,
     "description": description_command,
     "look": look_command,
     "flee": flee_command,
@@ -1364,6 +1377,17 @@ class Actor(Object):
         """
         self.remove_flag("cinematic")
 
+    def has_color(self):
+        """Return whether the Actor has color features or not."""
+        return self.get_setting("color", True)
+
+    def toggle_color(self):
+        """Toggle the color feature for an Actor and return new value."""
+        color = self.has_color()
+        toggled = not color
+        self.set_setting("color", toggled)
+        return toggled
+
     def can_recall(self):
         """Return whether the Actor can recall home or not."""
         # TODO implement this
@@ -1379,6 +1403,32 @@ class Actor(Object):
         room = Rooms.find({"area_vnum": area_vnum, "vnum": room_vnum})
 
         self.set_room(room)
+
+    def set_settings(self, settings):
+        """Set the entire dictionary of settings."""
+        self.settings = settings
+
+    def get_settings(self):
+        """Return the entire set of settings."""
+        return self.get("settings", {})
+
+    def set_setting(self, key, value):
+        """Set a specific setting on the Actor."""
+        settings = self.get_settings()
+        settings[key] = value
+        self.set_settings(settings)
+
+    def get_setting(self, key, default=None):
+        """Return a setting value."""
+        settings = self.get_settings()
+        return settings.get(key, default)
+
+    def remove_setting(self, key):
+        """Remove a specific setting."""
+        settings = self.get_settings()
+        if key in settings:
+            del settings[key]
+        self.set_settings(settings)
 
     def get_stats(self):
         """Return the dict of stats."""
