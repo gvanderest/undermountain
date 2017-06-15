@@ -189,6 +189,19 @@ ORGANIZATIONS = {
 }
 
 CHANNELS = {
+    "yell": {
+        "aliases": ["shout"],
+        "name": "Area Yell",
+        "default_active": True,
+        "force_visible": False,
+        "force_immortal_visible": False,
+        "default_color": "{r",
+        "self_format": "{{xYou yell {{8'{{r{message}{{8'{{x",
+        "format": "{{x{actor.name} yells {{8'{{r{message}{{8'{{x",
+        "pre_event": "yelling",
+        "post_event": "yelled",
+        "receive_check": lambda a, b: a.get_area() == b.get_area()
+    },
     "ooc": {
         "name": "Out Of Character",
         "default_active": True,
@@ -205,7 +218,7 @@ CHANNELS = {
         "confirmation_message": "Are you sure you wish to activate the trash channel?\nType 'trash' again if so.",
         "force_visible": True,
         "format": "{actor.name} {{RB{{ri{{Bt{{bc{{Bh{{re{{Rs {{8'{{Y{message}{{8'",
-        "self_format": "{{WYou {{YBITCH {{8'{{Y{message}{{8'",
+        "self_format": "{{WYou {{YBITCH {{8'{{Y{message}{{8'"
     },
     "clan": {
         "name": "Clan Chat",
@@ -287,11 +300,6 @@ CHANNELS = {
         "name": "Congratulations",
         "format": "{actor.name} {{Gg{{Yr{{Ra{{Bt{{Ms '{{y{message}{{x'",
         "self_format": "You grats '{{y{message}{{x'",
-    },
-    "shout": {
-        "name": "Shout",
-        "format": "{actor.name} shouts '{{r{message}{{x'",
-        "self_format": "You shout '{{r{message}{{x'",
     },
 }
 
