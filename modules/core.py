@@ -62,6 +62,13 @@ MAP_META = [
 ]
 
 
+def emote_command(self, command, arguments):
+    """Allow for emoting actions."""
+    color = "{c" if command == "pmote" else "{B"
+    message = " ".join(arguments)
+    self.act("%s[actor.name] %s%s" % (color, color, message), exclude=[])
+
+
 def version_command(self):
     """Get the version of the game."""
     game = self.get_game()
@@ -1265,6 +1272,8 @@ COMMANDS = {
     "exception": exception_command,
     "sockets": sockets_command,
     "who": who_command,
+    "pmote": emote_command,
+    "emote": emote_command,
     "walk": walk_command,
     "wizlist": wizlist_command,
     "score": score_command,
@@ -1736,6 +1745,7 @@ class Actor(Object):
             game.inject(
                 handler,
                 _self=self,
+                command=command,
                 arguments=arguments,
                 message=message,
                 **named_arguments
