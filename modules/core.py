@@ -20,7 +20,7 @@ from utils.columnify import columnify
 from mud.command_resolver import CommandResolver
 import logging
 from settings import DIRECTIONS, CHANNELS, SOCIALS, IDLE_TIME_TO_DISCONNECT, \
-    RACES, CLASSES, GENDERS, MAX_LEVEL
+    RACES, CLASSES, GENDERS, MAX_LEVEL, SELF_KEYWORDS
 
 
 MAP_META = [
@@ -60,6 +60,26 @@ MAP_META = [
     "U=underwtr",
     "@=YOU  |,-=normal path  |,-=door |,-=one way  |,-=secret  |,-=non-linear"
 ]
+
+
+def whisper_command(self, arguments):
+    """Send another Character a secret message, only seen by the two."""
+    if len(arguments) < 2:
+        self.echo("Tell who what?")
+        return
+
+    target_name = arguments[0]
+    message = " ".join(arguments[1:])
+
+    target = self.find_game_character(target_name)
+
+    if target is None:
+        self.echo("Can't find them.")
+        return
+
+    self.echo("{gYou tell %s{g '{G%s{g'{x" % (target.name, message))
+    if target != self:
+        target.echo("{g%s tells you{g '{G%s{g'{x" % (self.name, message))
 
 
 def emote_command(self, command, arguments):
@@ -1264,6 +1284,8 @@ COMMANDS = {
     "description": description_command,
     "look": look_command,
     "flee": flee_command,
+    "whisper": whisper_command,
+    "tell": whisper_command,
     "kill": kill_command,
     "murder": kill_command,
     "battle": kill_command,
@@ -1637,7 +1659,25 @@ class Actor(Object):
     def is_afk(self):
         return self.has_flag("afk")
 
+    def find_game_character(self, keywords, can_see=True):
+        """Return a Character in the Game, if matches keywords."""
+
+        if keywords in SELF_KEYWORDS:
+            return self
+
+        Characters = self.get_injector("Characters")
+        actors = Characters.query({"online": True})
+        for actor in actors:
+            if can_see and not self.can_see(actor):
+                continue
+
+            if not actor.matches_keywords(keywords):
+                continue
+
+            return actor
+
     def find_room_actor(self, keywords, can_see=True):
+        """Return an Actor/Character in the Game, if matches keywords."""
         room = self.get_room()
         Actors, Characters = self.get_injectors("Actors", "Characters")
         targets = [
