@@ -728,6 +728,11 @@ def kill_command(self, arguments, Characters, Actors):
         self.echo("Suicide is a mortal sin.")
         return
 
+    result, reason = self.check_can_attack(target)
+    if not result:
+        self.echo("You can't attack that target. ({})".format(reason))
+        return
+
     attacking = self.event_to_room("attacking", {"target": target})
 
     if attacking.is_blocked():
@@ -1373,6 +1378,37 @@ class Actor(Object):
         "?": "help",
     }
 
+    def check_attackable(self, attacker=None):
+        """Return the Actor is attackable and reason."""
+        if self.is_in_cinematic():
+            return False, "TARGET_IN_CINEMATIC"
+
+        if self.is_dead():
+            return False, "TARGET_IS_DEAD"
+
+        return True, ""
+
+    def check_can_attack(self, target=None):
+        """Return whether the Actor can attack (with target) with reason."""
+        if self.is_in_cinematic():
+            return False, "ATTACKER_IN_CINEMATIC"
+
+        if self.is_dead():
+            return False, "ATTACKER_IS_DEAD"
+
+        if target:
+            result, reason = target.check_attackable(self)
+            if not result:
+                return (result, reason)
+
+        return True, ""
+
+    def is_in_cinematic(self):
+        """
+        Return whether Actor is in a cinematic event or not.
+        """
+        return self.has_flag("cinematic")
+
     def start_cinematic(self):
         """
         Start cinematic mode, which removes player from most things, but
@@ -1888,6 +1924,7 @@ class CombatManager(Manager):
             if actor.is_fighting() and not fleeing:
                 actor.echo("No way!  You are still fighting!")
                 event.block()
+                return event
 
         return event
 
