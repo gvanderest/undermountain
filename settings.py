@@ -1,0 +1,35 @@
+import os
+
+#
+# SYSTEM BASICS
+#
+
+# How fast is "one second" in the world?  Smaller number for faster
+# Default: 1.0
+GAME_LOOP_TIME = 1.0
+
+# Where are datafiles for the game stored?
+# Default: <base_folder>/data
+DATA_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "/data"
+
+# Modules to include
+MODULES = (
+    "modules.core.Core",
+    "modules.telnet.Telnet",
+)
+
+
+#
+# NETWORKING AND CONNECTIONS
+#
+
+# Which ports do we want to allow/open up?
+TELNET_PORTS = (
+    ("0.0.0.0", 4200),
+    ("0.0.0.0", 4201),
+)
+
+WEBSOCKET_PORTS = (
+    ("0.0.0.0", 14200),
+    ("0.0.0.0", 14201),
+)

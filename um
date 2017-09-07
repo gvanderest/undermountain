@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+"""Undermountain Startup Script"""
+from logging.handlers import RotatingFileHandler
+from mud.game import Game
+import gevent
+import logging
+import sys
+import settings
+
+
+def get_python_version():
+    major, minor, micro, _, _ = sys.version_info
+    return '.'.join(map(str, [major, minor, micro]))
+
+
+def setup_logging():
+    """Set up the format and output of the logging module."""
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+
+    log_format = "%(asctime)-15s - %(levelname)s - %(message)s"
+    formatter = logging.Formatter(log_format)
+
+    log_file = RotatingFileHandler("log/undermountain.log")
+    log_file.setFormatter(formatter)
+    root_logger.addHandler(log_file)
+
+    log_console = logging.StreamHandler()
+    log_console.setFormatter(formatter)
+    root_logger.addHandler(log_console)
+
+
+def display_banner():
+    ENGINE_VERSION = Game.get_version()
+    PYTHON_VERSION = get_python_version()
+    BANNER_LINES = ("""\
+
+      __ _______
+     /  /       \ """ + (64 * "-") + """
+    /  /  /  /  /    Undermountain Python MUD Server v{} - Python v{}
+    \____/__/__/ """ + (66 * "-") + """
+
+    """).format(ENGINE_VERSION, PYTHON_VERSION).split("\n")
+
+    for line in BANNER_LINES:
+        logging.info(line)
+
+
+setup_logging()
+display_banner()
+logging.info("Loaded settings from {}".format(settings.__file__))
+
+GAME = Game(settings)
+try:
+    task = gevent.spawn(GAME.start)
+    task.join()
+except KeyboardInterrupt:
+    GAME.stop()
