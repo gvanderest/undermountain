@@ -5,6 +5,8 @@ from mud.connection import Connection
 from mud.client import Client
 from mud.entities import Character
 from mud.inject import inject
+from utils.ansi import colorize
+from utils.ansi import decolorize
 import logging
 import gevent
 import socket
@@ -68,6 +70,7 @@ class TelnetClient(Client):
            ## ## ## ######   ##   ####   ##  ##  ##  ## ####   ####   #####
            ## ## ## ##  ##   ##   ##     #####   ##  ## ##     ##     ##
             ##  ##  ##  ##   ##   ###### ##  ## ######  ###### ###### ##
+
                           C I T Y  O F  S P L E N D O R S
                                    [ Est 1997 ]
 
@@ -278,7 +281,16 @@ class TelnetConnection(Connection):
 
         return content
 
+    def has_color_enabled(self):
+        """Return whether to colorize or not."""
+        return True
+
     def write(self, output):
+        if self.has_color_enabled():
+            output = colorize(output)
+        else:
+            output = decolorize(output)
+
         self.socket.send(output.encode("utf-8"))
 
     def close(self):
