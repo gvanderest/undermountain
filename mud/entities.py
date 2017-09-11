@@ -40,17 +40,18 @@ def look_command(self):
         "none", "none", "none"))
 
     for obj in self.filter_visible(room.get_objects()):
-        self.echo("     " + obj.long_name)
+        self.echo("     " + obj.get_room_display_name())
 
     for actor in self.filter_visible(room.get_actors()):
         if actor is self:
             continue
-        self.echo(actor.long_name)
+        self.echo(actor.get_room_display_name())
 
     self.echo()
 
 
 def quit_command(self):
+    self.online = False
     self.echo("You are quitting.")
     client = self.get_client()
     client.quit()
@@ -58,8 +59,33 @@ def quit_command(self):
 
 @inject("Characters")
 def who_command(self, Characters):
+    self.echo("""\
+           The Visible Mortals and Immortals of Waterdeep
+-----------------------------------------------------------------------------\
+""")
     for char in Characters.query({"online": True}):
-        self.echo("Player: {}".format(char.name))
+        parts = []
+        parts.append("  1")
+        parts.append("M")
+        parts.append("Human")
+        parts.append("Adv")
+        parts.append("     ")
+        parts.append("[........]")
+        parts.append(char.name)
+        if char.title:
+            parts.append(char.title)
+        if char.bracket:
+            parts.append("[{}]".format(char.bracket))
+
+        self.echo(" ".join(parts))
+
+    self.echo()
+    self.echo(
+        "Players found: {}   "
+        "Total online: {}   "
+        "Most on today: {}"
+        .format(
+            0, 0, 0))
 
 
 class CommandResolver(object):
@@ -207,13 +233,17 @@ class Character(Actor):
     def set_client(self, client):
         super(Entity, self).__setattr__("_client", client)
 
-    @property
-    def long_name(self):
+    def get_room_display_name(self):
         return "{} {} is here.".format(self.name, self.title)
+
+    @classmethod
+    def get_clean_name(self, name):
+        return name.strip().lower().title()[0:12]
 
 
 class Object(Entity):
-    pass
+    def get_room_display_name(self):
+        return self.long_name
 
 
 class Vehicle(Object):

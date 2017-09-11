@@ -3,7 +3,9 @@ from mud.module import Module
 
 
 class Character(object):
-    pass
+    @classmethod
+    def get_clean_name(self, name):
+        return name.strip().lower().title()[0:12]
 
 
 class Injector(object):
@@ -15,17 +17,45 @@ class Injector(object):
         return self.game
 
 
+class SkipRecord(Exception):
+    pass
+
+
 class Characters(Injector):
     CLASSES = [Character]
 
     def init(self):
         self.characters = {}
 
-    def query(self, *args, **kwargs):
-        return self.characters.values()
+    def query(self, spec=None):
+        if spec is None:
+            spec = {}
+
+        for char in self.characters.values():
+            try:
+                for key, expected in spec.items():
+                    if getattr(char, key, None) != expected:
+                        raise SkipRecord()
+                yield char
+            except SkipRecord:
+                continue
 
     def save(self, char):
         self.characters[char.name] = char
+
+    def find(self, spec):
+        for entity in self.characters.values():
+            print("SEARCHING", entity, spec)
+            try:
+                for key, value in spec.items():
+                    entity_value = getattr(entity, key, None)
+                    print("DIDN'T MATCH", key, entity_value, value)
+                    if entity_value != value:
+                        raise SkipRecord()
+            except SkipRecord:
+                continue
+
+            return entity
 
 
 class Core(Module):

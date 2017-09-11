@@ -78,11 +78,19 @@ Why have you come....go away or choose a name: """)
 
     @inject("Characters")
     def handle_login_name_input(self, line, Characters):
-        actor = Character({"name": line})
+        name = Character.get_clean_name(line)
+
+        existing = Characters.find({"name": name})
+        print("EXISTING", existing)
+        if existing:
+            self.writeln("Sorry, that name is currently in use.")
+            self.write("Pick another name: ")
+            return
+
+        actor = Character({"name": name})
+
         self.set_actor(actor)
         actor.set_client(self)
-
-        Characters.save(actor)
 
         self.start_confirming_name()
 
@@ -118,11 +126,36 @@ Did I get that right, {} (Y/N)? """.format(self.actor.name))
         self.write("So what's your name? ")
         self.state = self.STATE_LOGIN_NAME
 
-    def handle_confirm_name_input(self, line):
+    @inject("Characters")
+    def handle_confirm_name_input(self, line, Characters):
         if line.lower().startswith("n"):
             self.start_reprompt_for_name()
         else:
-            self.start_selecting_race()
+            self.start_select_password()
+            Characters.save(self.actor)
+
+    def start_select_password(self):
+        self.state = self.STATE_SELECT_PASSWORD
+        self.write("Select a password: ")
+
+    def handle_select_password_input(self, line):
+        cleaned = line.strip()
+        self.actor.password = cleaned
+        self.start_confirm_password()
+
+    def start_confirm_password(self):
+        self.write("Confirm password: ")
+        self.state = self.STATE_CONFIRM_PASSWORD
+
+    def handle_confirm_password_input(self, line):
+        cleaned = line.strip()
+
+        if self.actor.password != cleaned:
+            self.writeln("The passwords must match.")
+            self.start_select_password()
+            return
+
+        self.start_selecting_race()
 
     def start_selecting_race(self):
         self.state = self.STATE_SELECT_RACE
@@ -247,6 +280,7 @@ Select a class or type HELP (Class) for details: """)
 
     def handle_motd_input(self, line):
         self.start_playing()
+        self.actor.online = True
 
     def start_playing(self):
         self.actor.force("look")
