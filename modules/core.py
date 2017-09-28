@@ -45,11 +45,9 @@ class Characters(Injector):
 
     def find(self, spec):
         for entity in self.characters.values():
-            print("SEARCHING", entity, spec)
             try:
                 for key, value in spec.items():
                     entity_value = getattr(entity, key, None)
-                    print("DIDN'T MATCH", key, entity_value, value)
                     if entity_value != value:
                         raise SkipRecord()
             except SkipRecord:
