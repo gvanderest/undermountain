@@ -32,28 +32,47 @@ def setup_logging():
 
 
 def display_banner():
-    ENGINE_VERSION = Game.get_version()
-    PYTHON_VERSION = get_python_version()
-    BANNER_LINES = ("""\
-
+    engine_version = Game.get_version()
+    python_version = get_python_version()
+    banner_lines = ("""\
       __ _______
      /  /       \ """ + (64 * "-") + """
     /  /  /  /  /    Undermountain Python MUD Server v{} - Python v{}
-    \____/__/__/ """ + (66 * "-") + """
+    \____/__/__/ """ + (66 * "-") + "\n").format(
+        engine_version, python_version).split("\n")
 
-    """).format(ENGINE_VERSION, PYTHON_VERSION).split("\n")
-
-    for line in BANNER_LINES:
+    for line in banner_lines:
         logging.info(line)
 
 
-setup_logging()
-display_banner()
-logging.info("Loaded settings from {}".format(settings.__file__))
+def start_game():
+    display_banner()
+    logging.info("Loaded settings from {}".format(settings.__file__))
 
-GAME = Game(settings)
-try:
-    task = gevent.spawn(GAME.start)
-    task.join()
-except KeyboardInterrupt:
-    GAME.stop()
+    GAME = Game(settings)
+    try:
+        task = gevent.spawn(GAME.start)
+        task.join()
+    except KeyboardInterrupt:
+        GAME.stop()
+
+def display_help():
+    display_banner()
+    [logging.info(line) for line in [
+        "Commands:",
+        "./um start - Start the game",
+        "./um backup [id] - Backup data with identifier",
+        "./um restore <id> - Restore data with identifier",
+        "",
+        "For backups, see the 'backups' folder",
+    ]]
+    sys.exit(1)
+
+setup_logging()
+ARGS = sys.argv
+if len(ARGS) == 1:
+    display_help()
+elif ARGS[1] == "start":
+    start_game()
+else:
+    display_help()
