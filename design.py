@@ -337,9 +337,10 @@ class Client(object):
         self.write(message + "\n")
 
 
-@inject("Rooms", "Actors", "Objects", "Directions")
-def look_command(self, args, Rooms, Actors, Objects, Directions, **kwargs):
-    room = list(Rooms.query())[0]
+@inject("Actors", "Objects", "Directions")
+def look_command(self, args, Actors, Objects, Directions, **kwargs):
+    room = self.room
+
     self.echo("{{B{} {{x[{{WLAW{{x] {{R[{{WSAFE{{R]{{x".format(room["name"]))
     for index, line in enumerate(room.description):
         if index == 0:
@@ -394,9 +395,10 @@ def say_command(self, message, **kwargs):
     self.emit("after:say", say_data)
 
 
-@inject("Rooms", "Directions")
-def direction_command(self, name, Rooms, Directions, **kwargs):
-    room = Rooms.get(self.room_id)
+@inject("Directions", "Rooms")
+def direction_command(self, name, Directions, Rooms, **kwargs):
+    room = self.room
+
     if not room:
         self.echo("You aren't anywhere.")
         return
@@ -408,7 +410,7 @@ def direction_command(self, name, Rooms, Directions, **kwargs):
 
     direction = Directions.get(name)
 
-    walk_data = {"direction": direction}
+    walk_data = {"direction": name}
     walk = self.emit("before:walk", walk_data)
 
     if walk.blocked:
@@ -437,6 +439,11 @@ def direction_command(self, name, Rooms, Directions, **kwargs):
     self.force("look")
 
     return 0.5
+
+
+def score_command(self, **kwargs):
+    self.echo("{{GName{{g:{{x {} {}".format(self.name, self.title))
+    self.echo("{{GExperience{{g:{{x {}".format(self.experience))
 
 
 @inject("Characters")
@@ -499,6 +506,7 @@ COMMANDS_MAP = {
     "look": {"handler": look_command},
     "save": {"handler": save_command},
     "title": {"handler": title_command},
+    "score": {"handler": score_command},
     "quit": {"handler": quit_command},
 }
 
@@ -709,13 +717,23 @@ class TelnetModule(Module):
 
 
 class Entity(object):
-    @inject("Subroutines")
-    def handle_event(self, event, Subroutines):
+    DEFAULT_DATA = {}
+
+    @inject("Subroutines", "Behaviors")
+    def handle_event(self, event, Subroutines, Behaviors):
         if self == event.source:
             return event
 
-        # TODO HANDLE THE EVENT
-        handlers = self.event_handlers
+        # TODO HAVE COLLECTION CREATE DEEPCOPIES OF EVERYTHING
+        handlers = list(self.event_handlers or [])
+
+        for behavior_id in (self.behaviors or []):
+            behavior = Behaviors.get(behavior_id)
+            handlers.append({
+                "type": behavior.type,
+                "subroutine_id": behavior.subroutine_id,
+            })
+
         if handlers:
             for entry in handlers:
                 if entry["type"] != event.type:
@@ -736,8 +754,11 @@ class Entity(object):
         return not self.__eq__(other)
 
     def __init__(self, data=None, collection=None):
-        if data is None:
-            data = {}
+        merged_data = dict(self.DEFAULT_DATA)
+        if data:
+            merged_data.update(data)
+        data = merged_data
+
         super(Entity, self).__setattr__("_data", data)
         super(Entity, self).__setattr__("_collection", collection)
 
@@ -826,7 +847,6 @@ class FileStorage(CollectionStorage):
 
     def post_delete(self, record):
         path = self.get_record_filename(record)
-        print("TRYING TO DELETE", path)
         os.remove(path)
 
 
@@ -871,13 +891,17 @@ class Collection(Injector):
 
     def get(self, spec):
         if isinstance(spec, str):
-            return self.wrap_record(self.data[spec])
+            record = self.data.get(spec, None)
+            if not record:
+                return None
+            return self.wrap_record(record)
         else:
             for record in self.query(spec):
                 return record
 
     def save(self, record, skip_storage=False):
         record = self.unwrap_record(record)
+
         if "id" not in record:
             record["id"] = str(random.randint(100000000000, 999999999999))
         self.data[record["id"]] = record
@@ -908,10 +932,33 @@ class Battles(Collection):
 
 
 class Actor(Entity):
+    DEFAULT_DATA = {
+        "name": "",
+        "title": "",
+        "experience": 0,
+        "room_id": "",
+        "room_vnum": settings.INITIAL_ROOM_VNUM,
+    }
+
     @property
     @inject("Rooms")
     def room(self, Rooms):
-        return Rooms.get(self.room_id)
+        room = Rooms.get(self.room_id)
+
+        save_room = False
+        if not room:
+            save_room = True
+            room = Rooms.get({"vnum": self.room_vnum})
+            if not room:
+                save_room = True
+                room = Rooms.get({"vnum": settings.INITIAL_ROOM_VNUM})
+
+        if save_room:
+            self.room_id = room.id
+            self.room_vnum = room.vnum
+            self.save()
+
+        return room
 
     @property
     def connection(self):
@@ -1009,6 +1056,12 @@ class Areas(Collection):
 
 
 class Room(Entity):
+    DEFAULT_DATA = {
+        "name": "",
+        "exits": {},
+        "description": [],
+    }
+
     @property
     @inject("Actors", "Characters", "Objects")
     def children(self, Actors, Characters, Objects):
@@ -1060,6 +1113,17 @@ class Subroutines(Collection):
     ENTITY_CLASS = Subroutine
 
 
+class Behavior(Entity):
+    @property
+    @inject("Subroutines")
+    def subroutine(self):
+        return Subroutines.get(self.subroutine_id)
+
+
+class Behaviors(Collection):
+    ENTITY_CLASS = Behavior
+
+
 class Characters(Collection):
     STORAGE_CLASS = FileStorage
     ENTITY_CLASS = Character
@@ -1088,6 +1152,7 @@ class CoreModule(Module):
         self.game.register_injector(Characters)
         self.game.register_injector(Directions)
         self.game.register_injector(Subroutines)
+        self.game.register_injector(Behaviors)
 
         directions, characters = \
             self.game.get_injectors("Directions", "Characters")
@@ -1105,11 +1170,11 @@ GAME.register_module(CoreModule)
 GAME.register_module(TelnetModule)
 GAME.register_module(CombatModule)
 
-rooms, actors, objects, characters, subroutines = GAME.get_injectors(
-    "Rooms", "Actors", "Objects", "Characters", "Subroutines")
+rooms, actors, objects, characters, subroutines, behaviors = \
+    GAME.get_injectors(
+        "Rooms", "Actors", "Objects", "Characters", "Subroutines", "Behaviors")
 
-room = rooms.save({
-    "id": "abc123",
+ms = rooms.save({
     "vnum": "market_square",
     "name": "Market Square",
     "description": [
@@ -1118,31 +1183,120 @@ room = rooms.save({
         "hawking their wares to the passers by.",
     ],
     "exits": {
-        "north": {"room_vnum": "market_square"},
-        "east": {"room_vnum": "market_square"},
-        "south": {"room_vnum": "market_square"},
+        "north": {"room_vnum": "north_ms"},
+        "east": {"room_vnum": "east_ms"},
+        "south": {"room_vnum": "south_ms"},
+        "west": {"room_vnum": "west_ms"},
+    },
+})
+
+rooms.save({
+    "vnum": "east_ms",
+    "name": "East of Market Square",
+    "description": [],
+    "exits": {
         "west": {"room_vnum": "market_square"},
+        "east": {"room_vnum": "east_path"},
+    },
+})
+
+rooms.save({
+    "vnum": "north_ms",
+    "name": "North of Market Square",
+    "description": [],
+    "exits": {
+        "south": {"room_vnum": "market_square"},
+    },
+})
+
+rooms.save({
+    "vnum": "south_ms",
+    "name": "South of Market Square",
+    "description": [],
+    "exits": {
+        "north": {"room_vnum": "market_square"},
+    },
+})
+
+rooms.save({
+    "vnum": "west_ms",
+    "name": "West of Market Square",
+    "description": [],
+    "exits": {
+        "east": {"room_vnum": "market_square"},
+    },
+})
+
+east_path = rooms.save({
+    "vnum": "east_path",
+    "name": "The Forest Path",
+    "description": [
+        "To the west, you can see the makeshift wooden walls surrounding the",
+        "small village of Westbridge.  To the east, the forest looms "
+            "menacingly,",
+        "its thick canopy enveloping the ground in near darkness.",
+    ],
+    "exits": {
+        "east": {"room_vnum": "east_path"},
+        "west": {"room_vnum": "east_ms"},
     },
 })
 
 actors.save({
+    "name": "Bill, the guard",
+    "room_vnum": east_path.vnum,
+    "room_id": east_path.id,
+    "event_handlers": [
+        {"type": "before:walk", "subroutine_id": "bill_stops_you"},
+    ]
+})
+
+actors.save({
     "name": "the town crier",
-    "room_id": room.id,
+    "room_vnum": ms.vnum,
+    "room_id": ms.id,
+    "behaviors": ["happy"],
     "event_handlers": [
         {"type": "after:enter", "subroutine_id": "greetings"},
     ],
 })
 
+
+behaviors.save({
+    "id": "happy",
+    "type": "after:enter",
+    "subroutine_id": "happy",
+})
+
 objects.save({
     "name": "a piece of bread",
-    "room_id": room.id,
+    "room_vnum": ms.vnum,
+    "room_id": ms.id,
+})
+
+subroutines.save({
+    "id": "happy",
+    "code": """
+wait(1)
+self.say("Boy golly, am I a happy fella!")
+    """
 })
 
 subroutines.save({
     "id": "greetings",
     "code": """
-wait(1)
+wait(0.2)
 self.say("Hello {}!".format(target.name))
+    """
+})
+
+subroutines.save({
+    "id": "bill_stops_you",
+    "code": """
+if direction == "east":
+    event.block()
+    self.say("There's no way I'm letting you go into the forest.")
+    self.say("It's too dangerous.. plus, the mayor would kill me.")
     """
 })
 
