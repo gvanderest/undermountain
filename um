@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 """Undermountain Startup Script"""
-from logging.handlers import RotatingFileHandler
 from mud.game import Game
 import gevent
 import logging
@@ -13,48 +12,167 @@ def get_python_version():
     return '.'.join(map(str, [major, minor, micro]))
 
 
-def setup_logging():
-    """Set up the format and output of the logging module."""
-
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)
-
-    log_format = "%(asctime)-15s - %(levelname)s - %(message)s"
-    formatter = logging.Formatter(log_format)
-
-    log_file = RotatingFileHandler("log/undermountain.log")
-    log_file.setFormatter(formatter)
-    root_logger.addHandler(log_file)
-
-    log_console = logging.StreamHandler()
-    log_console.setFormatter(formatter)
-    root_logger.addHandler(log_console)
-
-
 def display_banner():
-    engine_version = Game.get_version()
-    python_version = get_python_version()
     banner_lines = ("""\
       __ _______
      /  /       \ """ + (64 * "-") + """
     /  /  /  /  /    Undermountain Python MUD Server v{} - Python v{}
     \____/__/__/ """ + (66 * "-") + "\n").format(
-        engine_version, python_version).split("\n")
+        Game.VERSION,
+        get_python_version(),
+    ).split("\n")
 
     for line in banner_lines:
         logging.info(line)
 
 
+def load_initial_data(game):
+    rooms, actors, objects, characters, subroutines, behaviors = \
+        game.get_injectors(
+            "Rooms", "Actors", "Objects", "Characters", "Subroutines", "Behaviors")
+
+    ms = rooms.save({
+        "vnum": "market_square",
+        "name": "Market Square",
+        "description": [
+            "Beneath you, a rough mosaic of paving stones marks the center of the",
+            "market of Westbridge.  Nearby, bakers and butchers can be seen, ",
+            "hawking their wares to the passers by.",
+        ],
+        "exits": {
+            "north": {"room_vnum": "north_ms"},
+            "east": {"room_vnum": "east_ms"},
+            "south": {"room_vnum": "south_ms"},
+            "west": {"room_vnum": "west_ms"},
+        },
+    })
+
+    rooms.save({
+        "vnum": "east_ms",
+        "name": "East of Market Square",
+        "description": [],
+        "exits": {
+            "west": {"room_vnum": "market_square"},
+            "east": {"room_vnum": "east_path"},
+        },
+    })
+
+    rooms.save({
+        "vnum": "north_ms",
+        "name": "North of Market Square",
+        "description": [],
+        "exits": {
+            "south": {"room_vnum": "market_square"},
+        },
+    })
+
+    rooms.save({
+        "vnum": "south_ms",
+        "name": "South of Market Square",
+        "description": [],
+        "exits": {
+            "north": {"room_vnum": "market_square"},
+        },
+    })
+
+    rooms.save({
+        "vnum": "west_ms",
+        "name": "West of Market Square",
+        "description": [],
+        "exits": {
+            "east": {"room_vnum": "market_square"},
+        },
+    })
+
+    east_path = rooms.save({
+        "vnum": "east_path",
+        "name": "The Forest Path",
+        "description": [
+            "To the west, you can see the makeshift wooden walls surrounding the",
+            "small village of Westbridge.  To the east, the forest looms "
+                "menacingly,",
+            "its thick canopy enveloping the ground in near darkness.",
+        ],
+        "exits": {
+            "east": {"room_vnum": "east_path"},
+            "west": {"room_vnum": "east_ms"},
+        },
+    })
+
+    actors.save({
+        "name": "Bill, the guard",
+        "room_vnum": east_path.vnum,
+        "room_id": east_path.id,
+        "event_handlers": [
+            {"type": "before:walk", "subroutine_id": "bill_stops_you"},
+        ]
+    })
+
+    actors.save({
+        "name": "the town crier",
+        "room_vnum": ms.vnum,
+        "room_id": ms.id,
+        "behaviors": ["happy"],
+        "event_handlers": [
+            {"type": "after:enter", "subroutine_id": "greetings"},
+        ],
+    })
+
+    behaviors.save({
+        "id": "happy",
+        "type": "after:enter",
+        "subroutine_id": "happy",
+    })
+
+    objects.save({
+        "name": "a piece of bread",
+        "room_vnum": ms.vnum,
+        "room_id": ms.id,
+    })
+
+    subroutines.save({
+        "id": "happy",
+        "code": """
+wait(1)
+self.say("Boy golly, am I a happy fella!")
+        """
+    })
+
+    subroutines.save({
+        "id": "greetings",
+        "code": """
+wait(0.2)
+self.say("Hello {}!".format(target.name))
+        """
+    })
+
+    subroutines.save({
+        "id": "bill_stops_you",
+        "code": """
+if direction == "east":
+    event.block()
+    self.say("There's no way I'm letting you go into the forest.")
+    self.say("It's too dangerous.. plus, the mayor would kill me.")
+        """
+    })
+
+
 def start_game():
+    Game.VERSION = open("VERSION", "r").read().strip()
     display_banner()
+
     logging.info("Loaded settings from {}".format(settings.__file__))
 
-    GAME = Game(settings)
+    GAME = Game()
+    # TODO REMOVE THIS ENTIRELY
+    load_initial_data(GAME)
+    # TODO REMOVE THIS ENTIRELY
     try:
         task = gevent.spawn(GAME.start)
         task.join()
     except KeyboardInterrupt:
         GAME.stop()
+
 
 def display_help():
     display_banner()
@@ -68,7 +186,7 @@ def display_help():
     ]]
     sys.exit(1)
 
-setup_logging()
+
 ARGS = sys.argv
 if len(ARGS) == 1:
     display_help()

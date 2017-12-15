@@ -14,8 +14,8 @@ DATA_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "/data"
 
 # Modules to include
 MODULES = (
-    "modules.core.Core",
-    "modules.telnet.Telnet",
+    "modules.core.CoreModule",
+    "modules.telnet.TelnetModule",
 )
 
 DIRECTIONS = {

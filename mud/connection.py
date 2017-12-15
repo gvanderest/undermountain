@@ -1,44 +1,38 @@
-import gevent
-
-
 class Connection(object):
-    CLIENT_CLASS = None
+    NEWLINE = "\r\n"
+    CURRENT_ID = 0
+
+    @classmethod
+    def get_next_id(cls):
+        cls.CURRENT_ID += 1
+        return cls.CURRENT_ID
 
     def __init__(self, server):
+        """Initialize Connection to Game and store its socket."""
         self.server = server
-        self.client = self.CLIENT_CLASS(self)
-        self.init()
+        self.id = Connection.get_next_id()
+        self.actor_id = None
 
-    def init(self):
-        pass
+    @property
+    def game(self):
+        return self.server.game
 
     def start(self):
-        self.server.add_connection(self)
-        self.client.init()
+        """Execute commands for starting of Connection."""
+        self.client.start()
 
-        while True:
-            content = self.read()
-
-            if content is None:
-                break
-
-            self.client.handle_input(content)
-            gevent.sleep()
-
-        self.close()
-        self.server.remove_connection(self)
-
-    def read(self):
-        return ""
-
-    def write(self, message):
+    def close(self):
+        """Execute commands to close the Connection."""
         pass
 
-    def writeln(self, message):
-        self.write(message + "\n")
+    def write(self, message=""):
+        """Execute commands to send data over the socket."""
+        pass
 
-    def get_game(self):
-        return self.server.get_game()
+    def writeln(self, message=""):
+        """Send data over the socket, with newline."""
+        self.writeln(message + self.NEWLINE)
 
-    def get_actor(self):
-        return self.client.get_actor()
+    def flush(self):
+        """TODO: Confirm we need to handle this at all or if server will."""
+        pass

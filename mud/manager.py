@@ -1,22 +1,13 @@
-import gevent
+from mud.game_component import GameComponent
 
 
-class Manager(object):
-    EVENTS = []
-
-    def handle(self, event):
-        pass
-
-    def __init__(self, game):
-        self.running = False
-        self.game = game
-        self.init()
-
-    def init(self):
-        pass
+class Manager(GameComponent):
+    DESCRIPTION = ""
 
     def start(self):
-        self.running = True
+        """"Execute commands when Game starts."""
+        pass
 
-    def sleep(self, seconds=0.0):
-        gevent.sleep(seconds)
+    def stop(self):
+        """"Execute commands when Game stops."""
+        pass

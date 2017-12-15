@@ -1,331 +1,219 @@
 from gevent import monkey
-from mud.module import Module
-from mud.server import Server
-from mud.connection import Connection
 from mud.client import Client
-from mud.entities import Character
 from mud.inject import inject
-from utils.ansi import colorize
-from utils.ansi import decolorize
-import logging
+from mud.connection import Connection
+from mud.server import Server
+from mud.module import Module
+from utils.ansi import colorize, decolorize
+from utils.fuzzy_resolver import FuzzyResolver
+
 import gevent
-import socket
 import settings
+import socket as raw_socket
 
-monkey.patch_socket()
-
-
-class TelnetServer(Server):
-    def init(self):
-        self.sockets = []
-
-    def start(self):
-        """Start up the server."""
-        for host, port in settings.TELNET_PORTS:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.bind((host, port))
-            sock.listen()
-            self.sockets.append(sock)
-            logging.info("Created Telnet socket {}:{}".format(host, port))
-            gevent.spawn(self.accept_connections, sock)
-
-    def accept_connection(self, sock):
-        clientsocket, address = sock.accept()
-        conn = TelnetConnection(self, clientsocket, address)
-        return conn
-
-    def stop(self):
-        pass
+monkey.patch_all()
 
 
 class TelnetClient(Client):
-    def init(self):
-        self.write("""\
+    INITIAL_STATE = "login_username"
 
-
-            ;::::;
-           ;::::; :;
-         ;:::::'   :;
-        ;:::::;     ;.
-       ,:::::'       ;           OOO\\
-       ::::::;       ;          OOOOO\\
-       ;:::::;       ;         OOOOOOOO
-      ,;::::::;     ;'         / OOOOOOO
-    ;:::::::::`. ,,,;.        /  / DOOOOOO
-  .';:::::::::::::::::;,     /  /    DOOOO
- ,::::::;::::::;;;;::::;,   /  /       DOOO
-;`::::::`'::::::;;;::::: ,#/  /        DOOO
-:`:::::::`;::::::;;::: ;::#  /          DOOO
-::`:::::::`;:::::::: ;::::# /            DOO
-`:`:::::::`;:::::: ;::::::#/             DOO
- :::`:::::::`;; ;:::::::::##              OO
- ::::`:::::::`;::::::::;:::#              OO
- `:::::`::::::::::::;'`:;::#              O  Owned & Operated by Kelemvor
-  `:::::`::::::::;' /  / `:#                 E-Mail:  wdmudimms@gmail.com
-   ::::::`:::::;'  /  /   `#
-
-           ##    ##  ####  ###### ######  ####  ######  ###### ###### #####
-           ##    ## ##  ##   ##   ##     ##  ##  ##  ## ##     ##     ##  ##
-           ## ## ## ######   ##   ####   ##  ##  ##  ## ####   ####   #####
-           ## ## ## ##  ##   ##   ##     #####   ##  ## ##     ##     ##
-            ##  ##  ##  ##   ##   ###### ##  ## ######  ###### ###### ##
-
-                          C I T Y  O F  S P L E N D O R S
-                                   [ Est 1997 ]
-
-Why have you come....go away or choose a name: """)
+    def __init__(self, *args, **kwargs):
+        super(TelnetClient, self).__init__(*args, **kwargs)
+        self.write_ended_with_newline = False
+        self.prompt_thread = False
+        self.resolver = FuzzyResolver(self.game.commands)
+        self.color = True
+        self.writeln("Connected to {rU{8nd{wer{Wmou{wnt{8ai{rn{x.")
+        self.writeln()
+        self.write("What is your name, adventurer? ")
 
     @inject("Characters")
-    def handle_login_name_input(self, line, Characters):
-        name = Character.get_clean_name(line)
+    @property
+    def actor(self, Characters):
+        return Characters.get(self.connection.actor_id)
 
-        existing = Characters.find({"name": name})
-        print("EXISTING", existing)
-        if existing:
-            self.writeln("Sorry, that name is currently in use.")
-            self.write("Pick another name: ")
-            return
+    def stop(self):
+        self.writeln("Disconnecting..")
 
-        actor = Character({"name": name})
+    def handle_login_username_input(self, message):
+        Characters = self.game.get_injector("Characters")
+        name = message.strip().lower().title()
 
-        self.set_actor(actor)
-        actor.set_client(self)
+        found = Characters.get({"name": name})
+        if not found:
+            found = Characters.save(Characters.ENTITY_CLASS({
+                "room_id": "abc123",
+                "name": name,
+            }))
+        elif found.connection:
+            found.echo("You have been kicked off due to another logging in.")
+            found.connection.close()
 
-        self.start_confirming_name()
+        found.online = True
+        found.connection_id = self.connection.id
+        found.save()
 
-    def start_confirming_name(self):
-        self.state = self.STATE_CONFIRM_NAME
-        self.write("""\
-+------------------------[ Welcome to Waterdeep ]-------------------------+
+        self.connection.actor_id = found.id
 
-  We are a roleplaying -encouraged- mud, meaning roleplaying is not
-  required by our players but we do require non-roleplayers abide by a few
-  rules and regulations.  All character names must meet a certain standard
-  of quality in order to foster a more immersive and creative environment.
-  The staff retains the right to make the final judgment of whether a character
-  name meets the standard.
-  Some guidelines:
+        self.state = "playing"
+        self.handle_playing_input("look")
 
-    1. Do not use names such as Joe, Bob, Larry, Carl and so forth.
-       'Exotic' proper names like 'Xavier' and such -may- be acceptable.
-    2. Do not name yourself after a deity, fictional or otherwise.
-    3. Do not use the names of well-known fictional characters.
-    4. Names should fit with the fantasy/steampunk theme of the mud.
+    def quit(self):
+        self.connection.close()
+        self.connection.server.remove_connection(self.connection)
 
-  If we find your name is not suitable for our environment, an immortal
-  staff member will appear before you and offer you a rename.  Please be
-  nice and civil, and we will return with the same. If you need help developing
-  a name for your character there are many websites that generate random names.
+    def write(self, message=""):
+        if self.state == "playing" and not self.write_ended_with_newline:
+            message = "\n" + message
 
-+--------------[ This MUD is rated R for Mature Audiences ]---------------+
-
-Did I get that right, {} (Y/N)? """.format(self.actor.name))
-
-    def start_reprompt_for_name(self):
-        self.write("So what's your name? ")
-        self.state = self.STATE_LOGIN_NAME
-
-    @inject("Characters")
-    def handle_confirm_name_input(self, line, Characters):
-        if line.lower().startswith("n"):
-            self.start_reprompt_for_name()
+        if self.color:
+            message = colorize(message)
         else:
-            self.start_select_password()
-            Characters.save(self.actor)
+            message = decolorize(message)
 
-    def start_select_password(self):
-        self.state = self.STATE_SELECT_PASSWORD
-        self.write("Select a password: ")
+        self.write_ended_with_newline = message[-1] == "\n"
 
-    def handle_select_password_input(self, line):
-        cleaned = line.strip()
-        self.actor.password = cleaned
-        self.start_confirm_password()
+        super(TelnetClient, self).write(message)
+        if not self.prompt_thread:
+            self.prompt_thread = gevent.spawn(self.write_prompt)
 
-    def start_confirm_password(self):
-        self.write("Confirm password: ")
-        self.state = self.STATE_CONFIRM_PASSWORD
-
-    def handle_confirm_password_input(self, line):
-        cleaned = line.strip()
-
-        if self.actor.password != cleaned:
-            self.writeln("The passwords must match.")
-            self.start_select_password()
+    def write_prompt(self):
+        if self.state != "playing":
             return
+        self.writeln()
+        self.write("{x> ")
 
-        self.start_selecting_race()
+    @inject("Characters")
+    def handle_playing_input(self, message, Characters):
+        actor = Characters.get(self.connection.actor_id)
+        delay = None
 
-    def start_selecting_race(self):
-        self.state = self.STATE_SELECT_RACE
-        self.write("""
-+---------------------------[ Pick your Race ]----------------------------+
+        while self.inputs and not self.inputs[0]:
+            self.inputs.pop(0)
 
-  Welcome to the birthing process of your character.  Below you will
-  find a list of available races and their basic stats.  You will gain
-  an additional +2 points on a specific stat depending on your choice
-  of class.  For detailed information see our website located at
-  http://waterdeep.org or type HELP (Name of Race) below.
+        parts = message.split(" ")
+        name = parts[0].lower()
+        args = parts[1:]
 
-            STR INT WIS DEX CON                 STR INT WIS DEX CON
-  Avian     17  19  20  16  17      HalfElf     17  18  19  18  18
-  Centaur   20  17  15  13  21      HalfOrc     19  15  15  20  21
-  Draconian 22  18  16  15  21      Heucuva     25  10  10  25  25
-  Drow      18  22  20  23  17      Human       21  19  19  19  21
-  Dwarf     20  18  22  16  21      Kenku       19  19  21  20  19
-  Elf       16  20  18  21  15      Minotaur    23  16  15  16  22
-  Esper     14  21  21  20  14      Pixie       14  20  20  23  14
-  Giant     22  15  18  15  20      Podrikev    25  18  18  15  25
-  Gnoll     20  16  15  20  19      Thri'Kreen  17  22  22  16  25
-  Gnome     16  23  19  15  15      Titan       25  18  18  15  25
-  Goblin    16  20  16  19  20      Satyr       23  19  10  14  21
-  Halfling  15  20  16  21  18
+        kwargs = {"args": args, "name": name, "message": " ".join(args)}
 
-+-------------------------------------------------------------------------+
+        command = None
+        for real_name, entry in self.resolver.query(name):
+            min_level = entry.get("min_level", 0)
+            max_level = entry.get("max_level", 9999)
+            fake_level = 1
+            if fake_level < min_level or fake_level > max_level:
+                continue
+            kwargs["name"] = real_name
+            command = entry["handler"]
+            break
 
-Please choose a race, or HELP (Name of Race) for more info: """)
+        if command:
+            # TODO Handle command exceptions.
+            # try:
+            delay = command(actor, **kwargs)
+            # except Exception as e:
+            #     self.writeln(repr(e))
+            #     self.writeln("Huh?!")
+        else:
+            self.writeln("Huh?")
 
-    def handle_select_race_input(self, line):
-        self.actor.race_id = line
-        self.start_selecting_gender()
-
-    def start_selecting_gender(self):
-        self.write("""
-+--------------------------[ Pick your Gender ]---------------------------+
-
-                                  Male
-                                  Female
-                                  Neutral
-
-+-------------------------------------------------------------------------+
-
-Please choose a gender for your character: """)
-        self.state = self.STATE_SELECT_GENDER
-
-    def handle_select_gender_input(self, line):
-        self.actor.gender_id = line
-        self.start_selecting_class()
-
-    def start_selecting_class(self):
-        self.write("""
-+--------------------------[ Pick your Class ]---------------------------+
-
-  Waterdeep has a 101 level, 2 Tier remorting system.  After the first
-  101 levels you will reroll and be able to choose a new race and class.
-  2nd Tier classes are upgrades from their 1st tier counterparts.
-
-  For more information type HELP (Name of Class) to see their help files.
-
-                               Mage
-                               Cleric
-                               Thief
-                               Warrior
-                               Ranger
-                               Druid
-                               Vampire
-
-+-------------------------------------------------------------------------+
-
-Select a class or type HELP (Class) for details: """)
-        self.state = self.STATE_SELECT_CLASS
-
-    def handle_select_class_input(self, line):
-        self.actor.class_id = line
-        self.start_motd()
-
-    def start_motd(self):
-        self.state = self.STATE_MOTD
-        self.write("""
-
-
-                                                          __
-                                                        //  \\\\
-                                                       // /\\ \\\\
-                                                       \\\\ \\/ //
-                                                        \\\\__//
-                                                        [|//|]
-                                                        [|//|]
-               Welcome to                               [|//|]
-                                                        [|//|]
-            W A T E R D E E P                           [|//|]
-                                                        [|//|]
-            City of Splendors                /)         [|//|]        (\\
-                                            //\\_________[|//|]________/\\\\
-                est. 1997                   ))__________||__||_________((
-                                           <_/         [  \\/  ]        \\_>
-                                                       ||    ||
-                                                       ||    ||
-                                                       ||    ||
- [x] Waterdeep is rated [R] for Mature Audiences Only. ||    ||
- [x] Please follow the rules of the game. [Help Rules] ||    ||
- [x] Check the News Board for game info.               ||    ||
-                                                       ||    ||
- [x] Type HELP for our directory of help files.        ||    ||
- [x] Type HELP NEWBIE for basic directions and help.   ||    ||
-                                                       ||    ||
-                                                       ||    ||
-                                                       ||    ||
-         Waterdeep Entertainment                       ||    ||
-            www.waterdeep.org                          ||    ||
-                                                       ||    ||
-                                                       ||    ||
-                                                       ||    ||
-                                                       \\\\    //
-                                                        \\\\  //
-                                                         \\\\//
-                                                          \\/
-[Hit Enter to Continue]
-""")
-
-    def handle_motd_input(self, line):
-        self.start_playing()
-        self.actor.online = True
-
-    def start_playing(self):
-        self.actor.force("look")
-        self.state = self.STATE_PLAYING
-
-    def handle_playing_input(self, line):
-        self.actor.handle_input(line)
-
-
-class Telnet(Module):
-    def init(self):
-        self.game.add_manager(TelnetServer)
+        return delay
 
 
 class TelnetConnection(Connection):
-    CLIENT_CLASS = TelnetClient
-
-    def __init__(self, server, sock, address):
-        self.socket = sock
-        self.address = address
+    def __init__(self, server, socket, address):
         super(TelnetConnection, self).__init__(server)
+        self.socket = socket
+        self.client = TelnetClient(self)
+        self.address = address
+        self.buffer = ""
 
-    def read(self):
-        try:
-            content = self.socket.recv(4096).decode("utf-8")
-            if content == "":
-                return None
-        except UnicodeDecodeError:
-            content = ""
-        except OSError:
-            content = None
-
-        return content
-
-    def has_color_enabled(self):
-        """Return whether to colorize or not."""
-        return True
-
-    def write(self, output):
-        if self.has_color_enabled():
-            output = colorize(output)
-        else:
-            output = decolorize(output)
-
-        self.socket.send(output.encode("utf-8"))
+    def start(self):
+        gevent.spawn(self.read)
 
     def close(self):
-        self.socket.close()
+        try:
+            self.socket.flush()
+        except Exception:
+            pass
+
+        try:
+            self.socket.shutdown(raw_socket.SHUT_WR)
+        except Exception:
+            pass
+
+        try:
+            self.socket.close()
+        except Exception:
+            pass
+
+        self.socket = None
+
+    def read(self):
+        """Listen for commands/etc."""
+        while self.socket:
+            try:
+                raw = self.socket.recv(4096)
+            except Exception:
+                raw = None
+            if not raw:
+                self.close()
+                break
+
+            try:
+                self.buffer += raw.decode("utf-8").replace("\r\n", "\n")
+            except Exception:
+                pass
+
+            if "\n" in self.buffer:
+                split = self.buffer.split("\n")
+                inputs = split[:-1]
+                self.buffer = split[-1]
+
+                self.client.handle_inputs(inputs)
+
+    def write(self, message=""):
+        if not self.socket:
+            return
+        message = message.replace("\n", "\r\n")
+        self.socket.send(message.encode())
+
+
+class TelnetServer(Server):
+    def __init__(self, game):
+        super(TelnetServer, self).__init__(game)
+        self.ports = []
+
+    def start(self):
+        """Instantiate the ports to listen on."""
+        for host, port in settings.TELNET_PORTS:
+            socket = raw_socket.socket(
+                raw_socket.AF_INET,
+                raw_socket.SOCK_STREAM,
+            )
+            socket.setsockopt(
+                raw_socket.SOL_SOCKET,
+                raw_socket.SO_REUSEADDR,
+                1,
+            )
+            socket.bind((host, port))
+            self.ports.append(socket)
+            gevent.spawn(self.accept, socket)
+
+    def accept(self, port):
+        """Listen and handle Connections on port."""
+        port.listen()
+        while True:
+            socket, address = port.accept()
+            conn = TelnetConnection(self, socket, address)
+            self.add_connection(conn)
+            gevent.spawn(conn.start)
+
+
+class TelnetModule(Module):
+    DESCRIPTION = "Support the Telnet protocol for connections"
+
+    def __init__(self, game):
+        super(TelnetModule, self).__init__(game)
+        self.game.register_manager(TelnetServer)

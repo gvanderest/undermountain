@@ -1,52 +1,54 @@
+import logging
+import gevent
+
+
 class Client(object):
-    STATE_LOGIN_NAME = "login_name"
-    STATE_LOGIN_PASSWORD = "login_password"
-    STATE_LOGIN_RECONNECT = "login_reconnect"
-    STATE_CONFIRM_NAME = "confirm_name"
-    STATE_SELECT_PASSWORD = "select_password"
-    STATE_CONFIRM_PASSWORD = "confirm_password"
-    STATE_SELECT_RACE = "select_race"
-    STATE_SELECT_GENDER = "select_gender"
-    STATE_SELECT_CLASS = "select_class"
-    STATE_CUSTOMIZING = "customizing"
-    STATE_CONFIRM_CUSTOMIZE = "confirm_customize"
-    STATE_SELECT_ALIGNMENT = "select_alignment"
-    STATE_SELECT_WEAPON = "select_weapon"
-    STATE_MOTD = "motd"
-    STATE_PLAYING = "playing"
+    INITIAL_STATE = "null"
 
     def __init__(self, connection):
         self.connection = connection
-        self.actor = None
-        self.commands = []
-        self.state = self.STATE_LOGIN_NAME
+        self.inputs = []
+        self.parse_thread = None
+        self.state = self.INITIAL_STATE
+        self.last_input = ""
+        self.spam_count = 0
 
-    def init(self):
-        pass
+    @property
+    def game(self):
+        return self.connection.game
 
-    def write(self, message):
+    def handle_inputs(self, inputs):
+        if "clear" in inputs:
+            self.inputs = []
+            return
+
+        self.inputs += inputs
+
+        if not self.parse_thread:
+            self.parse_thread = gevent.spawn(self.start_parse_thread)
+        for input in inputs:
+            logging.info("INPUT {}".format(input))
+
+    def start_parse_thread(self):
+        while self.inputs:
+            message = self.inputs.pop(0)
+
+            if message == "!":
+                message = self.last_input
+            else:
+                self.last_input = message
+
+            delay = self.handle_input(message)
+            gevent.sleep(delay if delay else 0.3)
+        self.parse_thread = None
+
+    def handle_input(self, message):
+        func_name = "handle_{}_input".format(self.state)
+        func = getattr(self, func_name)
+        return func(message)
+
+    def write(self, message=""):
         self.connection.write(message)
 
-    def writeln(self, message):
-        self.connection.writeln(message)
-
-    def get_game(self):
-        return self.connection.get_game()
-
-    def handle_input(self, input):
-        method_name = "handle_{}_input".format(self.state)
-        method = getattr(self, method_name)
-        line = input.rstrip()
-        return method(line)
-
-    def handle_output(self, output):
-        self.write(output)
-
-    def set_actor(self, actor):
-        self.actor = actor
-
-    def get_actor(self):
-        return self.actor
-
-    def quit(self):
-        self.connection.close()
+    def writeln(self, message=""):
+        self.write(message + "\n")

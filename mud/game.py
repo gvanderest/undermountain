@@ -1,96 +1,92 @@
+from logging.handlers import RotatingFileHandler
+
 import gevent
 import importlib
 import logging
 import settings
 
 
+logger = logging.getLogger()
+FORMAT = "%(asctime)-15s [%(levelname)s] " + \
+    "%(filename)s.%(funcName)s:%(lineno)s %(message)s"
+formatter = logging.Formatter(FORMAT)
+
+logging.basicConfig(format=FORMAT)
+logger.setLevel(logging.DEBUG)
+
+log_file = RotatingFileHandler("log/undermountain.log")
+log_file.setFormatter(formatter)
+logger.addHandler(log_file)
+
+
+class InvalidInjector(Exception):
+    pass
+
+
 class Game(object):
     VERSION = None
 
-    def __init__(self, settings):
-        self.settings = settings
-        self.connections = []
+    def __init__(self):
+        self.data = {}
         self.injectors = {}
-        self.managers = []
         self.modules = []
-        self.handlers = {}
-        self.running = False
+        self.managers = []
+        self.connections = {}
+        self.commands = {}
 
-        for module in self.settings.MODULES:
-            self.add_module(module)
+        self.import_modules_from_settings()
 
-    @classmethod
-    def get_version(cls):
-        if cls.VERSION is None:
-            try:
-                cls.VERSION = list(open("VERSION", "r"))[0].strip()
-            except:
-                cls.VERSION = "UNKNOWN"
+    def import_modules_from_settings(self):
+        for class_path in settings.MODULES:
+            self.register_module(class_path)
 
-        return cls.VERSION
+    def import_class_path(self, path):
+        parts = path.split(".")
 
-    def add_injector(self, injector):
-        name = injector.__name__
+        module_path = ".".join(parts[:-1])
+        class_name = parts[-1]
 
-        if name in self.injectors:
-            raise Exception("Injector with name '{}' already added.".format(
-                name))
+        module = importlib.import_module(module_path)
+        return getattr(module, class_name)
 
-        self.injectors[name] = injector(self)
-        logging.info("Added injector {}".format(name))
+    def register_command(self, name, command):
+        self.commands[name] = {"handler": command}
 
-    def get_injector(self, name):
-        return self.injectors.get(name)
-
-    def add_module(self, maybe_module):
-        if isinstance(maybe_module, str):
-            parts = maybe_module.split(".")
-            mod = importlib.import_module(".".join(parts[:-1]))
-            class_name = parts[-1]
-            module = getattr(mod, class_name)
-        else:
-            module = maybe_module
-
-        instance = module(self)
+    def register_module(self, module_path):
+        module_class = self.import_class_path(module_path)
+        instance = module_class(self)
         self.modules.append(instance)
 
-        logging.info("Loaded module {}".format(module.__name__))
+    def register_manager(self, manager):
+        instance = manager(self)
+        self.managers.append(instance)
+        logging.info("Registered manager {}".format(
+            instance.__class__.__name__))
 
-    def add_manager(self, manager_class):
-        self.managers.append(manager_class(self))
+    def register_injector(self, injector):
+        instance = injector(self)
+        self.injectors[injector.__name__] = instance
+        logging.info("Registered injector {}".format(
+            instance.__class__.__name__))
 
-    def get_connections(self):
-        return self.connections
+    def get_injector(self, name):
+        if name not in self.injectors:
+            raise InvalidInjector(
+                "{} is not a valid injector name".format(name))
+        return self.injectors[name]
 
-    def add_connection(self, connection):
-        print("SELF CONNECTIONS", self.connections, connection)
-        self.connections.append(connection)
-
-    def remove_connection(self, connection):
-        print("REMOVING", self.connections, connection)
-        self.connections.remove(connection)
+    def get_injectors(self, *names):
+        return map(self.get_injector, names)
 
     def start(self):
-        logging.info("Starting Game..")
         self.running = True
+
         for manager in self.managers:
-            logging.info("Starting Manager {}".format(
-                manager.__class__.__name__))
             manager.start()
-        logging.info("Game started")
 
         while self.running:
-            gevent.sleep(settings.GAME_LOOP_TIME)
-            for manager in self.managers:
-                manager.tick()
-            logging.info("Tick")
+            gevent.sleep(1.0)
+            logging.debug("Tick.")
 
     def stop(self):
-        logging.info("Stopping Game..")
-        for manager in self.managers:
-            logging.info("Stopping Manager {}".format(
-                manager.__class__.__name__))
-            manager.stop()
-        logging.info("Game stopped")
-
         self.running = False

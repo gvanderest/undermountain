@@ -1,15 +1,8 @@
-def inject(*names):
+def inject(*injector_names):
     def decorator(func):
-        def decorate(self, *args, **kwargs, ):
-            game = self.get_game()
-
-            # injectors = {}
-
-            for name in names:
-                kwargs[name] = game.get_injector(name)
-
-            args = (self,) + args
-
-            return func(*args, **kwargs)
-        return decorate
+        def wrapper(self, *args, **kwargs):
+            for name in injector_names:
+                kwargs[name] = self.game.get_injector(name)
+            return func(self, *args, **kwargs)
+        return wrapper
     return decorator
