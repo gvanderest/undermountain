@@ -66,3 +66,5 @@ WEBSOCKET_PORTS = (
     ("0.0.0.0", 14200),
     ("0.0.0.0", 14201),
 )
+
+INITIAL_ROOM_VNUM = "market_square"
