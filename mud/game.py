@@ -4,6 +4,7 @@ import gevent
 import importlib
 import logging
 import settings
+import traceback
 
 
 logger = logging.getLogger()
@@ -35,6 +36,16 @@ class Game(object):
         self.commands = {}
 
         self.import_modules_from_settings()
+
+    def handle_exception(self, exception):
+        output = traceback.format_exc().replace("{", "{{")
+
+        self.echo("{{Y--> {{xException: {}".format(output))
+
+    def echo(self, message):
+        """Send a message to all players."""
+        for conn in self.connections.values():
+            conn.client.actor.echo(message)
 
     def import_modules_from_settings(self):
         for class_path in settings.MODULES:

@@ -27,8 +27,8 @@ class TelnetClient(Client):
         self.writeln()
         self.write("What is your name, adventurer? ")
 
-    @inject("Characters")
     @property
+    @inject("Characters")
     def actor(self, Characters):
         return Characters.get(self.connection.actor_id)
 
@@ -60,7 +60,6 @@ class TelnetClient(Client):
 
     def quit(self):
         self.connection.close()
-        self.connection.server.remove_connection(self.connection)
 
     def write(self, message=""):
         if self.state == "playing" and not self.write_ended_with_newline:
@@ -99,22 +98,16 @@ class TelnetClient(Client):
 
         command = None
         for real_name, entry in self.resolver.query(name):
-            min_level = entry.get("min_level", 0)
-            max_level = entry.get("max_level", 9999)
-            fake_level = 1
-            if fake_level < min_level or fake_level > max_level:
-                continue
             kwargs["name"] = real_name
             command = entry["handler"]
             break
 
         if command:
-            # TODO Handle command exceptions.
-            # try:
-            delay = command(actor, **kwargs)
-            # except Exception as e:
-            #     self.writeln(repr(e))
-            #     self.writeln("Huh?!")
+            try:
+                delay = command(actor, **kwargs)
+            except Exception as e:
+                self.game.handle_exception(e)
+                self.writeln("Huh?!")
         else:
             self.writeln("Huh?")
 
@@ -149,6 +142,7 @@ class TelnetConnection(Connection):
             pass
 
         self.socket = None
+        self.server.remove_connection(self)
 
     def read(self):
         """Listen for commands/etc."""

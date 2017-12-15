@@ -62,6 +62,8 @@ class FileStorage(CollectionStorage):
     def post_delete(self, record):
         path = self.get_record_filename(record)
         os.remove(path)
+
+
 class Entity(object):
     DEFAULT_DATA = {}
 

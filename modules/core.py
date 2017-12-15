@@ -6,6 +6,11 @@ import gevent
 import settings
 
 
+def fail_command(self, **kwargs):
+    """Force an Exception to occur."""
+    raise Exception("Testing exceptions.")
+
+
 @inject("Actors", "Objects", "Directions")
 def look_command(self, args, Actors, Objects, Directions, **kwargs):
     room = self.room
@@ -52,7 +57,7 @@ def say_command(self, message, **kwargs):
         return
 
     say_data = {"message": message}
-    say = self.emit("before:say", say_data)
+    say = self.trigger("before:say", say_data)
     if say.blocked:
         return
 
@@ -61,8 +66,7 @@ def say_command(self, message, **kwargs):
         "message": message,
     })
 
-    self.emit("after:say", say_data)
-
+    self.trigger("after:say", say_data, unblockable=True)
 
 @inject("Directions", "Rooms")
 def direction_command(self, name, Directions, Rooms, **kwargs):
@@ -80,7 +84,7 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
     direction = Directions.get(name)
 
     walk_data = {"direction": name}
-    walk = self.emit("before:walk", walk_data)
+    walk = self.trigger("before:walk", walk_data)
 
     if walk.blocked:
         return
@@ -92,7 +96,7 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
         return
 
     enter_data = {"direction": direction.opposite}
-    enter = self.emit("before:enter", enter_data)
+    enter = self.trigger("before:enter", enter_data)
 
     if enter.blocked:
         return
@@ -102,8 +106,8 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
     self.save()
     self.act("{self.name} has arrived.")
 
-    self.emit("after:enter", enter_data, unblockable=True)
-    self.emit("after:walk", walk_data, unblockable=True)
+    self.trigger("after:enter", enter_data, unblockable=True)
+    self.trigger("after:walk", walk_data, unblockable=True)
 
     self.force("look")
 
@@ -230,7 +234,7 @@ class Actor(Entity):
     def emit_event(self, event):
         return self.room.emit_event(event)
 
-    def emit(self, type, data=None, unblockable=False):
+    def trigger(self, type, data=None, unblockable=False):
         event = self.generate_event(type, data, unblockable=unblockable)
         if unblockable:
             gevent.spawn(self.emit_event, event)
@@ -325,19 +329,24 @@ class Rooms(Collection):
 
 class Subroutine(Entity):
     def execute(self, entity, event):
-        compiled = compile(self.code, "subroutine:{}".format(self.id), "exec")
+        try:
+            compiled = \
+                compile(self.code, "subroutine:{}".format(self.id), "exec")
 
-        def wait(duration):
-            gevent.sleep(duration)
+            def wait(duration):
+                gevent.sleep(duration)
 
-        context = dict(event.data)
-        context.update({
-            "self": entity,
-            "target": event.source,
-            "event": event,
-            "wait": wait,
-        })
-        exec(compiled, context, context)
+            context = dict(event.data)
+            context.update({
+                "self": entity,
+                "target": event.source,
+                "event": event,
+                "wait": wait,
+            })
+
+            exec(compiled, context, context)
+        except Exception as e:
+            self.game.handle_exception(e)
 
 
 class Subroutines(Collection):
@@ -392,7 +401,9 @@ class CoreModule(Module):
         self.game.register_command("who", who_command)
         self.game.register_command("score", score_command)
         self.game.register_command("delete", delete_command)
+        self.game.register_command("say", say_command)
         self.game.register_command("quit", quit_command)
+        self.game.register_command("fail", fail_command)
 
         directions, characters = \
             self.game.get_injectors("Directions", "Characters")

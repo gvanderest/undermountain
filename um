@@ -115,6 +115,7 @@ def load_initial_data(game):
         "behaviors": ["happy"],
         "event_handlers": [
             {"type": "after:enter", "subroutine_id": "greetings"},
+            {"type": "after:say", "subroutine_id": "fail"},
         ],
     })
 
@@ -143,6 +144,17 @@ self.say("Boy golly, am I a happy fella!")
         "code": """
 wait(0.2)
 self.say("Hello {}!".format(target.name))
+        """
+    })
+
+    subroutines.save({
+        "id": "fail",
+        "code": """
+if message.lower() in ["fail", "exception"]:
+    self.say("You want an exception? I'll give you an exception!")
+    self.act("{self.name} pauses for dramatic effect..")
+    wait(1.0)
+    non_existent_function()
         """
     })
 
