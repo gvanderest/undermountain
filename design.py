@@ -1,9 +1,13 @@
+from utils.ansi import colorize, decolorize
 import logging
 import gevent
 from gevent import monkey
 import settings
 import socket as raw_socket
 import random
+import json
+import os
+import glob
 
 monkey.patch_all()
 
@@ -22,26 +26,78 @@ class Unblockable(Exception):
     pass
 
 
+class FuzzyResolver(object):
+    def __init__(self, mapping=None):
+        self.commands = {}
+        if not mapping:
+            mapping = {}
+
+        for key, entry in mapping.items():
+            self.add(key, entry)
+
+    def _query_partial_names(self, name):
+        """Generate the names that make up the parts of the name."""
+        name = name.lower()
+        partial = ""
+        for char in name:
+            partial += char
+            yield partial
+
+    def add(self, name, entry):
+        """Add something to the Resolver by name to match entries."""
+        for partial in self._query_partial_names(name):
+
+            if partial not in self.commands:
+                self.commands[partial] = []
+
+            self.commands[partial].append((name, entry))
+
+    # def remove(self, name, entry):
+    #     """Remove something from the Resolved by name."""
+    #     for partial in self._query_partial_names(name):
+    #         commands = self.commands[partial]
+
+    #         commands.remove(entry)
+
+    #         if not commands[partial]:
+    #             del commands[partial]
+
+    def query(self, name):
+        """Return the list of entries matching a name."""
+        name = name.lower()
+        for entry in self.commands.get(name, []):
+            yield entry
+
+    def get(self, name):
+        """Return the first match for a name."""
+        name = name.lower()
+        for entry in self.query(name):
+            return entry
+
+
 class Game(object):
     def __init__(self):
         self.data = {}
         self.injectors = {}
         self.modules = []
         self.managers = []
-        self.connections = []
+        self.connections = {}
 
     def register_module(self, module):
         instance = module(self)
         self.modules.append(instance)
 
     def register_manager(self, manager):
-        logging.info("Registering manager {}".format(manager.NAME))
         instance = manager(self)
         self.managers.append(instance)
+        logging.info("Registered manager {}".format(
+            instance.__class__.__name__))
 
-    def register_injector(self, name, injector):
+    def register_injector(self, injector):
         instance = injector(self)
-        self.injectors[name] = instance
+        self.injectors[injector.__name__] = instance
+        logging.info("Registered injector {}".format(
+            instance.__class__.__name__))
 
     def get_injector(self, name):
         if name not in self.injectors:
@@ -51,12 +107,6 @@ class Game(object):
 
     def get_injectors(self, *names):
         return map(self.get_injector, names)
-
-    def set_data(self, key, value):
-        self.data[key] = value
-
-    def get_data(self, key):
-        return self.data[key]
 
     def start(self):
         self.running = True
@@ -78,32 +128,31 @@ class GameComponent(object):
         self.game = game
 
 
-class Event(GameComponent):
-    def __init__(self, game, type_name, data=None, blockable=True):
-        super(Event, self).__init__(game)
-
+class Event(object):
+    def __init__(self, source, type_name, data=None, unblockable=False):
         if data is None:
             data = {}
+
+        self.source = source
         self.type = type_name
         self.data = data
-        self.blockable = blockable
+        self.unblockable = unblockable
         self.blocked = False
 
     def block(self):
-        if not self.blockable:
+        if self.unblockable:
             raise Unblockable("Event of type '{}' is unblockable.".format(
                 self.type))
         self.blocked = True
+        return self
 
 
 class Module(GameComponent):
-    NAME = None
     DESCRIPTION = ""
     VERSION = "0.0.0"
 
 
 class Manager(GameComponent):
-    NAME = None
     DESCRIPTION = ""
 
     def start(self):
@@ -127,7 +176,7 @@ class TimerManager(Manager):
         self.running = True
         while self.running:
             gevent.sleep(self.TIMER_DELAY)
-            logging.debug("Ticking {}".format(self.NAME))
+            logging.debug("Ticking {}".format(self.__class__.__name__))
             self.tick()
 
     def tick(self):
@@ -136,7 +185,6 @@ class TimerManager(Manager):
 
 
 class Command(GameComponent):
-    NAME = ""
     DESCRIPTION = ""
 
     def execute(self, entity, args=None):
@@ -153,12 +201,7 @@ def inject(*injector_names):
     return decorator
 
 
-class Actor(GameComponent):
-    pass
-
-
 class CombatManager(TimerManager):
-    NAME = "CombatManager"
     TIMER_DELAY = 1.0
 
     @inject("Battles")
@@ -167,69 +210,37 @@ class CombatManager(TimerManager):
 
 
 class Injector(GameComponent):
-    NAME = None
     DESCRIPTION = ""
     pass
 
 
-class Collection(Injector):
-    NAME = None
-
-    def __init__(self, game):
-        super(Collection, self).__init__(game)
-        name = self.NAME or self.__class__.__name__
-        self.game.set_data(name, {})
-        self.types = {}
-
-    @property
-    def data(self):
-        name = self.NAME or self.__class__.__name__
-        return self.game.data[name]
-
-    def query(self, spec=None):
-        return self.data.values()
-
-    def get(self, id):
-        return self.data[id]
-
-    def add(self, record):
-        if "id" not in record:
-            record["id"] = str(random.randint(100000000000, 999999999999))
-        self.data[record["id"]] = record
-
-    def remove(self, record):
-        del self.data[record["id"]]
-
-
-class Battles(Collection):
-    pass
-
-
 class CombatModule(Module):
-    NAME = "RoundBasedCombat"
     DESCRIPTION = "Add the ability to support round-based combat"
 
     def __init__(self, game):
         super(CombatModule, self).__init__(game)
         self.game.register_manager(CombatManager)
-        self.game.register_injector("Battles", Battles)
+        self.game.register_injector(Battles)
 
 
 class Connection(object):
     NEWLINE = "\r\n"
+    CURRENT_ID = 0
+
+    @classmethod
+    def get_next_id(cls):
+        cls.CURRENT_ID += 1
+        return cls.CURRENT_ID
 
     def __init__(self, server):
         """Initialize Connection to Game and store its socket."""
         self.server = server
-        self.actor = None
+        self.id = Connection.get_next_id()
+        self.actor_id = None
 
     @property
     def game(self):
         return self.server.game
-
-    def set_actor(self, actor):
-        """Assign the Actor to this Connection."""
-        self.actor = actor
 
     def start(self):
         """Execute commands for starting of Connection."""
@@ -255,7 +266,7 @@ class Connection(object):
 class Server(GameComponent):
     def __init__(self, game):
         super(Server, self).__init__(game)
-        self.connections = []
+        self.connections = {}
 
     def start(self):
         """Execute commands when Server starts."""
@@ -266,12 +277,12 @@ class Server(GameComponent):
         pass
 
     def add_connection(self, connection):
-        self.connections.append(connection)
-        self.game.connections.append(connection)
+        self.connections[connection.id] = connection
+        self.game.connections[connection.id] = connection
 
     def remove_connection(self, connection):
-        self.game.connections.remove(connection)
-        self.connections.remove(connection)
+        del self.game.connections[connection.id]
+        del self.connections[connection.id]
 
 
 class Client(object):
@@ -282,6 +293,8 @@ class Client(object):
         self.inputs = []
         self.parse_thread = None
         self.state = self.INITIAL_STATE
+        self.last_input = ""
+        self.spam_count = 0
 
     @property
     def game(self):
@@ -293,6 +306,7 @@ class Client(object):
             return
 
         self.inputs += inputs
+
         if not self.parse_thread:
             self.parse_thread = gevent.spawn(self.start_parse_thread)
         for input in inputs:
@@ -301,14 +315,20 @@ class Client(object):
     def start_parse_thread(self):
         while self.inputs:
             message = self.inputs.pop(0)
+
+            if message == "!":
+                message = self.last_input
+            else:
+                self.last_input = message
+
             delay = self.handle_input(message)
-            gevent.sleep(delay if delay else 0.2)
+            gevent.sleep(delay if delay else 0.3)
         self.parse_thread = None
 
     def handle_input(self, message):
         func_name = "handle_{}_input".format(self.state)
         func = getattr(self, func_name)
-        func(message)
+        return func(message)
 
     def write(self, message=""):
         self.connection.write(message)
@@ -317,48 +337,213 @@ class Client(object):
         self.write(message + "\n")
 
 
-@inject("Rooms", "Actors", "Objects")
-def look_command(self, args, Rooms, Actors, Objects, **kwargs):
+@inject("Rooms", "Actors", "Objects", "Directions")
+def look_command(self, args, Rooms, Actors, Objects, Directions, **kwargs):
     room = list(Rooms.query())[0]
-    self.writeln("{} [LAW] [SAFE]".format(room["name"]))
-    for index, line in enumerate(room["description"]):
+    self.echo("{{B{} {{x[{{WLAW{{x] {{R[{{WSAFE{{R]{{x".format(room["name"]))
+    for index, line in enumerate(room.description):
         if index == 0:
-            self.write("  ")
-        self.writeln(line)
+            line = "{x   " + line
+        self.echo(line)
+
+    self.echo()
+
+    exit_names = []
+    door_names = []
+
+    for direction in Directions.query():
+        exit = room.exits.get(direction.id, None)
+        if exit:
+            exit_names.append(direction.colored_name)
+
+    exits_line = "{{x[{{GExits{{g:{{x {}{{x]   " \
+        "{{x[{{GDoors{{g:{{x {}{{x]   ".format(
+            " ".join(exit_names) if exit_names else "none",
+            " ".join(door_names) if door_names else "none",
+        )
+    self.echo(exits_line)
 
     spec = {"room_id": room["id"]}
     for actor in Actors.query(spec):
-        self.writeln("{} is standing here.".format(actor["name"]))
+        self.echo("{} is standing here.".format(actor["name"]))
 
     for obj in Objects.query(spec):
-        self.writeln("{} is on the ground here.".format(actor["name"]))
+        self.echo("{} is on the ground here.".format(obj["name"]))
 
 
 def quit_command(self, **kwargs):
-    self.writeln("You're logging out...")
+    self.echo("You're logging out...")
     self.quit()
 
 
-def who_command(self, **kwargs):
-    self.writeln("The Visible Mortals and Immortals of Waterdeep")
-    self.writeln("-" * 79)
-    for conn in self.game.connections:
-        self.writeln("  1 M Human War         [.N......] {}".format("Name"))
-    self.writeln()
-    self.writeln("Players found: X   Total online: X   Most on today: X")
+def say_command(self, message, **kwargs):
+    if not message:
+        self.echo("Say what?")
+        return
+
+    say_data = {"message": message}
+    say = self.emit("before:say", say_data)
+    if say.blocked:
+        return
+
+    self.echo("{{MYou say {{x'{{m{}{{x'".format(message))
+    self.act("{M{self.name} says {x'{m{message}{M{x'", {
+        "message": message,
+    })
+
+    self.emit("after:say", say_data)
+
+
+@inject("Rooms", "Directions")
+def direction_command(self, name, Rooms, Directions, **kwargs):
+    room = Rooms.get(self.room_id)
+    if not room:
+        self.echo("You aren't anywhere.")
+        return
+
+    exit = room.exits.get(name, None)
+    if not exit:
+        self.echo("You can't go that way.")
+        return
+
+    direction = Directions.get(name)
+
+    walk_data = {"direction": direction}
+    walk = self.emit("before:walk", walk_data)
+
+    if walk.blocked:
+        return
+
+    new_room = Rooms.get({"vnum": exit["room_vnum"]})
+
+    if not new_room:
+        self.echo("The place you're walking to doesn't appear to exist.")
+        return
+
+    enter_data = {"direction": direction.opposite}
+    enter = self.emit("before:enter", enter_data)
+
+    if enter.blocked:
+        return
+
+    self.act("{self.name} leaves " + direction.colored_name)
+    self.room_id = new_room.id
+    self.save()
+    self.act("{self.name} has arrived.")
+
+    self.emit("after:enter", enter_data, unblockable=True)
+    self.emit("after:walk", walk_data, unblockable=True)
+
+    self.force("look")
+
+    return 0.5
+
+
+@inject("Characters")
+def who_command(self, Characters, **kwargs):
+    self.echo("{GThe Visible Mortals and Immortals of Waterdeep")
+    self.echo("{g" + ("-" * 79))
+
+    count = 0
+    for actor in Characters.query({"online": True}):
+        count += 1
+        self.echo("{{x{} {} {} {} {{x[.{{BN{{x......] {} {}".format(
+            "1".rjust(3),
+            "{BM",
+            "{CH{cuman",
+            "{MA{mdv",
+            actor.name,
+            actor.title if actor.title else "",
+        ))
+    self.echo()
+    self.echo(
+        "{{GPlayers found: {{x{}   "
+        "{{GTotal online: {{x{}   "
+        "{{GMost on today: {{x{}".format(
+            count,
+            count,
+            count,
+        ))
+
+
+def title_command(self, message, **kwargs):
+    self.title = message
+    if message:
+        self.echo("Title set to: {}".format(self.title))
+    else:
+        self.echo("Title cleared.")
+
+
+def save_command(self, **kwargs):
+    self.echo("Your character has been saved.")
+
+
+@inject("Characters")
+def delete_command(self, Characters, **kwargs):
+    self.echo("Removing your character from the game.")
+    Characters.delete(self)
+    self.quit(skip_save=True)
+
+
+COMMANDS_MAP = {
+    "north": {"handler": direction_command},
+    "east": {"handler": direction_command},
+    "south": {"handler": direction_command},
+    "west": {"handler": direction_command},
+    "up": {"handler": direction_command},
+    "down": {"handler": direction_command},
+
+    "say": {"handler": say_command},
+    "who": {"handler": who_command},
+    "delete": {"handler": delete_command},
+    "look": {"handler": look_command},
+    "save": {"handler": save_command},
+    "title": {"handler": title_command},
+    "quit": {"handler": quit_command},
+}
 
 
 class TelnetClient(Client):
     INITIAL_STATE = "login_username"
 
-    def start(self):
-        self.writeln("Connected.")
+    def __init__(self, *args, **kwargs):
+        super(TelnetClient, self).__init__(*args, **kwargs)
+        self.write_ended_with_newline = False
+        self.prompt_thread = False
+        self.resolver = FuzzyResolver(COMMANDS_MAP)
+        self.color = True
+        self.writeln("Connected to {rU{8nd{wer{Wmou{wnt{8ai{rn{x.")
+        self.writeln()
+        self.write("What is your name, adventurer? ")
+
+    @inject("Characters")
+    @property
+    def actor(self, Characters):
+        return Characters.get(self.connection.actor_id)
 
     def stop(self):
         self.writeln("Disconnecting..")
 
     def handle_login_username_input(self, message):
-        self.writeln("RECEIVED {}".format(message))
+        Characters = self.game.get_injector("Characters")
+        name = message.strip().lower().title()
+
+        found = Characters.get({"name": name})
+        if not found:
+            found = Characters.save(Character({
+                "room_id": "abc123",
+                "name": name,
+            }))
+        elif found.connection:
+            found.echo("You have been kicked off due to another logging in.")
+            found.connection.close()
+
+        found.online = True
+        found.connection_id = self.connection.id
+        found.save()
+
+        self.connection.actor_id = found.id
+
         self.state = "playing"
         self.handle_playing_input("look")
 
@@ -366,39 +551,66 @@ class TelnetClient(Client):
         self.connection.close()
         self.connection.server.remove_connection(self.connection)
 
-    def handle_playing_input(self, message):
+    def write(self, message=""):
+        if self.state == "playing" and not self.write_ended_with_newline:
+            message = "\n" + message
+
+        if self.color:
+            message = colorize(message)
+        else:
+            message = decolorize(message)
+
+        self.write_ended_with_newline = message[-1] == "\n"
+
+        super(TelnetClient, self).write(message)
+        if not self.prompt_thread:
+            self.prompt_thread = gevent.spawn(self.write_prompt)
+
+    def write_prompt(self):
+        if self.state != "playing":
+            return
+        self.writeln()
+        self.write("{x> ")
+
+    @inject("Characters")
+    def handle_playing_input(self, message, Characters):
+        actor = Characters.get(self.connection.actor_id)
+        delay = None
+
         while self.inputs and not self.inputs[0]:
             self.inputs.pop(0)
 
-        self.writeln("You typed '{}'".format(message))
-        self.writeln("")
-
         parts = message.split(" ")
-        name = parts[0]
+        name = parts[0].lower()
         args = parts[1:]
 
-        kwargs = {"args": args, "name": name}
+        kwargs = {"args": args, "name": name, "message": " ".join(args)}
 
-        if message == "who":
-            who_command(self, **kwargs)
-        elif message == "look":
-            look_command(self, **kwargs)
-        elif message == "quit":
-            quit_command(self, **kwargs)
+        command = None
+        for real_name, entry in self.resolver.query(name):
+            min_level = entry.get("min_level", 0)
+            max_level = entry.get("max_level", 9999)
+            fake_level = 1
+            if fake_level < min_level or fake_level > max_level:
+                continue
+            kwargs["name"] = real_name
+            command = entry["handler"]
+            break
+
+        if command:
+            # TODO Handle command exceptions.
+            # try:
+            delay = command(actor, **kwargs)
+            # except Exception as e:
+            #     self.writeln(repr(e))
+            #     self.writeln("Huh?!")
         else:
-            for conn in self.game.connections:
-                if conn is self.connection:
-                    continue
-                client = conn.client
-                client.writeln("Someone typed: {}".format(message))
+            self.writeln("Huh?")
 
-        self.writeln("")
-        self.write("PROMPT> ")
+        return delay
 
 
 class TelnetConnection(Connection):
-    NAME = "TelnetConnection"
-
     def __init__(self, server, socket, address):
         super(TelnetConnection, self).__init__(server)
         self.socket = socket
@@ -414,10 +626,12 @@ class TelnetConnection(Connection):
             self.socket.flush()
         except Exception:
             pass
+
         try:
             self.socket.shutdown(raw_socket.SHUT_WR)
         except Exception:
             pass
+
         try:
             self.socket.close()
         except Exception:
@@ -435,7 +649,12 @@ class TelnetConnection(Connection):
             if not raw:
                 self.close()
                 break
-            self.buffer += raw.decode("utf-8").replace("\r\n", "\n")
+
+            try:
+                self.buffer += raw.decode("utf-8").replace("\r\n", "\n")
+            except Exception:
+                pass
+
             if "\n" in self.buffer:
                 split = self.buffer.split("\n")
                 inputs = split[:-1]
@@ -451,8 +670,6 @@ class TelnetConnection(Connection):
 
 
 class TelnetServer(Server):
-    NAME = "TelnetServer"
-
     def __init__(self, game):
         super(TelnetServer, self).__init__(game)
         self.ports = []
@@ -484,7 +701,6 @@ class TelnetServer(Server):
 
 
 class TelnetModule(Module):
-    NAME = "Telnet"
     DESCRIPTION = "Support the Telnet protocol for connections"
 
     def __init__(self, game):
@@ -492,36 +708,408 @@ class TelnetModule(Module):
         self.game.register_manager(TelnetServer)
 
 
-class Rooms(Collection):
+class Entity(object):
+    @inject("Subroutines")
+    def handle_event(self, event, Subroutines):
+        if self == event.source:
+            return event
+
+        # TODO HANDLE THE EVENT
+        handlers = self.event_handlers
+        if handlers:
+            for entry in handlers:
+                if entry["type"] != event.type:
+                    continue
+
+                subroutine = Subroutines.get(entry["subroutine_id"])
+                subroutine.execute(self, event)
+
+        return event
+
+    def generate_event(self, type, data=None, unblockable=False):
+        return Event(self, type, data, unblockable=unblockable)
+
+    def __eq__(self, other):
+        return other.id == self.id
+
+    def __neq__(self, other):
+        return not self.__eq__(other)
+
+    def __init__(self, data=None, collection=None):
+        if data is None:
+            data = {}
+        super(Entity, self).__setattr__("_data", data)
+        super(Entity, self).__setattr__("_collection", collection)
+
+    @property
+    def game(self):
+        return self._collection.game
+
+    @property
+    def collection(self):
+        return self._collection
+
+    def __setattr__(self, name, value):
+        return self.set(name, value)
+
+    def __getattr__(self, name):
+        return self.get(name)
+
+    def __setitem__(self, name, value):
+        return self.set(name, value)
+
+    def __getitem__(self, name):
+        return self.get(name)
+
+    def get(self, name, default=None):
+        return self._data.get(name, None)
+
+    def set(self, name, value):
+        self._data[name] = value
+
+    def set_data(self, data):
+        super(Entity, self).__setattr__("_data", data)
+
+    def get_data(self):
+        return self._data
+
+
+class CollectionStorage(object):
+    def __init__(self, collection):
+        self.collection = collection
+
+    def post_save(self, record):
+        pass
+
+    def post_delete(self, record):
+        pass
+
+
+class MemoryStorage(CollectionStorage):
     pass
+
+
+class FileStorage(CollectionStorage):
+    def __init__(self, *args, **kwargs):
+        super(FileStorage, self).__init__(*args, **kwargs)
+        name = self.collection.__class__.__name__.lower()
+        self.folder = "{}/{}".format(settings.DATA_FOLDER, name)
+
+        self.load_initial_data()
+
+    def load_initial_data(self):
+        pattern = "{}/*".format(self.folder)
+        for path in glob.glob(pattern):
+            with open(path, "r") as fh:
+                data = json.loads(fh.read())
+                self.collection.save(data, skip_storage=True)
+
+    def get_record_filename(self, record):
+        filename = record[self.collection.STORAGE_FILENAME_FIELD]
+        format_name = self.collection.STORAGE_FORMAT
+
+        suffix = self.collection.STORAGE_FILENAME_SUFFIX
+        if suffix != "":
+            if suffix is None:
+                suffix = format_name
+            suffix = "." + suffix
+
+        return "{}/{}{}".format(
+            self.folder,
+            filename,
+            suffix)
+
+    def post_save(self, record):
+        path = self.get_record_filename(record)
+        with open(path, "w") as fh:
+            fh.write(json.dumps(record))
+
+    def post_delete(self, record):
+        path = self.get_record_filename(record)
+        print("TRYING TO DELETE", path)
+        os.remove(path)
+
+
+class Collection(Injector):
+    PERSISTENT = False
+    ENTITY_CLASS = Entity
+    STORAGE_CLASS = MemoryStorage
+    STORAGE_FORMAT = "json"
+    STORAGE_FILENAME_FIELD = "name"
+    STORAGE_FILENAME_SUFFIX = ""
+    DATA_NAME = None
+
+    def __init__(self, game):
+        super(Collection, self).__init__(game)
+        name = self.DATA_NAME or self.__class__.__name__
+        self.game.data[name] = {}
+        self.storage = self.STORAGE_CLASS(self)
+
+    @property
+    def data(self):
+        name = self.DATA_NAME or self.__class__.__name__
+        return self.game.data[name]
+
+    @data.setter
+    def data(self, data):
+        name = self.DATA_NAME or self.__class__.__name__
+        self.game.data[name] = data
+
+    def query(self, spec=None):
+        def _filter_function(record):
+            if spec is None:
+                return True
+            else:
+                for key in spec:
+                    if key not in record or spec[key] != record[key]:
+                        return False
+                return True
+
+        filtered = filter(_filter_function, self.data.values())
+        for record in filtered:
+            yield self.wrap_record(record)
+
+    def get(self, spec):
+        if isinstance(spec, str):
+            return self.wrap_record(self.data[spec])
+        else:
+            for record in self.query(spec):
+                return record
+
+    def save(self, record, skip_storage=False):
+        record = self.unwrap_record(record)
+        if "id" not in record:
+            record["id"] = str(random.randint(100000000000, 999999999999))
+        self.data[record["id"]] = record
+
+        if not skip_storage:
+            self.storage.post_save(record)
+
+        return self.get(record["id"])
+
+    def unwrap_record(self, record):
+        if isinstance(record, Entity):
+            return record.get_data()
+        return record
+
+    def wrap_record(self, record):
+        if isinstance(record, dict):
+            return self.ENTITY_CLASS(data=record, collection=self)
+        return record
+
+    def delete(self, record):
+        record = self.unwrap_record(record)
+        del self.data[record["id"]]
+        self.storage.post_delete(record)
+
+
+class Battles(Collection):
+    pass
+
+
+class Actor(Entity):
+    @property
+    @inject("Rooms")
+    def room(self, Rooms):
+        return Rooms.get(self.room_id)
+
+    @property
+    def connection(self):
+        return self.game.connections.get(self.connection_id, None)
+
+    @property
+    def client(self):
+        if not self.connection:
+            return None
+        return self.connection.client
+
+    def say(self, message):
+        say_command(self, message=message)
+
+    def save(self):
+        self.collection.save(self)
+
+    def quit(self, skip_save=False):
+        if not self.client:
+            return
+        self.client.quit()
+        self.online = False
+
+        if not skip_save:
+            self.save()
+
+    def force(self, message):
+        if not self.client:
+            return
+        self.client.handle_input(message)
+
+    def echo(self, message=""):
+        if not self.client:
+            return
+
+        self.client.writeln(message)
+
+    def emit_event(self, event):
+        return self.room.emit_event(event)
+
+    def emit(self, type, data=None, unblockable=False):
+        event = self.generate_event(type, data, unblockable=unblockable)
+        if unblockable:
+            gevent.spawn(self.emit_event, event)
+            return event
+        else:
+            return self.emit_event(event)
+
+    def act(self, template, data=None):
+        Actors, Characters = self.game.get_injectors("Actors", "Characters")
+        if data is None:
+            data = {}
+
+        data["self"] = self
+
+        room_id = self.room_id
+
+        message = template
+
+        for collection in (Characters, Actors):
+            for actor in collection.query({"room_id": room_id}):
+                if actor == self:
+                    continue
+
+                if "{message}" in message:
+                    message = message.replace("{message}", data["message"])
+                if "{self.name}" in message:
+                    message = message.replace("{self.name}", data["self"].name)
+
+                actor.echo(message)
+
+
+class Account(Entity):
+    pass
+
+
+class Accounts(Collection):
+    ENTITY_CLASS = Account
+
+
+class Object(Entity):
+    pass
+
+
+class Character(Actor):
+    pass
+
+
+class Area(Entity):
+    pass
+
+
+class Areas(Collection):
+    ENTITY_CLASS = Area
+
+
+class Room(Entity):
+    @property
+    @inject("Actors", "Characters", "Objects")
+    def children(self, Actors, Characters, Objects):
+        # TODO Make this flexible, to define model relationships?
+        for collection in (Actors, Characters, Objects):
+            for entity in collection.query({"room_id": self.id}):
+                yield entity
+
+    def emit_event(self, event):
+        """Handle the Event for this level and its children, then emit up."""
+        for entity in self.children:
+            event = entity.handle_event(event)
+
+            if event.blocked:
+                return event
+
+        # TODO get the event back from the Area
+        event = self.handle_event(event)
+
+        return event
+
+
+class Direction(Entity):
+    pass
+
+
+class Rooms(Collection):
+    ENTITY_CLASS = Room
+
+
+class Subroutine(Entity):
+    def execute(self, entity, event):
+        compiled = compile(self.code, "subroutine:{}".format(self.id), "exec")
+
+        def wait(duration):
+            gevent.sleep(duration)
+
+        context = dict(event.data)
+        context.update({
+            "self": entity,
+            "target": event.source,
+            "event": event,
+            "wait": wait,
+        })
+        exec(compiled, context, context)
+
+
+class Subroutines(Collection):
+    ENTITY_CLASS = Subroutine
+
+
+class Characters(Collection):
+    STORAGE_CLASS = FileStorage
+    ENTITY_CLASS = Character
 
 
 class Actors(Collection):
-    pass
+    ENTITY_CLASS = Actor
 
 
 class Objects(Collection):
-    pass
+    ENTITY_CLASS = Object
+
+
+class Directions(Collection):
+    ENTITY_CLASS = Direction
 
 
 class CoreModule(Module):
-    NAME = "Core"
     DESCRIPTION = "The basics of the game, primarily data models"
 
     def __init__(self, game):
         super(CoreModule, self).__init__(game)
-        self.game.register_injector("Rooms", Rooms)
-        self.game.register_injector("Actors", Actors)
-        self.game.register_injector("Objects", Objects)
+        self.game.register_injector(Rooms)
+        self.game.register_injector(Actors)
+        self.game.register_injector(Objects)
+        self.game.register_injector(Characters)
+        self.game.register_injector(Directions)
+        self.game.register_injector(Subroutines)
+
+        directions, characters = \
+            self.game.get_injectors("Directions", "Characters")
+
+        directions.data = settings.DIRECTIONS
+
+        for actor in characters.query():
+            actor.online = False
+            actor.connection_id = None
+            characters.save(actor)
 
 
 GAME = Game()
 GAME.register_module(CoreModule)
 GAME.register_module(TelnetModule)
-# GAME.register_module(CombatModule)
+GAME.register_module(CombatModule)
 
-rooms, actors, objects = GAME.get_injectors("Rooms", "Actors", "Objects")
-rooms.add({
+rooms, actors, objects, characters, subroutines = GAME.get_injectors(
+    "Rooms", "Actors", "Objects", "Characters", "Subroutines")
+
+room = rooms.save({
+    "id": "abc123",
     "vnum": "market_square",
     "name": "Market Square",
     "description": [
@@ -537,6 +1125,27 @@ rooms.add({
     },
 })
 
+actors.save({
+    "name": "the town crier",
+    "room_id": room.id,
+    "event_handlers": [
+        {"type": "after:enter", "subroutine_id": "greetings"},
+    ],
+})
+
+objects.save({
+    "name": "a piece of bread",
+    "room_id": room.id,
+})
+
+subroutines.save({
+    "id": "greetings",
+    "code": """
+wait(1)
+self.say("Hello {}!".format(target.name))
+    """
+})
+
 tasks = [
     gevent.spawn(GAME.start)
 ]
@@ -544,4 +1153,4 @@ tasks = [
 try:
     gevent.joinall(tasks)
 except KeyboardInterrupt:
-    print("KILLED")
+    logging.info("Process killed by CTRL+C")

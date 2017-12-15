@@ -18,6 +18,39 @@ MODULES = (
     "modules.telnet.Telnet",
 )
 
+DIRECTIONS = {
+    "north": {
+        "id": "north",
+        "colored_name": "{Rnorth{x",
+        "opposite_id": "south",
+    },
+    "east": {
+        "id": "east",
+        "colored_name": "{Meast{x",
+        "opposite_id": "west",
+    },
+    "south": {
+        "id": "south",
+        "colored_name": "{rsouth{x",
+        "opposite_id": "north",
+    },
+    "west": {
+        "id": "west",
+        "colored_name": "{mwest{x",
+        "opposite_id": "east",
+    },
+    "up": {
+        "id": "up",
+        "colored_name": "{Yup{x",
+        "opposite_id": "down",
+    },
+    "down": {
+        "id": "down",
+        "colored_name": "{ydown{x",
+        "opposite_id": "up",
+    },
+}
+
 
 #
 # NETWORKING AND CONNECTIONS
