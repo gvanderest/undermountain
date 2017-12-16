@@ -39,7 +39,7 @@ class FileStorage(CollectionStorage):
                 data = json.loads(fh.read())
                 self.collection.save(data, skip_storage=True)
 
-    def get_record_filename(self, record):
+    def get_record_path(self, record):
         filename = record[self.collection.STORAGE_FILENAME_FIELD]
         format_name = self.collection.STORAGE_FORMAT
 
@@ -55,18 +55,24 @@ class FileStorage(CollectionStorage):
             suffix)
 
     def post_save(self, record):
-        path = self.get_record_filename(record)
+        path = self.get_record_path(record)
+        folders = path.split("/")
+        folder = "/".join(folders[:-1])
+
+        os.makedirs(folder, exist_ok=True)
+
         with open(path, "w") as fh:
             fh.write(json.dumps(record))
 
     def post_delete(self, record):
-        path = self.get_record_filename(record)
+        path = self.get_record_path(record)
         os.remove(path)
 
 
 class Entity(object):
     DEFAULT_DATA = {}
 
+    # FIXME Move this out of Collection, which is meant to be more generic
     @inject("Subroutines", "Behaviors")
     def handle_event(self, event, Subroutines, Behaviors):
         if self == event.source:
@@ -75,11 +81,11 @@ class Entity(object):
         # TODO HAVE COLLECTION CREATE DEEPCOPIES OF EVERYTHING
         handlers = list(self.event_handlers or [])
 
-        for behavior_id in (self.behaviors or []):
-            behavior = Behaviors.get(behavior_id)
+        for behavior_vnum in (self.behaviors or []):
+            behavior = Behaviors.get({"vnum": behavior_vnum})
             handlers.append({
                 "type": behavior.type,
-                "subroutine_id": behavior.subroutine_id,
+                "subroutine_vnum": behavior.subroutine_vnum,
             })
 
         if handlers:
@@ -87,7 +93,8 @@ class Entity(object):
                 if entry["type"] != event.type:
                     continue
 
-                subroutine = Subroutines.get(entry["subroutine_id"])
+                subroutine = \
+                    Subroutines.get({"vnum": entry["subroutine_vnum"]})
                 subroutine.execute(self, event)
 
         return event
@@ -148,7 +155,7 @@ class Collection(Injector):
     ENTITY_CLASS = Entity
     STORAGE_CLASS = MemoryStorage
     STORAGE_FORMAT = "json"
-    STORAGE_FILENAME_FIELD = "name"
+    STORAGE_FILENAME_FIELD = "vnum"
     STORAGE_FILENAME_SUFFIX = ""
     DATA_NAME = None
 

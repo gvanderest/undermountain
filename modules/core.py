@@ -68,6 +68,7 @@ def say_command(self, message, **kwargs):
 
     self.trigger("after:say", say_data, unblockable=True)
 
+
 @inject("Directions", "Rooms")
 def direction_command(self, name, Directions, Rooms, **kwargs):
     room = self.room
@@ -272,6 +273,7 @@ class Account(Entity):
 
 class Accounts(Collection):
     ENTITY_CLASS = Account
+    STORAGE_CLASS = FileStorage
 
 
 class Object(Entity):
@@ -288,6 +290,7 @@ class Area(Entity):
 
 class Areas(Collection):
     ENTITY_CLASS = Area
+    STORAGE_CLASS = FileStorage
 
 
 class Room(Entity):
@@ -325,6 +328,7 @@ class Direction(Entity):
 
 class Rooms(Collection):
     ENTITY_CLASS = Room
+    STORAGE_CLASS = FileStorage
 
 
 class Subroutine(Entity):
@@ -351,33 +355,39 @@ class Subroutine(Entity):
 
 class Subroutines(Collection):
     ENTITY_CLASS = Subroutine
+    STORAGE_CLASS = FileStorage
 
 
 class Behavior(Entity):
     @property
     @inject("Subroutines")
     def subroutine(self):
-        return Subroutines.get(self.subroutine_id)
+        return Subroutines.get({"vnum": self.subroutine_vnum})
 
 
 class Behaviors(Collection):
     ENTITY_CLASS = Behavior
+    STORAGE_CLASS = FileStorage
 
 
 class Characters(Collection):
     STORAGE_CLASS = FileStorage
+    STORAGE_FILENAME_FIELD = "name"
     ENTITY_CLASS = Character
 
 
 class Actors(Collection):
     ENTITY_CLASS = Actor
+    STORAGE_CLASS = FileStorage
 
 
 class Objects(Collection):
+    STORAGE_CLASS = FileStorage
     ENTITY_CLASS = Object
 
 
 class Directions(Collection):
+    STORAGE_CLASS = FileStorage
     ENTITY_CLASS = Direction
 
 
