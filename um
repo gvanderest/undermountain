@@ -48,7 +48,7 @@ def display_help():
         "Commands:",
         "./um start - Start the game",
         "./um backup [id] - Backup data with identifier",
-        "./um restore <id> - Restore data with identifier",
+        "./um restore <id|path> - Restore data with identifier or file path",
         "",
         "For backups, see the 'backups' folder",
     ]]
