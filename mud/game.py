@@ -39,7 +39,7 @@ class Game(object):
 
     def handle_exception(self, exception):
         output = traceback.format_exc().replace("{", "{{")
-
+        logging.error(output)
         self.echo("{{Y--> {{xException: {}".format(output))
 
     def echo(self, message):

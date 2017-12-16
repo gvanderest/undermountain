@@ -128,11 +128,12 @@ def who_command(self, Characters, **kwargs):
     count = 0
     for actor in Characters.query({"online": True}):
         count += 1
+
         self.echo("{{x{} {} {} {} {{x[.{{BN{{x......] {} {}".format(
-            "1".rjust(3),
-            "{BM",
-            "{CH{cuman",
-            "{MA{mdv",
+            str(actor.level).rjust(3),
+            actor.gender.colored_short_name,
+            actor.races[0].colored_name,
+            actor.classes[0].colored_short_name,
             actor.name,
             actor.title if actor.title else "",
         ))
@@ -171,10 +172,29 @@ class Actor(Entity):
     DEFAULT_DATA = {
         "name": "",
         "title": "",
+        "bracket": "",
+        "level": 1,
         "experience": 0,
         "room_id": "",
         "room_vnum": settings.INITIAL_ROOM_VNUM,
+        "race_ids": ["human"],
+        "class_ids": ["adventurer"],
     }
+
+    @property
+    @inject("Classes")
+    def classes(self, Classes):
+        return [Classes.get(class_id) for class_id in self.class_ids]
+
+    @property
+    @inject("Races")
+    def races(self, Races):
+        return [Races.get(race_id) for race_id in self.race_ids]
+
+    @property
+    @inject("Genders")
+    def gender(self, Genders):
+        return Genders.get(self.gender_id)
 
     @property
     @inject("Rooms")
@@ -376,6 +396,21 @@ class Characters(Collection):
     ENTITY_CLASS = Character
 
 
+class Genders(Collection):
+    ENTITY_CLASS = Entity
+    STORAGE_CLASS = FileStorage
+
+
+class Classes(Collection):
+    ENTITY_CLASS = Entity
+    STORAGE_CLASS = FileStorage
+
+
+class Races(Collection):
+    ENTITY_CLASS = Entity
+    STORAGE_CLASS = FileStorage
+
+
 class Actors(Collection):
     ENTITY_CLASS = Actor
     STORAGE_CLASS = FileStorage
@@ -403,6 +438,9 @@ class CoreModule(Module):
         self.game.register_injector(Directions)
         self.game.register_injector(Subroutines)
         self.game.register_injector(Behaviors)
+        self.game.register_injector(Genders)
+        self.game.register_injector(Classes)
+        self.game.register_injector(Races)
 
         for dir_name in settings.DIRECTIONS:
             self.game.register_command(dir_name, direction_command)

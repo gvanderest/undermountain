@@ -1,11 +1,12 @@
 from mud.injector import Injector
 from mud.event import Event
 from mud.inject import inject
+from utils.hash import get_random_hash
 
 import glob
 import json
+import logging
 import os
-import random
 import settings
 
 
@@ -36,8 +37,12 @@ class FileStorage(CollectionStorage):
         pattern = "{}/*".format(self.folder)
         for path in glob.glob(pattern):
             with open(path, "r") as fh:
-                data = json.loads(fh.read())
-                self.collection.save(data, skip_storage=True)
+                try:
+                    data = json.loads(fh.read())
+                    self.collection.save(data, skip_storage=True)
+                except Exception as e:
+                    self.collection.game.handle_exception(e)
+                    logging.error("Unable to parse file: {}".format(path))
 
     def get_record_path(self, record):
         filename = record[self.collection.STORAGE_FILENAME_FIELD]
@@ -62,7 +67,7 @@ class FileStorage(CollectionStorage):
         os.makedirs(folder, exist_ok=True)
 
         with open(path, "w") as fh:
-            fh.write(json.dumps(record))
+            fh.write(json.dumps(record, indent=4, sort_keys=True))
 
     def post_delete(self, record):
         path = self.get_record_path(record)
@@ -203,7 +208,7 @@ class Collection(Injector):
         record = self.unwrap_record(record)
 
         if "id" not in record:
-            record["id"] = str(random.randint(100000000000, 999999999999))
+            record["id"] = get_random_hash()
         self.data[record["id"]] = record
 
         if not skip_storage:
