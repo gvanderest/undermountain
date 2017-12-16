@@ -25,14 +25,14 @@ def display_banner():
     ).split("\n")
 
     for line in banner_lines:
-        logging.info(line)
+        print(line)
 
 
 def start_game():
     Game.VERSION = open("VERSION", "r").read().strip()
     display_banner()
 
-    logging.info("Loaded settings from {}".format(settings.__file__))
+    print("Loaded settings from {}".format(settings.__file__))
 
     GAME = Game()
     try:
@@ -44,7 +44,7 @@ def start_game():
 
 def display_help():
     display_banner()
-    [logging.info(line) for line in [
+    [print(line) for line in [
         "Commands:",
         "./um start - Start the game",
         "./um backup [id] - Backup data with identifier",
