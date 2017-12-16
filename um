@@ -3,8 +3,8 @@
 from mud.game import Game
 from utils.hash import get_random_hash
 
+import datetime
 import gevent
-import logging
 import sys
 import settings
 
@@ -109,7 +109,8 @@ if len(ARGS) == 1:
 elif ARGS[1] == "start":
     start_game()
 elif ARGS[1] == "backup":
-    backup_id = get_random_hash()[:6]
+    date = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    backup_id = "{}{}".format(date, get_random_hash()[:6])
     if len(ARGS) == 3:
         backup_id = ARGS[2]
     backup_data(backup_id)
