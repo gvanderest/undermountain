@@ -10,7 +10,9 @@ GAME_LOOP_TIME = 1.0
 
 # Where are datafiles for the game stored?
 # Default: <base_folder>/data
-DATA_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "/data"
+BASE_FOLDER = os.path.dirname(os.path.realpath(__file__))
+DATA_FOLDER = "{}/data".format(BASE_FOLDER)
+BACKUPS_FOLDER = "{}/backups".format(BASE_FOLDER)
 
 # Modules to include
 MODULES = (
