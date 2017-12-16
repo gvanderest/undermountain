@@ -67,15 +67,14 @@ def backup_data(backup_id):
         os.remove(backup_path)
 
     backup = tarfile.open(backup_path, "w:gz")
-
     folder_name = settings.DATA_FOLDER.split("/")[-1]
-
     backup.add(settings.DATA_FOLDER, arcname=folder_name)
-    backup.list()
-    backup.close()
 
-    logging.info("Backup ID generated: {}".format(backup_id))
-    logging.info("Backup saved to {}".format(backup_path))
+    print("Backup ID generated: {}".format(backup_id))
+    print("Backup saved to {}".format(backup_path))
+    print("Backed up {} files.".format(len(backup.getnames())))
+
+    backup.close()
 
 
 def restore_data(backup_id):
@@ -85,17 +84,22 @@ def restore_data(backup_id):
     import shutil
     import tarfile
 
-    backup_path = "{}/{}.tar.gz".format(settings.BACKUPS_FOLDER, backup_id)
+    if "." in backup_id:
+        backup_path = backup_id
+    else:
+        backup_path = "{}/{}.tar.gz".format(settings.BACKUPS_FOLDER, backup_id)
+        print("Restoring backup ID: {}".format(backup_id))
 
-    logging.info("Restoring backup ID: {}".format(backup_id))
+    print("Restoring backup path: {}".format(backup_path))
 
-    print(backup_path)
     backup = tarfile.open(backup_path, "r:gz")
-    backup.list()
     if os.path.exists(settings.DATA_FOLDER):
         shutil.rmtree(settings.DATA_FOLDER)
     os.mkdir(settings.DATA_FOLDER)
     backup.extractall()
+
+    print("Restored {} files.".format(len(backup.getnames())))
+
     backup.close()
 
 
