@@ -447,6 +447,7 @@ class CoreModule(Module):
 
         self.game.register_command("look", look_command)
         self.game.register_command("who", who_command)
+        self.game.register_command("title", title_command)
         self.game.register_command("score", score_command)
         self.game.register_command("delete", delete_command)
         self.game.register_command("say", say_command)
