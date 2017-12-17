@@ -19,5 +19,8 @@ class Server(GameComponent):
         self.game.connections[connection.id] = connection
 
     def remove_connection(self, connection):
-        del self.game.connections[connection.id]
-        del self.connections[connection.id]
+        if connection.id in self.game.connections:
+            del self.game.connections[connection.id]
+
+        if connection.id in self.connections:
+            del self.connections[connection.id]
