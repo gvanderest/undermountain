@@ -15,12 +15,17 @@ def get_python_version():
 
 
 def display_banner():
+    try:
+        VERSION = open("VERSION", "r").read().strip()
+    except Exception:
+        VERSION = None
+
     banner_lines = ("""\
       __ _______
      /  /       \ """ + (64 * "-") + """
     /  /  /  /  /    Undermountain Python MUD Server v{} - Python v{}
-    \____/__/__/ """ + (66 * "-") + "\n").format(
-        Game.VERSION,
+    \____/__/__/ """ + (65 * "-") + "\n").format(
+        VERSION,
         get_python_version(),
     ).split("\n")
 
@@ -29,7 +34,6 @@ def display_banner():
 
 
 def start_game():
-    Game.VERSION = open("VERSION", "r").read().strip()
     display_banner()
 
     print("Loaded settings from {}".format(settings.__file__))
@@ -43,16 +47,14 @@ def start_game():
 
 
 def display_help():
-    display_banner()
-    [print(line) for line in [
-        "Commands:",
-        "./um start - Start the game",
-        "./um backup [id] - Backup data with identifier",
-        "./um restore <id|path> - Restore data with identifier or file path",
-        "",
-        "For backups, see the 'backups' folder",
-    ]]
-    sys.exit(1)
+    print("""\
+Commands:
+./um start - Start the game
+./um backup [id] - Backup data with identifier
+./um restore <id|path> - Restore data with identifier or file path
+
+For backups, see the 'backups' folder
+""")
 
 
 def backup_data(backup_id):
@@ -103,9 +105,17 @@ def restore_data(backup_id):
     backup.close()
 
 
+def display_invalid():
+    print("Error: Invalid arguments provided.")
+    print("")
+    display_help()
+
+
 ARGS = sys.argv
+display_banner()
 if len(ARGS) == 1:
     display_help()
+    sys.exit(0)
 elif ARGS[1] == "start":
     start_game()
 elif ARGS[1] == "backup":
@@ -118,4 +128,5 @@ elif ARGS[1] == "restore":
     backup_id = ARGS[2]
     restore_data(backup_id)
 else:
-    display_help()
+    display_invalid()
+    sys.exit(1)

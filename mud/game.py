@@ -25,8 +25,6 @@ class InvalidInjector(Exception):
 
 
 class Game(object):
-    VERSION = None
-
     def __init__(self):
         self.data = {}
         self.injectors = {}
