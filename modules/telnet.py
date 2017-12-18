@@ -424,6 +424,9 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
 
         if command:
             try:
+                self.game.wiznet(
+                    "log", "{}: {}".format(actor.name, message),
+                    exclude=[actor])
                 delay = command(actor, **kwargs)
             except Exception as e:
                 self.game.handle_exception(e)

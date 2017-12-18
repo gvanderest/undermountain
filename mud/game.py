@@ -38,12 +38,23 @@ class Game(object):
     def handle_exception(self, exception):
         output = traceback.format_exc().replace("{", "{{")
         logging.error(output)
-        self.echo("{{Y--> {{xException: {}".format(output))
+        self.wiznet("exception", "Exception: {}".format(output))
 
-    def echo(self, message):
+    def wiznet(self, type, message, exclude=None):
+        self.echo("{{Y--> {{x{}{{x".format(message), exclude=exclude)
+
+    def echo(self, message, exclude=None):
         """Send a message to all players."""
+        if not exclude:
+            exclude = []
+
         for conn in self.connections.values():
-            conn.client.actor.echo(message)
+            actor = conn.client.actor
+
+            if actor in exclude:
+                continue
+
+            actor.echo(message)
 
     def import_modules_from_settings(self):
         for class_path in settings.MODULES:
