@@ -198,7 +198,7 @@ class Collection(Injector):
         filtered = filter(_filter_function, self.data.values())
         for record in filtered:
             if as_dict:
-                yield record
+                yield dict(record)
             else:
                 yield self.wrap_record(record)
 
@@ -227,12 +227,12 @@ class Collection(Injector):
 
     def unwrap_record(self, record):
         if isinstance(record, Entity):
-            return record.get_data()
+            return dict(record.get_data())
         return record
 
     def wrap_record(self, record):
         if isinstance(record, dict):
-            return self.ENTITY_CLASS(data=record, collection=self)
+            return self.ENTITY_CLASS(data=dict(record), collection=self)
         return record
 
     def delete(self, record):
