@@ -79,9 +79,11 @@ def unlink_command(self, args, Directions, Rooms, **kwargs):
 
     other_room = Rooms.get({"vnum": room.exits[direction.id]["room_vnum"]})
 
-    del other_room.exits[direction.opposite_id]
-    other_room.save()
-    other_room.area.save()
+    counter_exit = other_room.exits.get(direction.opposite_id, None)
+    if counter_exit and counter_exit["room_vnum"] == room.vnum:
+        del other_room.exits[direction.opposite_id]
+        other_room.save()
+        other_room.area.save()
 
     del room.exits[direction.id]
     room.save()
