@@ -312,6 +312,37 @@ class Areas(Collection):
     ENTITY_CLASS = Area
     STORAGE_CLASS = FileStorage
 
+    @inject("Rooms", "Actors", "Objects", "Subroutines")
+    def hydrate(self, record, Rooms, Objects, Actors, Subroutines):
+        """Load the Area from the file."""
+
+        [Rooms.save(room) for room in record.pop("rooms")]
+        [Objects.save(obj) for obj in record.pop("objects")]
+        [Actors.save(actor) for actor in record.pop("actors")]
+        [Subroutines.save(subroutine) for subroutine in
+            record.pop("subroutines")]
+
+        return record
+
+    @inject("Rooms", "Actors", "Objects", "Subroutines")
+    def dehydrate(self, record, Rooms, Actors, Objects, Subroutines):
+        """Save the Area to a file."""
+
+        query_args = [{"area_vnum": self.vnum}]
+        query_kwargs = {"as_dict": True}
+
+        record["rooms"] = list(Rooms.query(*query_args, **query_kwargs))
+        record["actors"] = list(Actors.query(*query_args, **query_kwargs))
+        record["objects"] = list(Objects.query(*query_args, **query_kwargs))
+        record["subroutines"] = list(Subroutines.query(
+            *query_args, **query_kwargs))
+
+        return record
+
+    def post_delete(self, record):
+        """Remove all related Entities."""
+        pass
+
 
 class Room(Entity):
     DEFAULT_DATA = {
@@ -348,7 +379,6 @@ class Direction(Entity):
 
 class Rooms(Collection):
     ENTITY_CLASS = Room
-    STORAGE_CLASS = FileStorage
 
 
 class Subroutine(Entity):
@@ -375,7 +405,6 @@ class Subroutine(Entity):
 
 class Subroutines(Collection):
     ENTITY_CLASS = Subroutine
-    STORAGE_CLASS = FileStorage
 
 
 class Behavior(Entity):
@@ -413,12 +442,10 @@ class Races(Collection):
 
 class Actors(Collection):
     ENTITY_CLASS = Actor
-    STORAGE_CLASS = FileStorage
 
 
 class Objects(Collection):
-    STORAGE_CLASS = FileStorage
-    ENTITY_CLASS = Object
+    pass
 
 
 class Directions(Collection):
@@ -441,6 +468,7 @@ class CoreModule(Module):
         self.game.register_injector(Genders)
         self.game.register_injector(Classes)
         self.game.register_injector(Races)
+        self.game.register_injector(Areas)
 
         for dir_name in settings.DIRECTIONS:
             self.game.register_command(dir_name, direction_command)

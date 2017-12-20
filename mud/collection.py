@@ -39,7 +39,9 @@ class FileStorage(CollectionStorage):
             with open(path, "r") as fh:
                 try:
                     data = json.loads(fh.read())
-                    self.collection.save(data, skip_storage=True)
+                    record = self.collection.hydrate(data)
+                    self.collection.save(record, skip_storage=True)
+
                 except Exception as e:
                     self.collection.game.handle_exception(e)
                     logging.error("Unable to parse file: {}".format(path))
@@ -161,7 +163,7 @@ class Collection(Injector):
     STORAGE_CLASS = MemoryStorage
     STORAGE_FORMAT = "json"
     STORAGE_FILENAME_FIELD = "vnum"
-    STORAGE_FILENAME_SUFFIX = ""
+    STORAGE_FILENAME_SUFFIX = None
     DATA_NAME = None
 
     def __init__(self, game):
@@ -180,7 +182,7 @@ class Collection(Injector):
         name = self.DATA_NAME or self.__class__.__name__
         self.game.data[name] = data
 
-    def query(self, spec=None):
+    def query(self, spec=None, as_dict=False):
         def _filter_function(record):
             if spec is None:
                 return True
@@ -192,7 +194,10 @@ class Collection(Injector):
 
         filtered = filter(_filter_function, self.data.values())
         for record in filtered:
-            yield self.wrap_record(record)
+            if as_dict:
+                yield record
+            else:
+                yield self.wrap_record(record)
 
     def get(self, spec):
         if isinstance(spec, str):
@@ -212,7 +217,8 @@ class Collection(Injector):
         self.data[record["id"]] = record
 
         if not skip_storage:
-            self.storage.post_save(record)
+            storage_record = self.dehydrate(record)
+            self.storage.post_save(storage_record)
 
         return self.get(record["id"])
 
@@ -230,3 +236,16 @@ class Collection(Injector):
         record = self.unwrap_record(record)
         del self.data[record["id"]]
         self.storage.post_delete(record)
+        self.post_delete(record)
+
+    def post_delete(self):
+        """Handle a record being removed from the Collection."""
+        pass
+
+    def dehydrate(self, record):
+        """Prepare data for cold storage."""
+        return record
+
+    def hydrate(self, record):
+        """Load data for Game usage."""
+        return record
