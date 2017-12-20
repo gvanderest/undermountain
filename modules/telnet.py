@@ -94,7 +94,8 @@ What is your name, adventurer? """)
 
     def start_verify_name(self):
         self.write("""
-{{B+{{b------------------------{{B[ {{CWelcome to Waterdeep {{B]{{b-------------------------{{B+{{x
+{{B+{{b------------------------{{B[ {{CWelcome to Waterdeep {{B]{{b\
+-------------------------{{B+{{x
 
   We are a roleplaying -encouraged- mud, meaning roleplaying is not
   required by our players but we do require non-roleplayers abide by a few
@@ -115,7 +116,8 @@ What is your name, adventurer? """)
   nice and civil, and we will return with the same. If you need help developing
   a name for your character there are many websites that generate random names.
 
-{{B+{{b--------------{{B[ {{RThis MUD is rated R for Mature Audiences {{B]{{b---------------{{B+{{x
+{{B+{{b--------------{{B[ {{RThis MUD is rated R for Mature Audiences {{B]{{b\
+---------------{{B+{{x
 
 Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
         self.state = "verify_name"
