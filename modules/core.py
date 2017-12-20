@@ -12,6 +12,83 @@ def fail_command(self, **kwargs):
     raise Exception("Testing exceptions.")
 
 
+@inject("Directions", "Rooms")
+def unlink_command(self, args, Directions, Rooms, **kwargs):
+    if not args:
+        self.echo("Link which exit to which room?")
+        return
+
+    direction_id = args.pop(0)
+    direction = Directions.fuzzy_get(direction_id)
+
+    if not direction:
+        self.echo("That's not a valid direction.")
+        return
+
+    room = self.room
+
+    if not room.exits.get(direction.id, None):
+        self.echo("That exit does not exist.")
+        return
+
+    other_room = Rooms.get({"vnum": room.exits[direction.id]["room_vnum"]})
+
+    del other_room.exits[direction.opposite_id]
+    other_room.save()
+    other_room.area.save()
+
+    del room.exits[direction.id]
+    room.save()
+    room.area.save()
+
+    self.echo("The link to the {} to room {} has been removed.".format(
+        direction.colored_name, other_room.vnum))
+
+
+@inject("Directions", "Rooms")
+def link_command(self, args, Directions, Rooms, **kwargs):
+    if not args:
+        self.echo("Link which exit to which room?")
+        return
+
+    direction_id = args.pop(0)
+
+    if not args:
+        self.echo("Link it to which room?")
+        return
+
+    room_vnum = args.pop(0)
+
+    direction = Directions.fuzzy_get(direction_id)
+    if not direction:
+        self.echo("That's not a valid direction.")
+        return
+
+    room = self.room
+
+    if room.exits.get(direction.id, None):
+        self.echo("That exit already has a room linked to it.")
+        return
+
+    other_room = Rooms.get({"vnum": room_vnum})
+
+    if other_room.exits.get(direction.opposite_id, None):
+        self.echo(
+            "The other room already has an exit in the opposite direction.")
+        return
+
+    room.exits[direction.id] = {"room_vnum": other_room.vnum}
+    room.save()
+    room.area.save()
+
+    other_room.exits[direction.opposite_id] = {"room_vnum": room.vnum}
+    other_room.save()
+    other_room.area.save()
+
+    self.echo("A link to the {} has been created to room {}".format(
+        direction.colored_name, other_room.vnum))
+
+
 @inject("Areas", "Rooms", "Directions")
 def dig_command(self, args, Areas, Rooms, Directions, **kwargs):
     if not args:
@@ -62,6 +139,11 @@ def dig_command(self, args, Areas, Rooms, Directions, **kwargs):
 
     # Save the area.
     area.save()
+
+    self.echo("Room {} to the {} has been created.".format(
+        room.vnum, direction.colored_name))
+
+    self.echo()
 
     self.force(direction.id)
 
@@ -559,7 +641,6 @@ class CoreModule(Module):
         for dir_name in settings.DIRECTIONS:
             self.game.register_command(dir_name, direction_command)
 
-        self.game.register_command("dig", dig_command)
         self.game.register_command("look", look_command)
         self.game.register_command("who", who_command)
         self.game.register_command("title", title_command)
@@ -568,6 +649,9 @@ class CoreModule(Module):
         self.game.register_command("say", say_command)
         self.game.register_command("quit", quit_command)
         self.game.register_command("fail", fail_command)
+        self.game.register_command("dig", dig_command)
+        self.game.register_command("link", link_command)
+        self.game.register_command("unlink", unlink_command)
 
         directions, characters = \
             self.game.get_injectors("Directions", "Characters")
