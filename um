@@ -112,7 +112,6 @@ def display_invalid():
 
 
 ARGS = sys.argv
-display_banner()
 if len(ARGS) == 1:
     display_help()
     sys.exit(0)

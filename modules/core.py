@@ -1,6 +1,7 @@
 from mud.module import Module
 from mud.collection import Collection, Entity, FileStorage
 from mud.inject import inject
+from utils.hash import get_random_hash
 
 import gevent
 import settings
@@ -11,11 +12,68 @@ def fail_command(self, **kwargs):
     raise Exception("Testing exceptions.")
 
 
+@inject("Areas", "Rooms", "Directions")
+def dig_command(self, args, Areas, Rooms, Directions, **kwargs):
+    if not args:
+        self.echo("Dig in which direction?")
+        return
+
+    direction_id = args.pop(0)
+
+    direction = Directions.fuzzy_get(direction_id)
+    if not direction:
+        self.echo("That's not a valid direction.")
+        return
+
+    room = self.room
+
+    exit = room.exits.get(direction.id, None)
+    if exit:
+        self.echo("That direction already has an exit.")
+        return
+
+    area = room.area
+
+    # Look up the existing Room
+    if args:
+        room_vnum = args.pop(0)
+        new_room = Rooms.get({"vnum": room_vnum})
+
+        if not new_room:
+            self.echo("The Room VNUM you've requested does not exist.")
+            return
+
+    # Create the new Room
+    else:
+        new_room = Rooms.save({
+            "area_id": area.id,
+            "area_vnum": area.vnum,
+            "vnum": get_random_hash()[:6],
+            "name": "Unnamed Room",
+            "description": [],
+            "exits": {},
+        })
+
+    # Link the Rooms
+    new_room.exits[direction.opposite_id] = {"room_vnum": room.vnum}
+    new_room.save()
+    room.exits[direction.id] = {"room_vnum": new_room.vnum}
+    room.save()
+
+    # Save the area.
+    area.save()
+
+    self.force(direction.id)
+
+
 @inject("Actors", "Objects", "Directions")
 def look_command(self, args, Actors, Objects, Directions, **kwargs):
     room = self.room
 
     self.echo("{{B{} {{x[{{WLAW{{x] {{R[{{WSAFE{{R]{{x".format(room["name"]))
+    self.echo("(ID: {}) (VNUM: {}) (Area: {})".format(
+        room["id"], room["vnum"], room["area_vnum"]))
+
     for index, line in enumerate(room.description):
         if index == 0:
             line = "{x   " + line
@@ -316,6 +374,14 @@ class Areas(Collection):
     def hydrate(self, record, Rooms, Objects, Actors, Subroutines):
         """Load the Area from the file."""
 
+        # Ensure all records have the Area's information in them
+        keys = ["rooms", "actors", "objects", "subroutines"]
+        for key in keys:
+            for entity in record[key]:
+                entity["area_vnum"] = record["vnum"]
+                entity["area_id"] = record["id"]
+
+        # Save all attached records
         [Rooms.save(room) for room in record.pop("rooms")]
         [Objects.save(obj) for obj in record.pop("objects")]
         [Actors.save(actor) for actor in record.pop("actors")]
@@ -328,7 +394,7 @@ class Areas(Collection):
     def dehydrate(self, record, Rooms, Actors, Objects, Subroutines):
         """Save the Area to a file."""
 
-        query_args = [{"area_vnum": self.vnum}]
+        query_args = [{"area_vnum": record["vnum"]}]
         query_kwargs = {"as_dict": True}
 
         record["rooms"] = list(Rooms.query(*query_args, **query_kwargs))
@@ -336,6 +402,14 @@ class Areas(Collection):
         record["objects"] = list(Objects.query(*query_args, **query_kwargs))
         record["subroutines"] = list(Subroutines.query(
             *query_args, **query_kwargs))
+
+        scrub_keys = ["area_id", "area_vnum"]
+        keys = ["rooms", "actors", "objects", "subroutines"]
+        for key in keys:
+            for entity in record[key]:
+                for scrub_key in scrub_keys:
+                    if scrub_key in entity:
+                        del entity[scrub_key]
 
         return record
 
@@ -371,6 +445,12 @@ class Room(Entity):
         event = self.handle_event(event)
 
         return event
+
+    @property
+    @inject("Areas")
+    def area(self, Areas):
+        """Get the Room's Area."""
+        return Areas.get(self.area_id) or Areas.get({"vnum": self.area_vnum})
 
 
 class Direction(Entity):
@@ -452,6 +532,12 @@ class Directions(Collection):
     STORAGE_CLASS = FileStorage
     ENTITY_CLASS = Direction
 
+    def fuzzy_get(self, name):
+        name = name.lower()
+        for direction in self.query():
+            if direction.id.startswith(name):
+                return direction
+
 
 class CoreModule(Module):
     DESCRIPTION = "The basics of the game, primarily data models"
@@ -473,6 +559,7 @@ class CoreModule(Module):
         for dir_name in settings.DIRECTIONS:
             self.game.register_command(dir_name, direction_command)
 
+        self.game.register_command("dig", dig_command)
         self.game.register_command("look", look_command)
         self.game.register_command("who", who_command)
         self.game.register_command("title", title_command)

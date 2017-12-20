@@ -39,8 +39,8 @@ class FileStorage(CollectionStorage):
             with open(path, "r") as fh:
                 try:
                     data = json.loads(fh.read())
-                    record = self.collection.hydrate(data)
-                    self.collection.save(record, skip_storage=True)
+                    self.collection.save(data, skip_storage=True)
+                    self.collection.hydrate(data)
 
                 except Exception as e:
                     self.collection.game.handle_exception(e)
@@ -155,6 +155,9 @@ class Entity(object):
 
     def get_data(self):
         return self._data
+
+    def save(self):
+        return self._collection.save(self)
 
 
 class Collection(Injector):
