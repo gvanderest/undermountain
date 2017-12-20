@@ -20,6 +20,28 @@ MODULES = (
     "modules.telnet.TelnetModule",
 )
 
+# Conversation channels.
+CHANNELS = {
+    "ooc": {
+        "default": True,
+        "toggle": True,
+        "force_name": True,
+        "echo_to_others": "{W[*OOC*]{c{name} {8'{w{message}{8'{x",
+        "echo_to_self": "{WYou OOC {8'{w{message}{8'{x",
+    },
+    "trash": {
+        "default": False,
+        "toggle": True,
+        "force_name": True,
+        "toggle_warning": """
+You are about to enable a channel that is bad.
+Please verify that you really want to turn this bad channel by toggling \
+again.""",
+        "echo_to_others": "{name} TRASHes '{message}'",
+        "echo_to_self": "You TRASH '{message}'",
+    }
+}
+
 DIRECTIONS = {
     "north": {
         "id": "north",

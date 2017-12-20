@@ -7,9 +7,55 @@ import gevent
 import settings
 
 
+@inject("Areas")
+def areas_command(self, Areas, **kwargs):
+    """List all Areas available in the Game."""
+    self.echo("List of Areas:")
+    for area in Areas.query():
+        self.echo("* {} (vnum '{}')".format(area.name, area.vnum))
+
+
+@inject("Rooms")
+def goto_command(self, args, Rooms, **kwargs):
+    """Go to a certain Room by its ID or VNUM."""
+    if not args:
+        self.echo("Please specify a room ID or VNUM.")
+        return
+
+    room_id_or_vnum = args.pop(0)
+    room = Rooms.get(room_id_or_vnum) or Rooms.get({"vnum": room_id_or_vnum})
+
+    if not room:
+        self.echo("Room not found.")
+        return
+
+    self.act("{self.name} disappears suddenly.")
+    self.room_id = room.id
+    self.room_vnum = room.vnum
+    self.save()
+    self.act("{self.name} appears suddenly.")
+    self.force("look")
+
+
 def fail_command(self, **kwargs):
     """Force an Exception to occur."""
     raise Exception("Testing exceptions.")
+
+
+def channel_command(self, name, message, **kwargs):
+    channel = settings.CHANNELS[name]
+
+    if not message:
+        self.echo("Channel toggling is not yet supported.")
+        return
+
+    def replace(template):
+        template = template.replace("{name}", self.name)
+        template = template.replace("{message}", message)
+        return template
+
+    self.echo(replace(channel["echo_to_self"]))
+    self.game.echo(replace(channel["echo_to_others"]), exclude=[self])
 
 
 @inject("Directions", "Rooms")
@@ -641,6 +687,9 @@ class CoreModule(Module):
         for dir_name in settings.DIRECTIONS:
             self.game.register_command(dir_name, direction_command)
 
+        for channel_name in settings.CHANNELS:
+            self.game.register_command(channel_name, channel_command)
+
         self.game.register_command("look", look_command)
         self.game.register_command("who", who_command)
         self.game.register_command("title", title_command)
@@ -652,6 +701,8 @@ class CoreModule(Module):
         self.game.register_command("dig", dig_command)
         self.game.register_command("link", link_command)
         self.game.register_command("unlink", unlink_command)
+        self.game.register_command("areas", areas_command)
+        self.game.register_command("goto", goto_command)
 
         directions, characters = \
             self.game.get_injectors("Directions", "Characters")
