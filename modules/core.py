@@ -189,7 +189,7 @@ def dig_command(self, args, Areas, Rooms, Directions, **kwargs):
     area.save()
 
     self.echo("Room {} to the {} has been created.".format(
-        room.vnum, direction.colored_name))
+        new_room.vnum, direction.colored_name))
 
     self.echo()
 
