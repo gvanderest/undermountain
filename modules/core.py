@@ -11,7 +11,7 @@ import settings
 
 class Map(object):
     @classmethod
-    def from_actor(cls, actor, width=45, height=23):
+    def from_actor(cls, actor, width=45, height=23, border=False):
         # Note: All coordinates are (row, col) to make things easier later.
         Rooms = actor.game.get_injector("Rooms")
 
@@ -90,7 +90,26 @@ class Map(object):
                 if next_room.vnum not in used_room_vnums:
                     used_room_vnums.add(next_room.vnum)
                     stack.append((next_y, next_x, next_room))
-                    print("NEXT", next_y, next_x, next_room)
+
+        if border:
+            CORNER_SYMBOL = "{x+"
+            HORIZONTAL_SYMBOL = "{x-"
+            VERTICAL_SYMBOL = "{x|"
+
+            max_y = height - 1
+            max_x = width - 1
+
+            # Corner symbols
+            for y, x in ((0, 0), (0, max_x), (max_y, 0), (max_y, max_x)):
+                grid[y][x] = CORNER_SYMBOL
+
+            # Horizontals
+            for x in range(1, width - 1):
+                grid[max_y][x] = grid[0][x] = HORIZONTAL_SYMBOL
+
+            # Verticals
+            for y in range(1, height - 1):
+                grid[y][max_x] = grid[y][0] = VERTICAL_SYMBOL
 
         return Map(grid)
 
@@ -370,16 +389,18 @@ def dig_command(self, args, Areas, Rooms, Directions, **kwargs):
 def look_command(self, args, Actors, Objects, Directions, **kwargs):
     room = self.room
 
-    self.echo("{{B{} {{x[{{WLAW{{x] {{R[{{WSAFE{{R]{{x".format(room["name"]))
-    self.echo("(ID: {}) (VNUM: {}) (Area: {})".format(
+    lines = []
+    lines.append(
+        "{{B{} {{x[{{WLAW{{x] {{R[{{WSAFE{{R]{{x".format(room["name"]))
+    lines.append("(ID: {}) (VNUM: {}) (Area: {})".format(
         room["id"], room["vnum"], room["area_vnum"]))
 
     for index, line in enumerate(room.description):
         if index == 0:
             line = "{x   " + line
-        self.echo(line)
+        lines.append(line)
 
-    self.echo()
+    lines.append("")
 
     exit_names = []
     door_names = []
@@ -394,14 +415,43 @@ def look_command(self, args, Actors, Objects, Directions, **kwargs):
             " ".join(exit_names) if exit_names else "none",
             " ".join(door_names) if door_names else "none",
         )
-    self.echo(exits_line)
+    lines.append(exits_line)
 
     spec = {"room_id": room["id"]}
     for actor in Actors.query(spec):
-        self.echo("{} is standing here.".format(actor["name"]))
+        lines.append("{} is standing here.".format(actor["name"]))
 
     for obj in Objects.query(spec):
-        self.echo("{} is on the ground here.".format(obj["name"]))
+        lines.append("{} is on the ground here.".format(obj["name"]))
+
+    MINIMAP_ENABLED = True
+    MINIMAP_WIDTH = 15
+    MINIMAP_HEIGHT = 7
+    MINIMAP_BORDER = False
+    MINIMAP_JOIN_SYMBOLS = "  "
+
+    if MINIMAP_ENABLED:
+        minimap = Map.from_actor(
+            self, width=MINIMAP_WIDTH, height=MINIMAP_HEIGHT,
+            border=MINIMAP_BORDER)
+        map_lines = minimap.to_lines()
+
+        map_line_count = len(map_lines)
+        line_count = len(lines)
+
+        outputs = []
+
+        for index in range(max(map_line_count, line_count)):
+            map_line = map_lines[index] if index < map_line_count else \
+                " " * MINIMAP_WIDTH
+            line = lines[index] if index < line_count else \
+                ""
+
+            outputs.append(map_line + MINIMAP_JOIN_SYMBOLS + line)
+
+        lines = outputs
+
+    self.echo(lines)
 
 
 def quit_command(self, **kwargs):
@@ -608,7 +658,11 @@ class Actor(Entity):
         if not self.client:
             return
 
-        self.client.writeln(message)
+        if isinstance(message, list):
+            for line in message:
+                self.echo(line)
+        else:
+            self.client.writeln(str(message))
 
     def emit_event(self, event):
         return self.room.emit_event(event)
