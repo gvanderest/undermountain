@@ -659,6 +659,9 @@ class Actor(Entity):
                 save_room = True
                 room = Rooms.get({"vnum": settings.INITIAL_ROOM_VNUM})
 
+        if not room:
+            room = Rooms.get({"vnum": "void"})
+
         if save_room:
             self.room_id = room.id
             self.room_vnum = room.vnum
@@ -1029,8 +1032,9 @@ class CoreModule(Module):
         self.game.register_command("subroutines", subroutines_command)
         self.game.register_command("tell", tell_command)
 
-        directions, characters = \
-            self.game.get_injectors("Directions", "Characters")
+        directions, characters, rooms, areas = \
+            self.game.get_injectors(
+                "Directions", "Characters", "Rooms", "Areas")
 
         directions.data = settings.DIRECTIONS
 
@@ -1038,3 +1042,20 @@ class CoreModule(Module):
             actor.online = False
             actor.connection_id = None
             characters.save(actor)
+
+        areas.save({
+            "id": "void",
+            "vnum": "void",
+            "name": "The Void",
+        })
+
+        rooms.save({
+            "id": "void",
+            "vnum": "void",
+            "area_vnum": "void",
+            "name": "The Void",
+            "description": [
+                "You are floating in nothingness.",
+            ],
+            "exits": {},
+        })
