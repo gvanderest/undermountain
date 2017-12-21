@@ -92,3 +92,5 @@ WEBSOCKET_PORTS = (
 )
 
 INITIAL_ROOM_VNUM = "market_square"
+
+VNUM_AREA_SEPARATOR = ":"

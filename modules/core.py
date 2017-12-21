@@ -193,7 +193,7 @@ def goto_command(self, args, Rooms, **kwargs):
         return
 
     room_id_or_vnum = args.pop(0)
-    room = Rooms.get(room_id_or_vnum) or Rooms.get({"vnum": room_id_or_vnum})
+    room = Rooms.fuzzy_get(room_id_or_vnum)
 
     if not room:
         self.echo("Room not found.")
@@ -759,6 +759,38 @@ class Direction(Entity):
 
 class Rooms(Collection):
     ENTITY_CLASS = Room
+
+    @inject("Areas")
+    def fuzzy_get(self, identifier, Areas):
+        """Try to find a Room by its id, strict vnum, loose vnum."""
+        # Try ID
+        room = self.get(identifier)
+        if room:
+            return room
+
+        # If area:vnum format, try that.
+        if settings.VNUM_AREA_SEPARATOR in identifier:
+            parts = identifier.split(settings.VNUM_AREA_SEPARATOR)
+            area_vnum = parts[0].lower()
+            room_vnum = parts[1].lower()
+
+            area = Areas.get({"vnum": area_vnum})
+
+            # Area does not exist.
+            if not area:
+                return None
+
+            for room in self.query({"area_vnum": area.vnum}):
+                if room.vnum.startswith(room_vnum):
+                    return room
+
+        # Fuzzy scan the world.
+        else:
+            room_vnum = identifier.lower()
+
+            for room in self.query():
+                if room.vnum.startswith(room_vnum):
+                    return room
 
 
 class Subroutine(Entity):
