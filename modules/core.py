@@ -703,7 +703,7 @@ class Areas(Collection):
         record["subroutines"] = list(Subroutines.query(
             *query_args, **query_kwargs))
 
-        scrub_keys = ["id", "area_id", "area_vnum"]
+        scrub_keys = ["area_id", "area_vnum"]
         keys = ["rooms", "actors", "objects", "subroutines"]
         for key in keys:
             for entity in record[key]:
