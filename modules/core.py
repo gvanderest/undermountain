@@ -137,6 +137,34 @@ def subroutines_command(self, args, Subroutines, **kwargs):
             subroutine.id, subroutine.vnum, subroutine.name))
 
 
+@inject("Characters")
+def tell_command(self, args, Characters, **kwargs):
+    """Private message a Character with a message."""
+    if not args:
+        self.echo("Tell whom what?")
+        return
+
+    target_name = args.pop(0).lower()
+
+    if not args:
+        self.echo("Tell them what?")
+        return
+
+    message = " ".join(args)
+
+    if target_name in settings.SELF_NAMES:
+        char = self
+    else:
+        char = Characters.fuzzy_get(target_name)
+        if not char:
+            self.echo("Can't find that player.")
+            return
+
+    self.echo("{{gYou tell {} '{{G{}{{g'{{x".format(char.name, message))
+    if char != self:
+        char.echo("{{g{} tells you '{{G{}{{g'{{x".format(self.name, message))
+
+
 def map_command(self, **kwargs):
     """Display a Map to the Character."""
     map = Map.from_actor(self)
@@ -904,6 +932,26 @@ class Characters(Collection):
     STORAGE_FILENAME_FIELD = "name"
     ENTITY_CLASS = Character
 
+    def fuzzy_get(self, name, online=True, visible=True):
+        filters = {}
+
+        name = name.lower()
+
+        if online:
+            filters["online"] = True
+
+        first_match = None
+
+        for char in self.query({"online": online}):
+            char_name = char.name.lower()
+            if char_name == name:
+                return char
+
+            if char_name.startswith(name):
+                first_match = char
+
+        return first_match
+
 
 class Genders(Collection):
     ENTITY_CLASS = Entity
@@ -979,6 +1027,7 @@ class CoreModule(Module):
         self.game.register_command("time", time_command)
         self.game.register_command("map", map_command)
         self.game.register_command("subroutines", subroutines_command)
+        self.game.register_command("tell", tell_command)
 
         directions, characters = \
             self.game.get_injectors("Directions", "Characters")

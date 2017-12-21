@@ -19,6 +19,11 @@ PASSWORD_ALGORITHM = "sha256"
 PASSWORD_SALT = "undermountain"  # TODO Make this generated once on first run
 PASSWORD_ROUNDS = 100000
 
+# Special keywords.
+SELF_NAMES = (
+    "self",
+)
+
 
 # Modules to include
 MODULES = (
