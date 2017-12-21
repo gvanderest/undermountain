@@ -7,6 +7,21 @@ import gevent
 import settings
 
 
+@inject("Rooms")
+def rooms_command(self, Rooms, **kwargs):
+    area = self.room.area
+
+    self.echo("Rooms in {}".format(area.vnum))
+
+    count = 0
+    for room in Rooms.query({"area_id": area.id}):
+        count += 1
+        self.echo("* {} - {} - {}{{x".format(room.id, room.vnum, room.name))
+
+    if count == 0:
+        self.echo("No rooms found.")
+
+
 @inject("Areas")
 def areas_command(self, Areas, **kwargs):
     """List all Areas available in the Game."""
@@ -705,6 +720,7 @@ class CoreModule(Module):
         self.game.register_command("unlink", unlink_command)
         self.game.register_command("areas", areas_command)
         self.game.register_command("goto", goto_command)
+        self.game.register_command("rooms", rooms_command)
 
         directions, characters = \
             self.game.get_injectors("Directions", "Characters")
