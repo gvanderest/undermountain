@@ -36,9 +36,11 @@ class Game(object):
         self.import_modules_from_settings()
 
     def handle_exception(self, exception):
-        output = traceback.format_exc().replace("{", "{{")
+        output = traceback.format_exc()
         logging.error(output)
-        self.wiznet("exception", "Exception: {}".format(output))
+
+        escaped = output.replace("{", "{{")
+        self.wiznet("exception", "Exception: {}".format(escaped))
 
     def wiznet(self, type, message, exclude=None):
         self.echo("{{Y--> {{x{}{{x".format(message), exclude=exclude)

@@ -1,15 +1,170 @@
+from datetime import datetime
 from mud.module import Module
 from mud.collection import Collection, Entity, FileStorage
 from mud.inject import inject
 from utils.hash import get_random_hash
+# from utils.map import Map
 
 import gevent
 import settings
 
 
-@inject("Rooms")
-def rooms_command(self, Rooms, **kwargs):
+class Map(object):
+    @classmethod
+    def from_actor(cls, actor, width=45, height=23):
+        # Note: All coordinates are (row, col) to make things easier later.
+        Rooms = actor.game.get_injector("Rooms")
+
+        VERTICAL_SYMBOL = "|"
+        HORIZONTAL_SYMBOL = "--"
+
+        VALID_DIRECTIONS = set(["north", "east", "south", "west"])
+
+        DIRECTIONS = {
+            "north": (((VERTICAL_SYMBOL,),), -1, 0, -2, 0),
+            "east": (((HORIZONTAL_SYMBOL,),), 0, 1, 0, 3),
+            "south": (((VERTICAL_SYMBOL,),), 1, 0, 2, 0),
+            "west": (((HORIZONTAL_SYMBOL,),), 0, -2, 0, -3),
+        }
+
+        ORIGIN_COLOR = "{R"
+        ROOM_COLOR = "{C"
+        LINEAR_LINK_COLOR = "{x"
+        NON_LINEAR_LINK_COLOR = "{r"
+        EMPTY_SYMBOL = " "
+
+        grid = [
+            [EMPTY_SYMBOL for _ in range(width)] for _ in range(height)
+        ]
+
+        start_room = actor.room
+        used_room_vnums = set([start_room.vnum])
+        stack = [
+            (height // 2, width // 2, start_room)
+        ]
+
+        def coords_are_valid(y, x):
+            return y > 0 and y < height and x > 0 and x < width
+
+        while stack:
+            base_y, base_x, room = stack.pop()
+
+            linear = True
+            if grid[base_y][base_x] != EMPTY_SYMBOL:
+                linear = False
+
+            # Origin room.
+            if grid[base_y][base_x] == EMPTY_SYMBOL:
+                grid[base_y][base_x] = (ORIGIN_COLOR + "@") \
+                    if room == start_room else (ROOM_COLOR + "#")
+
+            for direction_id, entry in room.exits.items():
+                if direction_id not in VALID_DIRECTIONS:
+                    continue
+
+                symbols, symbol_y_start, symbol_x_start, y_mod, x_mod = \
+                    DIRECTIONS[direction_id]
+
+                # Linkages.
+                for symbol_y, symbol_row in enumerate(symbols):
+                    for symbol_x, symbols_in_row in enumerate(symbol_row):
+                        for char_x, symbol in enumerate(symbols_in_row):
+                            y = base_y + symbol_y_start + symbol_y
+                            x = base_x + symbol_x_start + symbol_x + char_x
+
+                            if not coords_are_valid(y, x):
+                                continue
+
+                            link_color = LINEAR_LINK_COLOR if linear \
+                                else NON_LINEAR_LINK_COLOR
+                            grid[y][x] = link_color + symbol
+
+                next_y = base_y + y_mod
+                next_x = base_x + x_mod
+
+                if not coords_are_valid(next_y, next_x):
+                    continue
+
+                next_room = Rooms.get({"vnum": entry["room_vnum"]})
+
+                if next_room.vnum not in used_room_vnums:
+                    used_room_vnums.add(next_room.vnum)
+                    stack.append((next_y, next_x, next_room))
+                    print("NEXT", next_y, next_x, next_room)
+
+        return Map(grid)
+
+    def __init__(self, grid):
+        self.grid = grid
+
+    def to_lines(self):
+        return ["".join(row) for row in self.grid]
+
+
+@inject("Subroutines")
+def subroutines_command(self, args, Subroutines, **kwargs):
+    """Display the list of Subroutines for an Area."""
+
+    if args:
+        area_vnum = args.pop(0)
+        area = Areas.get({"vnum": area_vnum})
+    else:
+        area = self.room.area
+
     area = self.room.area
+    self.echo("Subroutines in {}".format(area.vnum))
+    for subroutine in Subroutines.query({"area_vnum": area.vnum}):
+        self.echo("* {} - {} - {}".format(
+            subroutine.id, subroutine.vnum, subroutine.name))
+
+
+def map_command(self, **kwargs):
+    """Display a Map to the Character."""
+    map = Map.from_actor(self)
+
+    self.echo("{}'s Map of {}".format(
+        self.name, self.room.area.name).center(79))
+    self.echo("\n".join(map.to_lines()))
+
+
+def time_command(self, **kwargs):
+    """Display the current time."""
+
+    now = datetime.now()
+
+    date_format = "%a %b %d %H:%M:%S %Y"
+    # great_realms_time = "Wed Dec 20 22:02:27 2017"
+
+    current_time = now.strftime(date_format)
+
+    self.echo("""\
+{{B+{{b---------------------------------------------------------{{B+{{x
+  Great Realms Standard Time: {}
+{{B+{{b---------------------------------------------------------{{B+{{x
+  Waterdeep Standard Time:    {}
+  Waterdeep Last Rebooted:    {}
+{{B+{{b---------------------------------------------------------{{B+{{x\
+""".format(
+        current_time,
+        current_time,
+        current_time,
+    ))
+
+    pass
+
+
+@inject("Rooms", "Areas")
+def rooms_command(self, args, Rooms, Areas, **kwargs):
+
+    if args:
+        area_vnum = args.pop(0)
+        area = Areas.get({"vnum": area_vnum})
+    else:
+        area = self.room.area
+
+    if not area:
+        self.echo("Area {} not found.".format(area_vnum))
+        return
 
     self.echo("Rooms in {}".format(area.vnum))
 
@@ -27,7 +182,7 @@ def areas_command(self, Areas, **kwargs):
     """List all Areas available in the Game."""
     self.echo("List of Areas:")
     for area in Areas.query():
-        self.echo("* {} (vnum '{}')".format(area.name, area.vnum))
+        self.echo("* {} - {} - {}".format(area.id, area.vnum, area.name))
 
 
 @inject("Rooms")
@@ -548,7 +703,7 @@ class Areas(Collection):
         record["subroutines"] = list(Subroutines.query(
             *query_args, **query_kwargs))
 
-        scrub_keys = ["area_id", "area_vnum"]
+        scrub_keys = ["id", "area_id", "area_vnum"]
         keys = ["rooms", "actors", "objects", "subroutines"]
         for key in keys:
             for entity in record[key]:
@@ -721,6 +876,9 @@ class CoreModule(Module):
         self.game.register_command("areas", areas_command)
         self.game.register_command("goto", goto_command)
         self.game.register_command("rooms", rooms_command)
+        self.game.register_command("time", time_command)
+        self.game.register_command("map", map_command)
+        self.game.register_command("subroutines", subroutines_command)
 
         directions, characters = \
             self.game.get_injectors("Directions", "Characters")
