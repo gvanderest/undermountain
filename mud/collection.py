@@ -196,7 +196,7 @@ class Collection(Injector):
                 return True
 
         filtered = filter(_filter_function, self.data.values())
-        for record in filtered:
+        for record in list(filtered):
             if as_dict:
                 yield dict(record)
             else:
