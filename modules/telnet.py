@@ -5,7 +5,7 @@ from mud.connection import Connection
 from mud.server import Server
 from mud.module import Module
 from utils.ansi import colorize, decolorize
-from utils.hash import password_is_valid
+from utils.hash import hash_password, password_is_valid
 from utils.fuzzy_resolver import FuzzyResolver
 
 import gevent
@@ -148,19 +148,37 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
 
     @inject("Characters")
     def handle_verify_name_input(self, message, Characters):
-        self.start_select_password()
+        if message.lower().startswith("y"):
+            self.writeln("A new life has been created.")
+            self.writeln()
+            self.start_select_password()
+        elif message.lower().startswith("n"):
+            self.restart_login_username()
+        else:
+            self.write("Is your name {} (Y/N)? ".format(
+                self.temporary_actor.name))
 
     def start_select_password(self):
         self.state = "select_password"
-        self.write("""
-A new life has been created.
-
-Please choose a password (max 8 characters) for {}: """.format(
-            self.temporary_actor.name))
+        self.write(
+            """Please choose a password (max 8 characters) for {}: """.format(
+                self.temporary_actor.name))
 
     def handle_select_password_input(self, message):
-        self.start_select_race()
-        self.temporary_actor.password = "test"
+        self.temporary_actor.password = hash_password(message)
+        self.start_confirm_password()
+
+    def start_confirm_password(self):
+        self.state = "confirm_password"
+        self.write("Please confirm your password: ")
+
+    def handle_confirm_password_input(self, message):
+        if self.temporary_actor.password != hash_password(message):
+            self.writeln(
+                "You did not type the same password, please try again.")
+            self.start_select_password()
+        else:
+            self.start_select_race()
 
     def start_select_race(self):
         self.state = "select_race"
