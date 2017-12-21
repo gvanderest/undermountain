@@ -243,8 +243,10 @@ def channel_command(self, name, message, **kwargs):
         template = template.replace("{message}", message)
         return template
 
-    self.echo(replace(channel["echo_to_self"]))
-    self.game.echo(replace(channel["echo_to_others"]), exclude=[self])
+    template_to_others = channel["to_others"]
+
+    self.echo(replace(channel.get("to_self", template_to_others)))
+    self.game.echo(replace(template_to_others), exclude=[self])
 
 
 @inject("Directions", "Rooms")

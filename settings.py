@@ -20,28 +20,6 @@ MODULES = (
     "modules.telnet.TelnetModule",
 )
 
-# Conversation channels.
-CHANNELS = {
-    "ooc": {
-        "default": True,
-        "toggle": True,
-        "force_name": True,
-        "echo_to_others": "{W[*OOC*]{c{name} {8'{w{message}{8'{x",
-        "echo_to_self": "{WYou OOC {8'{w{message}{8'{x",
-    },
-    "trash": {
-        "default": False,
-        "toggle": True,
-        "force_name": True,
-        "toggle_warning": """
-You are about to enable a channel that is bad.
-Please verify that you really want to turn this bad channel by toggling \
-again.""",
-        "echo_to_others": "{name} TRASHes '{message}'",
-        "echo_to_self": "You TRASH '{message}'",
-    }
-}
-
 DIRECTIONS = {
     "north": {
         "id": "north",
@@ -94,3 +72,56 @@ WEBSOCKET_PORTS = (
 INITIAL_ROOM_VNUM = "market_square"
 
 VNUM_AREA_SEPARATOR = ":"
+
+# Conversation channels.
+CHANNELS = {
+    "ooc": {
+        "to_others": "{W[*OOC*]{c{name} {8'{w{message}{8'{x",
+        "to_self": "{WYou OOC {8'{w{message}{8'{x",
+    },
+    "trash": {
+        "toggle_warning": """
+You are about to enable a channel that is bad.
+Please verify that you really want to turn this bad channel by toggling \
+again.""",
+        "to_others": "{name} TRASHes '{message}'",
+        "to_self": "You TRASH '{message}'",
+    },
+    "immtalk": {
+        "to_others": "{x{name}: {W{message}{x",
+    },
+    "auction": {
+        "to_self": "You {R<{G-{Y={MA/B{Y={G-{R> {CAuction {x'{G{message}{x'",
+        "to_others":
+            "{name} {R<{G-{Y={MA/B{Y={G-{R> {CAuctions {x'{G{message}{x'",
+    },
+    "bid": {
+        "to_self": "You {R<{G-{Y={MA/B{Y={G-{R> {CBid {x'{G{message}{x'",
+        "to_others":
+            "{name} {R<{G-{Y={MA/B{Y={G-{R> {CBids {x'{G{message}{x'",
+    },
+    "cgossip": {
+        "to_self": "You cgossip '{R{message}{x'",
+        "to_others": "{name} cgossips '{R{message}{x'",
+    },
+    "qgossip": {
+        "to_self": "You {C({Wqg{Bo{bs{Bs{Wip{C){x '{C{message}{x'",
+        "to_others": "{name} {C({Wqg{Bo{bs{Bs{Wip{C){x '{C{message}{x'",
+    },
+    "heronet": {
+        "to_self": "{g[You {GHero-Net{g]: '{message}{g'",
+        "to_others": "{g[{name} {GHero-Nets{g]: '{message}{g'",
+    },
+    "quote": {
+        "to_self": "You quote '{g{message}{x'",
+        "to_others": "{name} quotes '{g{message}{x'",
+    },
+    "ask": {
+        "to_self": "You [Q/A] Ask '{Y{message}{x'",
+        "to_others": "{name} [Q/A] Asks '{Y{message}{x'",
+    },
+    "answer": {
+        "to_self": "You [Q/A] Answer '{Y{message}{x'",
+        "to_others": "{name} [Q/A] Answers '{Y{message}{x'",
+    },
+}
