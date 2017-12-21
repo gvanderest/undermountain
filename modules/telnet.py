@@ -5,6 +5,7 @@ from mud.connection import Connection
 from mud.server import Server
 from mud.module import Module
 from utils.ansi import colorize, decolorize
+from utils.hash import password_is_valid
 from utils.fuzzy_resolver import FuzzyResolver
 
 import gevent
@@ -66,6 +67,10 @@ What is your name, adventurer? """)
     def stop(self):
         self.writeln("Disconnecting..")
 
+    def restart_login_username(self):
+        self.write("What is your name? ")
+        self.state = "login_username"
+
     def handle_login_username_input(self, message):
         Characters = self.game.get_injector("Characters")
         name = message.strip().lower().title()
@@ -79,16 +84,35 @@ What is your name, adventurer? """)
             })
             self.start_verify_name()
             return
+        else:
+            self.temporary_actor = found
+            self.start_login_password()
+
+    def start_login_password(self):
+        self.write("Password: ")
+        self.state = "login_password"
+
+    def handle_login_password_input(self, message):
+        actor_password = self.temporary_actor.password
+
+        if not password_is_valid(message, actor_password):
+            self.writeln("Sorry, that is not the correct password.")
+            self.connection.close()
+            return
+
+        found = self.temporary_actor
+
+        if found.connection:
+            found.echo(
+                "You have been kicked off due to another logging in.")
+            found.connection.close()
 
         found.online = False
         found.save()
 
         self.connection.actor_id = found.id
 
-        if found.connection:
-            found.echo(
-                "You have been kicked off due to another logging in.")
-            found.connection.close()
+        self.temporary_actor = None
 
         self.start_motd()
 

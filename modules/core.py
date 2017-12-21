@@ -591,6 +591,18 @@ class Actor(Entity):
         "class_ids": ["adventurer"],
     }
 
+    @inject("Actors")
+    def spawn_actor(self, data, Actors):
+        room = self.room
+        data["room_id"] = room.id
+        data["room_vnum"] = room.vnum
+
+        area = room.area
+        data["area_id"] = area.id
+        data["area_vnum"] = area.vnum
+
+        return Actors.save(data)
+
     @property
     @inject("Classes")
     def classes(self, Classes):

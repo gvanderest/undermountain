@@ -14,6 +14,12 @@ BASE_FOLDER = os.path.dirname(os.path.realpath(__file__))
 DATA_FOLDER = "{}/data".format(BASE_FOLDER)
 BACKUPS_FOLDER = "{}/backups".format(BASE_FOLDER)
 
+# Passwords and encryption
+PASSWORD_ALGORITHM = "sha256"
+PASSWORD_SALT = "undermountain"  # TODO Make this generated once on first run
+PASSWORD_ROUNDS = 100000
+
+
 # Modules to include
 MODULES = (
     "modules.core.CoreModule",
