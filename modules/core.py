@@ -425,8 +425,8 @@ def look_command(self, args, Actors, Objects, Directions, **kwargs):
         lines.append("{} is on the ground here.".format(obj["name"]))
 
     MINIMAP_ENABLED = True
-    MINIMAP_WIDTH = 15
-    MINIMAP_HEIGHT = 7
+    MINIMAP_WIDTH = 16
+    MINIMAP_HEIGHT = 8
     MINIMAP_BORDER = False
     MINIMAP_JOIN_SYMBOLS = "  "
 
