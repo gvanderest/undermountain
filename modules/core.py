@@ -120,6 +120,25 @@ class Map(object):
         return ["".join(row) for row in self.grid]
 
 
+@inject("Areas")
+def asave_command(self, args, Areas, **kwargs):
+    """Save the area to its storage."""
+
+    if args:
+        area_vnum = args.pop(0)
+        area = Areas.get({"vnum": area_vnum})
+    else:
+        area = self.room.area
+
+    if not area:
+        self.echo("Area not found.")
+        return
+
+    area.save()
+
+    self.echo("Area {} saved.".format(area.vnum))
+
+
 @inject("Scripts")
 def scripts_command(self, args, Scripts, **kwargs):
     """Display the list of Scripts for an Area."""
@@ -1029,6 +1048,7 @@ class CoreModule(Module):
         self.game.register_command("map", map_command)
         self.game.register_command("scripts", scripts_command)
         self.game.register_command("tell", tell_command)
+        self.game.register_command("asave", asave_command)
 
         directions, characters, rooms, areas = \
             self.game.get_injectors(
