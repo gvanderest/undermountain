@@ -120,6 +120,32 @@ class Map(object):
         return ["".join(row) for row in self.grid]
 
 
+def equipment_command(self, **kwargs):
+    self.echo("You are using:")
+    self.echo("Nothing.")
+
+
+def inventory_command(self, **kwargs):
+    self.echo("You are carrying:")
+    self.echo("     Nothing.")
+
+
+def group_command(self, **kwargs):
+    self.echo("{}'s group:".format(self.name))
+
+    self.echo("[{} {}] {} {}/{} hp {}/{} mana {} xp".format(
+        self.level,
+        self.classes[0].short_name,
+
+        self.name.ljust(20),
+
+        0, 0,
+        0, 0,
+
+        self.experience,
+    ))
+
+
 @inject("Areas")
 def asave_command(self, args, Areas, **kwargs):
     """Save the area to its storage."""
@@ -1049,6 +1075,9 @@ class CoreModule(Module):
         self.game.register_command("scripts", scripts_command)
         self.game.register_command("tell", tell_command)
         self.game.register_command("asave", asave_command)
+        self.game.register_command("equipment", equipment_command)
+        self.game.register_command("inventory", inventory_command)
+        self.game.register_command("group", group_command)
 
         directions, characters, rooms, areas = \
             self.game.get_injectors(
