@@ -120,9 +120,9 @@ class Map(object):
         return ["".join(row) for row in self.grid]
 
 
-@inject("Subroutines")
-def subroutines_command(self, args, Subroutines, **kwargs):
-    """Display the list of Subroutines for an Area."""
+@inject("Scripts")
+def scripts_command(self, args, Scripts, **kwargs):
+    """Display the list of Scripts for an Area."""
 
     if args:
         area_vnum = args.pop(0)
@@ -131,10 +131,10 @@ def subroutines_command(self, args, Subroutines, **kwargs):
         area = self.room.area
 
     area = self.room.area
-    self.echo("Subroutines in {}".format(area.vnum))
-    for subroutine in Subroutines.query({"area_vnum": area.vnum}):
+    self.echo("Scripts in {}".format(area.vnum))
+    for script in Scripts.query({"area_vnum": area.vnum}):
         self.echo("* {} - {} - {}".format(
-            subroutine.id, subroutine.vnum, subroutine.name))
+            script.id, script.vnum, script.name))
 
 
 @inject("Characters")
@@ -769,12 +769,12 @@ class Areas(Collection):
     ENTITY_CLASS = Area
     STORAGE_CLASS = FileStorage
 
-    @inject("Rooms", "Actors", "Objects", "Subroutines")
-    def hydrate(self, record, Rooms, Objects, Actors, Subroutines):
+    @inject("Rooms", "Actors", "Objects", "Scripts")
+    def hydrate(self, record, Rooms, Objects, Actors, Scripts):
         """Load the Area from the file."""
 
         # Ensure all records have the Area's information in them
-        keys = ["rooms", "actors", "objects", "subroutines"]
+        keys = ["rooms", "actors", "objects", "scripts"]
         for key in keys:
             for entity in record[key]:
                 entity["area_vnum"] = record["vnum"]
@@ -784,13 +784,12 @@ class Areas(Collection):
         [Rooms.save(room) for room in record.pop("rooms")]
         [Objects.save(obj) for obj in record.pop("objects")]
         [Actors.save(actor) for actor in record.pop("actors")]
-        [Subroutines.save(subroutine) for subroutine in
-            record.pop("subroutines")]
+        [Scripts.save(script) for script in record.pop("scripts")]
 
         return record
 
-    @inject("Rooms", "Actors", "Objects", "Subroutines")
-    def dehydrate(self, record, Rooms, Actors, Objects, Subroutines):
+    @inject("Rooms", "Actors", "Objects", "Scripts")
+    def dehydrate(self, record, Rooms, Actors, Objects, Scripts):
         """Save the Area to a file."""
 
         query_args = [{"area_vnum": record["vnum"]}]
@@ -799,11 +798,10 @@ class Areas(Collection):
         record["rooms"] = list(Rooms.query(*query_args, **query_kwargs))
         record["actors"] = list(Actors.query(*query_args, **query_kwargs))
         record["objects"] = list(Objects.query(*query_args, **query_kwargs))
-        record["subroutines"] = list(Subroutines.query(
-            *query_args, **query_kwargs))
+        record["scripts"] = list(Scripts.query(*query_args, **query_kwargs))
 
         scrub_keys = ["area_id", "area_vnum"]
-        keys = ["rooms", "actors", "objects", "subroutines"]
+        keys = ["rooms", "actors", "objects", "scripts"]
         for key in keys:
             for entity in record[key]:
                 for scrub_key in scrub_keys:
@@ -892,11 +890,11 @@ class Rooms(Collection):
                     return room
 
 
-class Subroutine(Entity):
+class Script(Entity):
     def execute(self, entity, event):
         try:
             compiled = \
-                compile(self.code, "subroutine:{}".format(self.id), "exec")
+                compile(self.code, "script:{}".format(self.id), "exec")
 
             def wait(duration):
                 gevent.sleep(duration)
@@ -914,15 +912,15 @@ class Subroutine(Entity):
             self.game.handle_exception(e)
 
 
-class Subroutines(Collection):
-    ENTITY_CLASS = Subroutine
+class Scripts(Collection):
+    ENTITY_CLASS = Script
 
 
 class Behavior(Entity):
     @property
-    @inject("Subroutines")
-    def subroutine(self):
-        return Subroutines.get({"vnum": self.subroutine_vnum})
+    @inject("Scripts")
+    def script(self):
+        return Scripts.get({"vnum": self.script_vnum})
 
 
 class Behaviors(Collection):
@@ -1000,7 +998,7 @@ class CoreModule(Module):
         self.game.register_injector(Objects)
         self.game.register_injector(Characters)
         self.game.register_injector(Directions)
-        self.game.register_injector(Subroutines)
+        self.game.register_injector(Scripts)
         self.game.register_injector(Behaviors)
         self.game.register_injector(Genders)
         self.game.register_injector(Classes)
@@ -1029,7 +1027,7 @@ class CoreModule(Module):
         self.game.register_command("rooms", rooms_command)
         self.game.register_command("time", time_command)
         self.game.register_command("map", map_command)
-        self.game.register_command("subroutines", subroutines_command)
+        self.game.register_command("scripts", scripts_command)
         self.game.register_command("tell", tell_command)
 
         directions, characters, rooms, areas = \

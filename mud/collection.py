@@ -39,8 +39,10 @@ class FileStorage(CollectionStorage):
             with open(path, "r") as fh:
                 try:
                     data = json.loads(fh.read())
-                    self.collection.save(data, skip_storage=True)
+                    record = self.collection.save(data, skip_storage=True)
                     self.collection.hydrate(data)
+                    logging.debug("Stored {}: {}".format(
+                        self.collection.__class__.__name__, record.vnum))
 
                 except Exception as e:
                     self.collection.game.handle_exception(e)
@@ -80,29 +82,28 @@ class Entity(object):
     DEFAULT_DATA = {}
 
     # FIXME Move this out of Collection, which is meant to be more generic
-    @inject("Subroutines", "Behaviors")
-    def handle_event(self, event, Subroutines, Behaviors):
+    @inject("Scripts", "Behaviors")
+    def handle_event(self, event, Scripts, Behaviors):
         if self == event.source:
             return event
 
         # TODO HAVE COLLECTION CREATE DEEPCOPIES OF EVERYTHING
-        handlers = list(self.event_handlers or [])
+        triggers = list(self.triggers or [])
 
         for behavior_vnum in (self.behaviors or []):
             behavior = Behaviors.get({"vnum": behavior_vnum})
-            handlers.append({
+            triggers.append({
                 "type": behavior.type,
-                "subroutine_vnum": behavior.subroutine_vnum,
+                "script_vnum": behavior.script_vnum,
             })
 
-        if handlers:
-            for entry in handlers:
+        if triggers:
+            for entry in triggers:
                 if entry["type"] != event.type:
                     continue
 
-                subroutine = \
-                    Subroutines.get({"vnum": entry["subroutine_vnum"]})
-                subroutine.execute(self, event)
+                script = Scripts.get({"vnum": entry["script_vnum"]})
+                script.execute(self, event)
 
         return event
 
@@ -213,6 +214,8 @@ class Collection(Injector):
                 return record
 
     def save(self, record, skip_storage=False):
+        logging.debug("Saving {} record {}".format(
+            self.__class__.__name__, record.get("vnum", None)))
         record = self.unwrap_record(record)
 
         if "id" not in record:
