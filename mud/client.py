@@ -1,5 +1,8 @@
-import logging
 import gevent
+import glob
+import logging
+import random
+import settings
 
 
 class Client(object):
@@ -16,6 +19,15 @@ class Client(object):
     @property
     def game(self):
         return self.connection.game
+
+    def write_from_random_template(self, folder):
+        """Read a random file from a data folder and output it."""
+        path = "{}/{}".format(settings.DATA_FOLDER, folder)
+        paths = glob.glob("{}/*".format(path))
+        template_path = random.choice(paths)
+        with open(template_path, "r") as fh:
+            output = fh.read()
+            self.write(output)
 
     def handle_inputs(self, inputs):
         if "clear" in inputs:

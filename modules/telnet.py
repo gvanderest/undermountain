@@ -26,38 +26,8 @@ class TelnetClient(Client):
         self.prompt_thread = False
         self.resolver = FuzzyResolver(self.game.commands)
         self.color = True
-        self.write("""
-
-
-            ;::::;                             Original DIKUMUD by Hans
-           ;::::; :;                         Staerfeldt, Katja Nyboe, Tom
-         ;:::::'   :;                        Madsen, Michael Seirfert and
-        ;:::::;     ;.                       Sebastiand Hammer. (c) 1991
-       ,:::::'       ;           OOO\\
-       ::::::;       ;          OOOOO\\         MERC 2.1 Code by Hatchet,
-       ;:::::;       ;         OOOOOOOO      Furey and Kahn. (c) 1993
-      ,;::::::;     ;'         / OOOOOOO
-    ;:::::::::`. ,,,;.        /  / DOOOOOO     RoM 2.4 Code by Russ Taylor.
-  .';:::::::::::::::::;,     /  /    DOOOO   (c) 1996
- ,::::::;::::::;;;;::::;,   /  /       DOOO
-;`::::::`'::::::;;;::::: ,#/  /        DOOO    RoT 1.4 Code by Russ Welsh.
-:`:::::::`;::::::;;::: ;::#  /          DOOO (c) 1997
-::`:::::::`;:::::::: ;::::# /            DOO
-`:`:::::::`;:::::: ;::::::#/             DOO   WDM 2.0 Code by Waterdeep
- :::`:::::::`;; ;:::::::::##              OO MUD Entertainmant. (c) 2007
- ::::`:::::::`;::::::::;:::#              OO
- `:::::`::::::::::::;'`:;::#              O  Owned & Operated by Kelemvor
-  `:::::`::::::::;' /  / `:#                 E-Mail:  wdmudimms@gmail.com
-   ::::::`:::::;'  /  /   `#
-           ##    ##  ####  ###### ######  ####  ######  ###### ###### #####
-           ##    ## ##  ##   ##   ##     ##  ##  ##  ## ##     ##     ##  ##
-           ## ## ## ######   ##   ####   ##  ##  ##  ## ####   ####   #####
-           ## ## ## ##  ##   ##   ##     #####   ##  ## ##     ##     ##
-            ##  ##  ##  ##   ##   ###### ##  ## ######  ###### ###### ##
-                          C I T Y  O F  S P L E N D O R S
-                                   [ Est 1997 ]
-
-What is your name, adventurer? """)
+        self.write_from_random_template("banners")
+        self.write("What is your name, adventurer? ")
 
     @property
     @inject("Characters")
@@ -367,45 +337,7 @@ Your choice? """)
 
     def start_motd(self):
         self.state = "motd"
-        self.write(r"""
-
-                                                          __
-                                                        //  \\
-                                                       // /\ \\
-                                                       \\ \/ //
-                                                        \\__//
-                                                        [|//|]
-                                                        [|//|]
-               Welcome to                               [|//|]
-                                                        [|//|]
-            W A T E R D E E P                           [|//|]
-                                                        [|//|]
-            City of Splendors                /)         [|//|]        (\
-                                            //\_________[|//|]________/\\
-                est. 1997                   ))__________||__||_________((
-                                           <_/         [  \/  ]        \_>
-                                                       ||    ||
-                                                       ||    ||
-                                                       ||    ||
- [x] Waterdeep is rated [R] for Mature Audiences Only. ||    ||
- [x] Please follow the rules of the game. [Help Rules] ||    ||
- [x] Check the News Board for game info.               ||    ||
-                                                       ||    ||
- [x] Type HELP for our directory of help files.        ||    ||
- [x] Type HELP NEWBIE for basic directions and help.   ||    ||
-                                                       ||    ||
-                                                       ||    ||
-                                                       ||    ||
-         Waterdeep Entertainment                       ||    ||
-            www.waterdeep.org                          ||    ||
-                                                       ||    ||
-                                                       ||    ||
-                                                       ||    ||
-                                                       \\    //
-                                                        \\  //
-                                                         \\//
-                                                          \/
-[Hit Enter to Continue] """)
+        self.write_from_random_template("motds")
 
     def handle_motd_input(self, message):
         self.writeln("""
