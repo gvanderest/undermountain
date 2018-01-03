@@ -19,6 +19,8 @@ PASSWORD_ALGORITHM = "sha256"
 PASSWORD_SALT = "undermountain"  # TODO Make this generated once on first run
 PASSWORD_ROUNDS = 100000
 
+TICK_SECONDS = 5.0  # Defaults to one tick per minute
+
 # Special keywords.
 SELF_NAMES = (
     "self",

@@ -3,10 +3,11 @@ from mud.module import Module
 from mud.collection import Collection, Entity, FileStorage
 from mud.inject import inject
 from utils.hash import get_random_hash
-# from utils.map import Map
+from mud.timer_manager import TimerManager
 
 import gevent
 import settings
+import logging
 
 
 class Map(object):
@@ -1033,6 +1034,15 @@ class Directions(Collection):
                 return direction
 
 
+class TickManager(TimerManager):
+    TIMER_DELAY = settings.TICK_SECONDS
+
+    def tick(self):
+        self.game.trigger("before:tick", blockable=False)
+        logging.debug("Tick.")
+        self.game.trigger("after:tick", blockable=False)
+
+
 class CoreModule(Module):
     DESCRIPTION = "The basics of the game, primarily data models"
 
@@ -1078,6 +1088,8 @@ class CoreModule(Module):
         self.game.register_command("equipment", equipment_command)
         self.game.register_command("inventory", inventory_command)
         self.game.register_command("group", group_command)
+
+        self.game.register_manager(TickManager)
 
         directions, characters, rooms, areas = \
             self.game.get_injectors(

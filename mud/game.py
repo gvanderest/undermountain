@@ -45,6 +45,9 @@ class Game(object):
     def wiznet(self, type, message, exclude=None):
         self.echo("{{Y--> {{x{}{{x".format(message), exclude=exclude)
 
+    def trigger(self, *args, **kwargs):
+        logging.debug("Global triggered {} {}".format(args, kwargs))
+
     def echo(self, message, exclude=None):
         """Send a message to all players."""
         if not exclude:
@@ -108,7 +111,6 @@ class Game(object):
 
         while self.running:
             gevent.sleep(1.0)
-            logging.debug("Tick.")
 
     def stop(self):
         self.running = False
