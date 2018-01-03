@@ -150,9 +150,10 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
         else:
             self.start_select_race()
 
-    def start_select_race(self):
+    @inject("Races")
+    def start_select_race(self, Races):
         self.state = "select_race"
-        self.write("""
+        output = """
 +---------------------------[ Pick your Race ]----------------------------+
 
   Welcome to the birthing process of your character.  Below you will
@@ -161,48 +162,48 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
   of class.  For detailed information see our website located at
   http://waterdeep.org or type HELP (Name of Race) below.
 
-            STR INT WIS DEX CON                 STR INT WIS DEX CON
-  Avian     17  19  20  16  17      HalfElf     17  18  19  18  18
-  Centaur   20  17  15  13  21      HalfOrc     19  15  15  20  21
-  Draconian 22  18  16  15  21      Heucuva     25  10  10  25  25
-  Drow      18  22  20  23  17      Human       21  19  19  19  21
-  Dwarf     20  18  22  16  21      Kenku       19  19  21  20  19
-  Elf       16  20  18  21  15      Minotaur    23  16  15  16  22
-  Esper     14  21  21  20  14      Pixie       14  20  20  23  14
-  Giant     22  15  18  15  20      Podrikev    25  18  18  15  25
-  Gnoll     20  16  15  20  19      Thri'Kreen  17  22  22  16  25
-  Gnome     16  23  19  15  15      Titan       25  18  18  15  25
-  Goblin    16  20  16  19  20      Satyr       23  19  10  14  21
-  Halfling  15  20  16  21  18
+            STR INT WIS DEX CON
+"""
+
+        for race in Races.query():
+            output += "            {} 0 0 0 0 0\n".format(race.name)
+
+        output += """
 
 +-------------------------------------------------------------------------+
 
-Please choose a race, or HELP (Name of Race) for more info: """)
+Please choose a race, or HELP (Name of Race) for more info: """
+        self.write(output)
 
     def handle_select_race_input(self, message):
         self.start_select_gender()
         self.temporary_actor.race_ids = ["human"]
 
-    def start_select_gender(self):
+    @inject("Genders")
+    def start_select_gender(self, Genders):
         self.state = "select_gender"
-        self.write("""
+        output = """
 +--------------------------[ Pick your Gender ]---------------------------+
+"""
 
-                                  Male
-                                  Female
-                                  Neutral
+        for gender in Genders.query():
+            output += "        {}\n".format(gender.name)
 
+        output += """
 +-------------------------------------------------------------------------+
 
-Please choose a gender for your character: """)
+Please choose a gender for your character: """
+
+        self.write(output)
 
     def handle_select_gender_input(self, message):
         self.start_select_class()
         self.temporary_actor.gender_id = "male"
 
-    def start_select_class(self):
+    @inject("Classes")
+    def start_select_class(self, Classes):
         self.state = "select_class"
-        self.write("""
+        output = """
 +--------------------------[ Pick your Class ]---------------------------+
 
   Waterdeep has a 101 level, 2 Tier remorting system.  After the first
@@ -210,22 +211,28 @@ Please choose a gender for your character: """)
   2nd Tier classes are upgrades from their 1st tier counterparts.
 
   For more information type HELP (Name of Class) to see their help files.
+"""
+        classes = list(Classes.query({"tier": 0}))
+        if len(classes) == 1:
+            self.handle_select_class_input(classes[0].id)
+            return
 
-                               Mage
-                               Cleric
-                               Thief
-                               Warrior
-                               Ranger
-                               Druid
-                               Vampire
+        for cls in classes:
+            output += "{}{}\n".format(" " * 20, cls.name)
+
+        output += """
 
 +-------------------------------------------------------------------------+
 
-Select a class or type HELP (Class) for details: """)
+Select a class or type HELP (Class) for details: """
+
+        self.write(output)
 
     def handle_select_class_input(self, message):
         self.temporary_actor.class_ids = ["adventurer"]
-        self.start_select_alignment()
+        # self.start_select_alignment()
+        self.save_temporary_actor()
+        self.start_motd()
 
     def start_select_alignment(self):
         self.state = "select_alignment"
@@ -329,11 +336,14 @@ Choice (add, drop, list, help)? """)
 
 Your choice? """)
 
+    def handle_select_weapon_input(self, message):
+        self.save_temporary_actor()
+        self.start_motd()
+
     @inject("Characters")
-    def handle_select_weapon_input(self, message, Characters):
+    def save_temporary_actor(self, Characters):
         actor = Characters.save(self.temporary_actor)
         self.connection.actor_id = actor.id
-        self.start_motd()
 
     def start_motd(self):
         self.state = "motd"
