@@ -176,6 +176,13 @@ class Collection(Injector):
         self.game.data[name] = {}
         self.storage = self.STORAGE_CLASS(self)
 
+    def fuzzy_get(self, identifier):
+        """Look up an Entity, using fuzzier logic."""
+        cleaned = identifier.strip().lower()
+        for entry in self.query():
+            if entry.name.lower().startswith(cleaned):
+                return entry
+
     @property
     def data(self):
         name = self.DATA_NAME or self.__class__.__name__

@@ -50,6 +50,7 @@ class TelnetClient(Client):
         if not found:
             self.temporary_actor = Characters.ENTITY_CLASS({
                 "name": name,
+                "tier": 0,
                 "connection_id": self.connection.id,
             })
             self.start_verify_name()
@@ -212,7 +213,7 @@ Please choose a gender for your character: """
 
   For more information type HELP (Name of Class) to see their help files.
 """
-        classes = list(Classes.query({"tier": 0}))
+        classes = list(Classes.query({"tier": self.temporary_actor.tier}))
         if len(classes) == 1:
             self.handle_select_class_input(classes[0].id)
             return
@@ -228,11 +229,18 @@ Select a class or type HELP (Class) for details: """
 
         self.write(output)
 
-    def handle_select_class_input(self, message):
-        self.temporary_actor.class_ids = ["adventurer"]
-        # self.start_select_alignment()
-        self.save_temporary_actor()
-        self.start_motd()
+    @inject("Classes")
+    def handle_select_class_input(self, message, Classes):
+        message = message.strip().lower()
+        cls = Classes.fuzzy_get(message)
+        if cls:
+            self.temporary_actor.class_ids = [cls.id]
+            self.save_temporary_actor()
+            self.start_motd()
+        else:
+            self.write("""
+That's not a valid class.
+Try again: """)
 
     def start_select_alignment(self):
         self.state = "select_alignment"
