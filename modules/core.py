@@ -652,6 +652,16 @@ def title_command(self, message, **kwargs):
         self.echo("Title cleared.")
 
 
+class ActorStats(object):
+    def __init__(self, stats, actor):
+        self.stats = stats
+        self.actor = actor
+
+    @property
+    def game(self):
+        return self.actor.game
+
+
 class Actor(Entity):
     DEFAULT_DATA = {
         "name": "",
@@ -788,6 +798,10 @@ class Actor(Entity):
                     message = message.replace("{self.name}", data["self"].name)
 
                 actor.echo(message)
+
+    @property
+    def stats(self):
+        return ActorStats(self.data.stats)
 
 
 class Account(Entity):

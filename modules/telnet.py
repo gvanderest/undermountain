@@ -396,6 +396,8 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         if self.state != "playing":
             return
         self.writeln()
+        stats = self.actor.stats
+        print(stats)
         self.write("{x> ")
 
     @inject("Characters")
