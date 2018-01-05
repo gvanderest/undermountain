@@ -18,21 +18,28 @@ A modular MUD platform for flexibly creating worlds, written in Python.
     affect the newest versions of the Python3 interpreter.
 
 2. Download the code from this repository
-        git clone git@bitbucket.org:wdmud/undermountain.git
+
+    ```
+    git clone git@github.com:gvanderest/undermountain.git
+    ```
 
 3. Create a virtual environment (recommended)
     If you wish to create a sandbox that prevents the Undermountain engine
     from being affected by the rest of the system, it can be created via
     the virtual environment system.
 
-        python3 -m venv venv
-        source venv/bin/activate
+    ```
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
 5. Install any dependencies
     Using the built-in Python package manager `pip` you are able to read the
     list of dependencies from a file and install them.
 
-        pip install -r requirements.txt
+    ```
+    pip install -r requirements.txt
+    ```
 
 ## Interacting with the Engine
 
