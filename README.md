@@ -29,7 +29,7 @@ A modular MUD platform for flexibly creating worlds, written in Python.
     the virtual environment system.
 
     ```
-    python3 -m venv venv
+    virtualenv -p python3 venv
     source venv/bin/activate
     ```
 
