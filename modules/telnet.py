@@ -436,17 +436,19 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
 class TelnetConnection(Connection):
     def __init__(self, server, socket, address):
         super(TelnetConnection, self).__init__(server)
+        self.read_buffer = ""
+        self.write_buffer = ""
         self.socket = socket
-        self.client = TelnetClient(self)
         self.address = address
-        self.buffer = ""
+        self.flush_thread = None
 
     def start(self):
+        self.client = TelnetClient(self)
         gevent.spawn(self.read)
 
     def close(self):
         try:
-            self.socket.flush()
+            self.flush()
         except Exception:
             pass
 
@@ -475,22 +477,34 @@ class TelnetConnection(Connection):
                 break
 
             try:
-                self.buffer += raw.decode("utf-8").replace("\r\n", "\n")
+                self.read_buffer += raw.decode("utf-8").replace("\r\n", "\n")
             except Exception:
                 pass
 
-            if "\n" in self.buffer:
-                split = self.buffer.split("\n")
+            if "\n" in self.read_buffer:
+                split = self.read_buffer.split("\n")
                 inputs = split[:-1]
-                self.buffer = split[-1]
+                self.read_buffer = split[-1]
 
                 self.client.handle_inputs(inputs)
 
     def write(self, message=""):
         if not self.socket:
             return
+
         message = message.replace("\n", "\r\n")
-        self.socket.send(message.encode())
+        self.write_buffer += message
+
+        if not self.flush_thread:
+            self.flush_thread = gevent.spawn(self.flush)
+
+    def flush(self):
+        if not self.socket:
+            return
+
+        self.socket.send(self.write_buffer.encode())
+        self.write_buffer = ""
+        self.flush_thread = None
 
 
 class TelnetServer(Server):
