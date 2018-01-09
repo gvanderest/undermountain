@@ -652,14 +652,38 @@ def title_command(self, message, **kwargs):
         self.echo("Title cleared.")
 
 
+class ActorStat(object):
+    def __init__(self, id, value, actor):
+        self.id = id
+        self.value = value
+        self.actor = actor
+
+    @property
+    def base(self):
+        return self.value
+
+    @base.setter
+    def set_base(self, value):
+        self.actor.stats[id] = value
+
+    @property
+    def bonus(self):
+        return 0
+
+    @property
+    def total(self):
+        return self.base + self.bonus
+
+
 class ActorStats(object):
     def __init__(self, stats, actor):
         self.stats = stats
         self.actor = actor
 
-    @property
-    def game(self):
-        return self.actor.game
+    def __getattr__(self, key):
+        if key not in self.stats:
+            self.stats[key] = 0
+        return ActorStat(key, self.stats[key], self.actor)
 
 
 class Actor(Entity):
@@ -801,7 +825,10 @@ class Actor(Entity):
 
     @property
     def stats(self):
-        return ActorStats(self.data.stats)
+        data = self.data
+        if "stats" not in data:
+            data["stats"] = {}
+        return ActorStats(data["stats"], self)
 
 
 class Account(Entity):

@@ -160,6 +160,14 @@ class Entity(object):
     def save(self):
         return self._collection.save(self)
 
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, data):
+        self.set_data(data)
+
 
 class Collection(Injector):
     PERSISTENT = False

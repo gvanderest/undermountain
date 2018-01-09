@@ -52,6 +52,10 @@ class TelnetClient(Client):
                 "name": name,
                 "tier": 0,
                 "connection_id": self.connection.id,
+                "stats": {
+                    "current_hp": 100,
+                    "hp": 100,
+                },
             })
             self.start_verify_name()
             return
