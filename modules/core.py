@@ -643,6 +643,67 @@ def save_command(self, **kwargs):
     self.echo("Your character has been saved.")
 
 
+@inject("Characters")
+def finger_command(self, args, Characters, **kwargs):
+    if not args:
+        self.echo("Finger whom?")
+        return
+
+    name = args.pop(0).lower().title()
+    actor = Characters.get({"name": name})
+    if not actor:
+        self.echo("No such player: {}".format(name))
+        return
+
+    output = """
++-----------------------[ WaterdeepMUD Character Info ]-----------------------+
+ Name {}   : {} {}
+ Class    : {}                          Clan    : {}
+ Race     : {}                          Rank    : {}
+ Level    : {}                          Deity   : {}
+ Age      : {}                          Arena   : {} Wins
+ Height   : {}                                    {} Losses
+ Weight   : {}                          Hours   : {}
+ Hair     : {}                          Birthday: {}
+ Eyes     : {}                          Old Clan: {}
+ PK Rank  : {}                          NPK Rank: {}
+ RP Status: {}
++-------------------------------| DESCRIPTION |-------------------------------+
+{}
++-----------------------------------------------------------------------------+
+{} is currently {} from {}.
++-----------------------------------------------------------------------------+\
+""".format(
+        actor.gender.colored_short_name,
+        actor.name,
+        actor.title,
+        actor.classes[0].name,
+        "",
+        actor.races[0].name,
+        "",
+        str(actor.level),
+        "",
+        "",
+        str(0),
+        "",
+        str(0),
+        "",
+        str(0),
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "\n".join(actor.description or []),
+        actor.name,
+        "ONLINE",
+        ""
+    )
+    self.echo(output)
+
+
 def title_command(self, message, **kwargs):
     self.title = message
     self.save()
@@ -1129,6 +1190,7 @@ class CoreModule(Module):
         self.game.register_command("equipment", equipment_command)
         self.game.register_command("inventory", inventory_command)
         self.game.register_command("group", group_command)
+        self.game.register_command("finger", finger_command)
 
         self.game.register_manager(TickManager)
 
