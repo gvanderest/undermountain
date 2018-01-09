@@ -396,13 +396,55 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         if not self.prompt_thread:
             self.prompt_thread = gevent.spawn(self.write_prompt)
 
+    def format_prompt_template(self, template):
+        output = template
+
+        """
+        |      %g : Displays your hps color coded.  (green, yellow, red)     |
+        |      %x : Displays your current experience.                        |
+        |      %e : Displays the exits from the room in NESWDU style.        |
+        |      %R : Displays the vnum you are in (Immortal Only).            |
+        |      %z : Displays the area name you are in (Immortal Only).       |
+        """
+
+        actor = self.actor
+        stats = actor.stats
+        room = actor.room
+
+        values = {
+            "%N": actor.name,
+            "%H": stats.hp.total,
+            "%h": stats.current_hp.total,
+            "%M": stats.mana.total,
+            "%m": stats.current_mana.total,
+            "%V": stats.moves.total,
+            "%v": stats.current_moves.total,
+            "%X": stats.experience.total,
+            "%a": stats.alignment.total,
+            "%q": stats.next_quest_time.total,
+            "%Q": stats.quest_time.total,
+            "%r": room.name,
+            "%c": "\n",
+            "%t": "12{Bam",
+        }
+
+        for key, value in values.items():
+            output = output.replace(key, str(value))
+
+        if output[-1] != "\n":
+            output += " "
+        output += "{x"
+
+        return output
+
     def write_prompt(self):
         if self.state != "playing":
             return
         self.writeln()
-        stats = self.actor.stats
-        print(stats)
-        self.write("{x> ")
+        template = (
+            "{8[{R%h{8/{r%H{8h {B%m{8/{b%M{8m {M%v{8v {W%N{8({Y%X{8) "
+            "{W%r{8({w%q{8/{w%t{8) {W%a{8]{x")
+        self.write(self.format_prompt_template(template))
 
     @inject("Characters")
     def handle_playing_input(self, message, Characters):
