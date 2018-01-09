@@ -55,6 +55,8 @@ class TelnetClient(Client):
                 "stats": {
                     "current_hp": 100,
                     "hp": 100,
+                    "current_mana": 100,
+                    "mana": 100,
                 },
             })
             self.start_verify_name()

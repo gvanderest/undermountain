@@ -31,6 +31,7 @@ SELF_NAMES = (
 MODULES = (
     "modules.core.CoreModule",
     "modules.telnet.TelnetModule",
+    "modules.combat.CombatModule",
 )
 
 DIRECTIONS = {

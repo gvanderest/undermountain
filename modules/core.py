@@ -724,8 +724,8 @@ class ActorStat(object):
         return self.value
 
     @base.setter
-    def set_base(self, value):
-        self.actor.stats[id] = value
+    def base(self, value):
+        self.actor.data["stats"][self.id] = value
 
     @property
     def bonus(self):
