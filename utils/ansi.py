@@ -116,7 +116,7 @@ def pad_left(message, length, symbol=" "):
     return (symbol * max(0, length - len(stripped))) + message
 
 
-def pad_right(cls, message, length, symbol=" "):
+def pad_right(message, length, symbol=" "):
     """Pad a colorized string's right."""
     stripped = decolorize(message)
     return message + (symbol * max(0, length - len(stripped)))

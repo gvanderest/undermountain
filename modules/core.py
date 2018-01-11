@@ -2,6 +2,7 @@ from datetime import datetime
 from mud.module import Module
 from mud.collection import Collection, Entity, FileStorage
 from mud.inject import inject
+from utils.ansi import pad_right
 from utils.hash import get_random_hash
 from mud.timer_manager import TimerManager
 
@@ -615,9 +616,9 @@ def who_command(self, Characters, **kwargs):
 
         self.echo("{{x{} {} {} {} {{x[.{{BN{{x......] {} {}".format(
             str(actor.level).rjust(3),
-            actor.gender.colored_short_name,
-            actor.races[0].colored_name,
-            actor.classes[0].colored_short_name,
+            pad_right(actor.gender.colored_short_name, 1),
+            pad_right(actor.races[0].colored_name, 5),
+            pad_right(actor.classes[0].colored_short_name, 3),
             actor.name,
             actor.title if actor.title else "",
         ))
@@ -655,7 +656,7 @@ def finger_command(self, args, Characters, **kwargs):
         self.echo("No such player: {}".format(name))
         return
 
-    output = """
+    output = """ \
 +-----------------------[ WaterdeepMUD Character Info ]-----------------------+
  Name {}   : {} {}
  Class    : {}                          Clan    : {}
