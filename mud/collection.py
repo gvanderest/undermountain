@@ -188,7 +188,8 @@ class Collection(Injector):
         """Look up an Entity, using fuzzier logic."""
         cleaned = identifier.strip().lower()
         for entry in self.query():
-            if entry.name.lower().startswith(cleaned):
+            compare = entry.name.lower()
+            if compare.startswith(cleaned):
                 return entry
 
     @property

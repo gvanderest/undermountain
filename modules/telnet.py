@@ -182,9 +182,16 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
 Please choose a race, or HELP (Name of Race) for more info: """
         self.write(output)
 
-    def handle_select_race_input(self, message):
+    @inject("Races")
+    def handle_select_race_input(self, message, Races):
+        race = Races.fuzzy_get(message)
+
+        if not race:
+            self.writeln("That race does not exist, please try again.")
+            return
+
         self.start_select_gender()
-        self.temporary_actor.race_ids = ["human"]
+        self.temporary_actor.race_ids = [race.id]
 
     @inject("Genders")
     def start_select_gender(self, Genders):
@@ -203,9 +210,17 @@ Please choose a gender for your character: """
 
         self.write(output)
 
-    def handle_select_gender_input(self, message):
+    @inject("Genders")
+    def handle_select_gender_input(self, message, Genders):
+
+        gender = Genders.fuzzy_get(message)
+        if not gender:
+            self.writeln("That is not a valid gender, please try again.")
+            return
+
+        print("BOOPLE", gender.id)
+        self.temporary_actor.gender_id = gender.id
         self.start_select_class()
-        self.temporary_actor.gender_id = "male"
 
     @inject("Classes")
     def start_select_class(self, Classes):
