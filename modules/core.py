@@ -462,8 +462,8 @@ def dig_command(self, args, Areas, Rooms, Directions, **kwargs):
     self.force(direction.id)
 
 
-@inject("Actors", "Objects", "Directions")
-def look_command(self, args, Actors, Objects, Directions, **kwargs):
+@inject("Actors", "Characters", "Objects", "Directions")
+def look_command(self, args, Actors, Characters, Objects, Directions, **k):
     room = self.room
 
     lines = []
@@ -494,12 +494,17 @@ def look_command(self, args, Actors, Objects, Directions, **kwargs):
         )
     lines.append(exits_line)
 
+    for actor in Characters.query({"room_id": room["id"], "online": True}):
+        if actor == self:
+            continue
+        lines.append("{} (Player) is standing here.".format(actor.name))
+
     spec = {"room_id": room["id"]}
     for actor in Actors.query(spec):
-        lines.append("{} is standing here.".format(actor["name"]))
+        lines.append("{} is standing here.".format(actor.name))
 
     for obj in Objects.query(spec):
-        lines.append("{} is on the ground here.".format(obj["name"]))
+        lines.append("{} is on the ground here.".format(obj.name))
 
     lines = list(stop_color_bleed(lines))
 
