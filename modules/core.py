@@ -1089,25 +1089,48 @@ class Script(Entity):
                 script = Scripts.get({"vnum": vnum})
                 script.execute(entity, event)
 
+            def say(message):
+                entity.say(message)
+
+            def kill(target):
+                Battles = self.game.get_injector("Battles")
+                Battles.initiate(entity, target)
+
             def spawn(type, data):
+                collection = None
                 if type == "actor":
-                    Actors = self.game.get_injector("Actors")
-                    room = entity.room
-                    data["room_id"] = room.id
-                    data["room_vnum"] = room.vnum
-                    return Actors.save(data)
-                else:
+                    collection = self.game.get_injector("Actors")
+                elif type == "object":
+                    collection = self.game.get_injector("Objects")
+
+                if not collection:
                     raise Exception("Invalid spawn type {}".format(type))
+
+                room = entity.room
+                data["room_id"] = room.id
+                data["room_vnum"] = room.vnum
+
+                return collection.save(data)
+
+            def echo(message):
+                entity.echo(message)
+
+            def act(message):
+                entity.act(message)
 
             context = dict(event.data)
             context.update({
-                "self": entity,
-                "say": entity.say,
-                "echo": entity.echo,
                 "target": event.source,
+                "actor": event.source,
+                "self": entity,
+
+                "kill": kill,
+                "act": act,
+                "say": say,
+                "echo": echo,
                 "event": event,
                 "wait": wait,
-                "execute": execute,
+                "call": call,
                 "spawn": spawn,
             })
 
