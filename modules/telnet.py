@@ -566,12 +566,12 @@ class TelnetConnection(Connection):
             self.flush_thread = gevent.spawn(self.flush)
 
     def flush(self):
-        gevent.sleep(0.01)
+        gevent.sleep(0.05)
 
         if not self.socket:
             return
 
-        self.socket.sendall(self.write_buffer.encode())
+        self.socket.send(self.write_buffer.encode())
         self.write_buffer = ""
         self.flush_thread = None
 
