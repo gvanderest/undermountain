@@ -3,6 +3,7 @@ from mud.event import Event
 from mud.inject import inject
 from utils.hash import get_random_hash
 
+import gevent
 import glob
 import json
 import logging
@@ -81,12 +82,59 @@ class FileStorage(CollectionStorage):
 class Entity(object):
     DEFAULT_DATA = {}
 
+    @property
+    def children(self):
+        return []
+
+    @property
+    def parents(self):
+        return []
+
+    def emit(self, type, data=None, unblockable=False):
+        event = self.generate_event(type, data, unblockable=unblockable)
+        if unblockable:
+            gevent.spawn(self.emit_event, event)
+            return event
+        else:
+            return self.emit_event(event)
+
+    def broadcast(self, type, data=None, unblockable=False):
+        event = self.generate_event(type, data, unblockable=unblockable)
+        if unblockable:
+            gevent.spawn(self.broadcast_event, event)
+            return event
+        else:
+            return self.broadcast_event(event)
+
+    def broadcast_event(self, event):
+        event = self.handle_event(event)
+
+        if event.blocked:
+            return event
+
+        for child in self.children:
+            event = child.broadcast_event(event)
+            if event.blocked:
+                return event
+
+        return event
+
+    def emit_event(self, event):
+        event = self.handle_event(event)
+
+        if event.blocked:
+            return event
+
+        for parent in self.parents:
+            event = parent.emit_event(event)
+            if event.blocked:
+                return event
+
+        return event
+
     # FIXME Move this out of Collection, which is meant to be more generic
     @inject("Scripts", "Behaviors")
     def handle_event(self, event, Scripts, Behaviors):
-        if self == event.source:
-            return event
-
         # TODO HAVE COLLECTION CREATE DEEPCOPIES OF EVERYTHING
         triggers = list(self.triggers or [])
 
@@ -159,6 +207,9 @@ class Entity(object):
 
     def save(self):
         return self._collection.save(self)
+
+    def delete(self):
+        return self._collection.delete(self)
 
     @property
     def data(self):
@@ -260,7 +311,7 @@ class Collection(Injector):
         self.storage.post_delete(record)
         self.post_delete(record)
 
-    def post_delete(self):
+    def post_delete(self, record):
         """Handle a record being removed from the Collection."""
         pass
 

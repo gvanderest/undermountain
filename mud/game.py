@@ -1,4 +1,5 @@
 from logging.handlers import RotatingFileHandler
+from mud.inject import inject
 
 import gevent
 import importlib
@@ -34,6 +35,10 @@ class Game(object):
         self.commands = {}
 
         self.import_modules_from_settings()
+
+    @property
+    def game(self):
+        return self
 
     def handle_exception(self, exception):
         output = traceback.format_exc()
@@ -103,11 +108,21 @@ class Game(object):
     def get_injectors(self, *names):
         return map(self.get_injector, names)
 
-    def start(self):
+    @inject("Areas")
+    def broadcast(self, type, data=None, unblockable=False, Areas=None):
+        event = None
+        for area in Areas.query():
+            event = area.broadcast(type, data=data, unblockable=unblockable)
+        return event
+
+    @inject("Rooms")
+    def start(self, Rooms):
         self.running = True
 
         for manager in self.managers:
             manager.start()
+
+        self.broadcast("after:spawn")
 
         while self.running:
             gevent.sleep(1.0)

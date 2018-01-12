@@ -428,6 +428,8 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         stats = actor.stats
         room = actor.room
 
+        xp_tnl = actor.experience_per_level - actor.experience
+
         values = {
             "%N": actor.name,
             "%H": stats.hp.total,
@@ -436,7 +438,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             "%m": stats.current_mana.total,
             "%V": stats.moves.total,
             "%v": stats.current_moves.total,
-            "%X": stats.experience.total,
+            "%X": xp_tnl,
             "%a": stats.alignment.total,
             "%q": stats.next_quest_time.total,
             "%Q": stats.quest_time.total,

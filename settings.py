@@ -139,3 +139,6 @@ again.""",
         "to_others": "{name} [Q/A] Answers '{Y{message}{x'",
     },
 }
+
+
+LEVEL_MAXIMUM = 15

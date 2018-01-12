@@ -755,11 +755,31 @@ class Actor(Entity):
         "bracket": "",
         "level": 1,
         "experience": 0,
+        "experience_per_level": 3000,
         "room_id": "",
         "room_vnum": settings.INITIAL_ROOM_VNUM,
         "race_ids": ["human"],
         "class_ids": ["adventurer"],
     }
+
+    def gain_experience(self, amount):
+        amount = int(abs(amount))
+
+        self.echo("You gain {} experience!".format(amount))
+        self.experience += amount
+
+        while self.level < settings.LEVEL_MAXIMUM and \
+                self.experience >= self.experience_per_level:
+            self.level += 1
+            self.echo("You gained a level! You are now level {}".format(
+                self.level))
+            self.experience -= self.experience_per_level
+
+            if self.level >= settings.LEVEL_MAXIMUM:
+                self.echo("Congratulations, you made it to the maximum level!")
+
+        if self.level >= settings.LEVEL_MAXIMUM:
+            self.experience = 0
 
     @inject("Actors")
     def spawn_actor(self, data, Actors):
@@ -851,9 +871,6 @@ class Actor(Entity):
         else:
             self.client.writeln(str(message))
 
-    def emit_event(self, event):
-        return self.room.emit_event(event)
-
     def trigger(self, type, data=None, unblockable=False):
         event = self.generate_event(type, data, unblockable=unblockable)
         if unblockable:
@@ -892,6 +909,10 @@ class Actor(Entity):
             data["stats"] = {}
         return ActorStats(data["stats"], self)
 
+    @property
+    def parents(self):
+        return [self.room]
+
 
 class Account(Entity):
     pass
@@ -911,7 +932,14 @@ class Character(Actor):
 
 
 class Area(Entity):
-    pass
+    @property
+    @inject("Rooms")
+    def rooms(self, Rooms):
+        return Rooms.query({"area_id": self.id})
+
+    @property
+    def children(self):
+        return self.rooms
 
 
 class Areas(Collection):
@@ -979,24 +1007,19 @@ class Room(Entity):
             for entity in collection.query({"room_id": self.id}):
                 yield entity
 
-    def emit_event(self, event):
-        """Handle the Event for this level and its children, then emit up."""
-        for entity in self.children:
-            event = entity.handle_event(event)
-
-            if event.blocked:
-                return event
-
-        # TODO get the event back from the Area
-        event = self.handle_event(event)
-
-        return event
+    def echo(self, message):
+        for child in self.children:
+            child.echo(message)
 
     @property
     @inject("Areas")
     def area(self, Areas):
         """Get the Room's Area."""
         return Areas.get(self.area_id) or Areas.get({"vnum": self.area_vnum})
+
+    @property
+    def room(self):
+        return self
 
 
 class Direction(Entity):
@@ -1048,12 +1071,36 @@ class Script(Entity):
             def wait(duration):
                 gevent.sleep(duration)
 
+            def execute(vnum, data=None):
+                Scripts = self.game.get_injector("Scripts")
+                if data is None:
+                    data = {}
+
+                event.data.update(data)
+
+                script = Scripts.get({"vnum": vnum})
+                script.execute(entity, event)
+
+            def spawn(type, data):
+                if type == "actor":
+                    Actors = self.game.get_injector("Actors")
+                    room = entity.room
+                    data["room_id"] = room.id
+                    data["room_vnum"] = room.vnum
+                    return Actors.save(data)
+                else:
+                    raise Exception("Invalid spawn type {}".format(type))
+
             context = dict(event.data)
             context.update({
                 "self": entity,
+                "say": entity.say,
+                "echo": entity.echo,
                 "target": event.source,
                 "event": event,
                 "wait": wait,
+                "execute": execute,
+                "spawn": spawn,
             })
 
             exec(compiled, context, context)

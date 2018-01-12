@@ -1,14 +1,33 @@
+from logging import debug
+from math import ceil
 from mud.timer_manager import TimerManager
 from mud.module import Module
 from mud.inject import inject
 from mud.collection import Collection
-
-import logging
-import math
+from modules.core import Character
+from random import randint
 
 
 class Battles(Collection):
-    pass
+    def initiate(self, actor, target):
+        # FIXME Make this use visibility and be cleaner
+        actor.echo("You attack {}".format(target.name))
+        actor.act("{} attacks {}".format(actor.name, target.name))
+
+        event = target.emit("before:death")
+        if event.blocked:
+            return
+
+        target.act("{} is dead!".format(target.name))
+
+        target.emit("after:death", unblockable=True)
+
+        if not isinstance(target, Character):
+            target.delete()
+
+        experience = randint(200, 300)
+        actor.gain_experience(experience)
+        actor.save()
 
 
 class CombatManager(TimerManager):
@@ -16,7 +35,24 @@ class CombatManager(TimerManager):
 
     @inject("Battles")
     def tick(self, Battles):
-        logging.debug("Battles!! {}".format(Battles.query()))
+        debug("Battles!! {}".format(Battles.query()))
+
+
+@inject("Actors", "Battles")
+def kill_command(self, args, Actors, Battles, **kwargs):
+    if not args:
+        self.echo("Kill what?")
+        return
+
+    room = self.room
+    name = args.pop(0)
+    target = Actors.get({"room_id": room.id, "name": name})
+
+    if not target:
+        self.echo("Can't find that here.")
+        return
+
+    Battles.initiate(self, target)
 
 
 class RegenerationManager(TimerManager):
@@ -24,24 +60,24 @@ class RegenerationManager(TimerManager):
 
     @inject("Characters")
     def tick(self, Characters):
-        logging.debug("Regenerating Characters")
+        debug("Regenerating Characters")
         for char in Characters.query({"online": True}):
             stats = char.stats
 
             hp = stats.current_hp.base
             max_hp = stats.hp.total
-            new_hp = min(max_hp, hp + int(math.ceil(max_hp * 0.1)))
+            new_hp = min(max_hp, hp + int(ceil(max_hp * 0.1)))
             char.stats.current_hp.base = new_hp
 
             mana = stats.current_mana.base
             max_mana = stats.mana.total
-            new_mana = min(max_mana, mana + int(math.ceil(max_mana * 0.1)))
+            new_mana = min(max_mana, mana + int(ceil(max_mana * 0.1)))
             char.stats.current_mana.base = new_mana
 
             char.save()
 
-            logging.debug("Regenerated resources for {}".format(char.name))
-        logging.debug("Regenerated Characters")
+            debug("Regenerated resources for {}".format(char.name))
+        debug("Regenerated Characters")
 
 
 class CombatModule(Module):
@@ -52,3 +88,7 @@ class CombatModule(Module):
         self.game.register_manager(CombatManager)
         self.game.register_manager(RegenerationManager)
         self.game.register_injector(Battles)
+        self.game.register_command("kill", kill_command)
+        self.game.register_command("murder", kill_command)
+        self.game.register_command("attack", kill_command)
+        self.game.register_command("battle", kill_command)
