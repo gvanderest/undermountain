@@ -781,7 +781,7 @@ class Actor(Entity):
     def gain_experience(self, amount):
         amount = int(abs(amount))
 
-        self.echo("You gain {} experience!".format(amount))
+        self.echo("{{BYou gain {{W{} {{Bexperience points!{{x".format(amount))
         self.experience += amount
 
         while self.level < settings.LEVEL_MAXIMUM and \
@@ -892,20 +892,18 @@ class Actor(Entity):
         else:
             self.client.writeln(str(message))
 
-    def act(self, template, data=None):
+    def act(self, template, data=None, exclude=None):
         Actors, Characters = self.game.get_injectors("Actors", "Characters")
         if data is None:
             data = {}
 
         data["self"] = self
 
-        room_id = self.room_id
-
         message = template
 
         for collection in (Characters, Actors):
-            for actor in collection.query({"room_id": room_id}):
-                if actor == self:
+            for actor in collection.query({"room_id": self.room_id}):
+                if actor == self or actor == exclude:
                     continue
 
                 if "{message}" in message:

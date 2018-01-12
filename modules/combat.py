@@ -9,28 +9,72 @@ from random import randint
 
 
 class Battles(Collection):
-    def initiate(self, actor, target):
-        actor.echo("You attack {}".format(target.name))
-        actor.act("{} attacks {}".format(actor.name, target.name))
-
-        event = target.emit("before:death")
-        if event.blocked:
-            return
-
-        target.act("{} is dead!".format(target.name))
-        target.echo("You have been killed!")
-
-        target.emit("after:death", unblockable=True)
-
-        if not isinstance(target, Character):
-            target.delete()
+    def get_damage_amount_text(self, amount):
+        if amount < 10:
+            return "scratches"
         else:
-            target.die()
-            target.save()
+            return "{B<{w<{B< {BE{bRA{wD{WIC{wA{bTE{BS {B>{W>{B>"
 
-        experience = randint(200, 300)
-        actor.gain_experience(experience)
-        actor.save()
+    def attempt_hit(self, actor, target):
+        amount = \
+            randint(1, 3) if actor.name != "giant bear" else randint(50, 70)
+        noun = "punch" if isinstance(actor, Character) else "claw"
+        self.damage(actor, target, noun=noun, amount=amount, silent=False)
+
+    def damage(self, actor, target, noun, amount, silent=False):
+        if not silent:
+            amount_text = self.get_damage_amount_text(amount)
+            actor.echo(
+                "{{BYour {}{{B {}{{B {}{{B! {{B-{{R={{C{}{{R={{B-{{x".format(
+                    noun, amount_text, target.name, amount))
+            actor.act(
+                "{{c{}'s {}{{c {}{{c {}{{c! {{B-{{R={{C{}{{R={{B-{{x".format(
+                    actor.name, noun, amount_text, target.name, amount),
+                exclude=target)
+            target.echo(
+                "{{B{}'s {}{{B {}{{B you! {{B-{{R={{C{}{{R={{B-{{x".format(
+                    actor.name, noun, amount_text, amount))
+
+        target.stats.current_hp.base -= amount
+
+    def initiate(self, actor, target):
+        actor.fighting = True
+        target.fighting = True
+
+        for _ in range(3):
+            self.attempt_hit(actor, target)
+
+            if target.stats.current_hp.base > 0:
+                continue
+
+            event = target.emit("before:death")
+            if event.blocked:
+                continue
+
+            target.act("{{c{}{{c is {{CDEAD{{c!{{x".format(target.name))
+            target.echo("You have been {RKILLED{x!")
+
+            experience = randint(200, 300)
+            actor.gain_experience(experience)
+
+            target.act("You hear {self.name}{x's death cry.")
+            actor.echo("Death gives you one silver coin for your sacrifice.")
+            target.echo()
+
+            target.emit("after:death", unblockable=True)
+
+            target.fighting = False
+            actor.fighting = False
+            actor.save()
+
+            if not isinstance(target, Character):
+                target.delete()
+            else:
+                target.die()
+                target.save()
+                target.force("look")
+
+            break
 
 
 class CombatManager(TimerManager):
