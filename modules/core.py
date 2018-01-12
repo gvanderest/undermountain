@@ -842,6 +842,11 @@ class Actor(Entity):
 
         return room
 
+    @room.setter
+    def room(self, provided):
+        self.room_id = provided.id
+        self.room_vnum = provided.vnum
+
     @property
     def connection(self):
         return self.game.connections.get(self.connection_id, None)

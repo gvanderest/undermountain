@@ -190,6 +190,12 @@ class Entity(object):
     def collection(self):
         return self._collection
 
+    def _get_property(self, name):
+        prop_check = getattr(self.__class__, name, None)
+        if isinstance(prop_check, property):
+            return prop_check
+        return None
+
     def __setattr__(self, name, value):
         return self.set(name, value)
 
@@ -203,10 +209,18 @@ class Entity(object):
         return self.get(name)
 
     def get(self, name, default=None):
-        return self._data.get(name, None)
+        prop = self._get_property(name)
+        if prop:
+            return prop.fget(self, default)
+        else:
+            return self._data.get(name, None)
 
     def set(self, name, value):
-        self._data[name] = value
+        prop = self._get_property(name)
+        if prop:
+            prop.fset(self, value)
+        else:
+            self._data[name] = value
 
     def set_data(self, data):
         super(Entity, self).__setattr__("_data", data)
