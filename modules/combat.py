@@ -10,7 +10,6 @@ from random import randint
 
 class Battles(Collection):
     def initiate(self, actor, target):
-        # FIXME Make this use visibility and be cleaner
         actor.echo("You attack {}".format(target.name))
         actor.act("{} attacks {}".format(actor.name, target.name))
 
@@ -19,11 +18,15 @@ class Battles(Collection):
             return
 
         target.act("{} is dead!".format(target.name))
+        target.echo("You have been killed!")
 
         target.emit("after:death", unblockable=True)
 
         if not isinstance(target, Character):
             target.delete()
+        else:
+            target.die()
+            target.save()
 
         experience = randint(200, 300)
         actor.gain_experience(experience)

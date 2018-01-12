@@ -764,6 +764,15 @@ class Actor(Entity):
         "class_ids": ["adventurer"],
     }
 
+    def die(self):
+        self.recall()
+        self.stats.current_hp.base = 1
+
+    @inject("Rooms")
+    def recall(self, Rooms):
+        room = Rooms.get({"vnum": settings.INITIAL_ROOM_VNUM})
+        self.room = room
+
     def gain_experience(self, amount):
         amount = int(abs(amount))
 
@@ -1065,7 +1074,7 @@ class Script(Entity):
             def wait(duration):
                 gevent.sleep(duration)
 
-            def execute(vnum, data=None):
+            def call(vnum, data=None):
                 Scripts = self.game.get_injector("Scripts")
                 if data is None:
                     data = {}
