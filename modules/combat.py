@@ -17,7 +17,7 @@ class Battles(Collection):
 
     def attempt_hit(self, actor, target):
         amount = \
-            randint(1, 3) if actor.name != "giant bear" else randint(50, 70)
+            randint(1, 3) if actor.name != "a giant bear" else randint(50, 70)
         noun = "punch" if isinstance(actor, Character) else "claw"
         self.damage(actor, target, noun=noun, amount=amount, silent=False)
 
