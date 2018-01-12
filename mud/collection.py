@@ -98,6 +98,15 @@ class Entity(object):
         else:
             return self.emit_event(event)
 
+    def trigger(self, type, data=None, unblockable=False):
+        event = self.generate_event(type, data, unblockable=unblockable)
+        level = self.room
+        if unblockable:
+            gevent.spawn(level.broadcast_event, event)
+            return event
+        else:
+            return level.broadcast_event(event)
+
     def broadcast(self, type, data=None, unblockable=False):
         event = self.generate_event(type, data, unblockable=unblockable)
         if unblockable:

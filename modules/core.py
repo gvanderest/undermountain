@@ -544,7 +544,7 @@ def say_command(self, message, **kwargs):
         return
 
     say_data = {"message": message}
-    say = self.trigger("before:say", say_data)
+    say = self.emit("before:say", say_data)
     if say.blocked:
         return
 
@@ -553,7 +553,7 @@ def say_command(self, message, **kwargs):
         "message": message,
     })
 
-    self.trigger("after:say", say_data, unblockable=True)
+    self.emit("after:say", say_data, unblockable=True)
 
 
 @inject("Directions", "Rooms")
@@ -594,10 +594,10 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
     self.save()
     self.act("{self.name} has arrived.")
 
+    self.force("look")
+
     self.trigger("after:enter", enter_data, unblockable=True)
     self.trigger("after:walk", walk_data, unblockable=True)
-
-    self.force("look")
 
     return 0.5
 
@@ -872,14 +872,6 @@ class Actor(Entity):
                 self.echo(line)
         else:
             self.client.writeln(str(message))
-
-    def trigger(self, type, data=None, unblockable=False):
-        event = self.generate_event(type, data, unblockable=unblockable)
-        if unblockable:
-            gevent.spawn(self.emit_event, event)
-            return event
-        else:
-            return self.emit_event(event)
 
     def act(self, template, data=None):
         Actors, Characters = self.game.get_injectors("Actors", "Characters")
@@ -1190,9 +1182,9 @@ class TickManager(TimerManager):
     TIMER_DELAY = settings.TICK_SECONDS
 
     def tick(self):
-        self.game.trigger("before:tick", blockable=False)
+        self.game.broadcast("before:tick", unblockable=True)
         logging.debug("Tick.")
-        self.game.trigger("after:tick", blockable=False)
+        self.game.broadcast("after:tick", unblockable=True)
 
 
 class CoreModule(Module):
