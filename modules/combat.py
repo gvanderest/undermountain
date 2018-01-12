@@ -49,7 +49,21 @@ def kill_command(self, args, Actors, Battles, **kwargs):
 
     room = self.room
     name = args.pop(0)
-    target = Actors.get({"room_id": room.id, "name": name})
+
+    target = None
+    for actor in room.actors:
+        if target:
+            break
+
+        # Enable player-killing later.
+        if isinstance(actor, Character):
+            continue
+
+        keywords = actor.name.lower().split()
+        for keyword in keywords:
+            if keyword.startswith(name):
+                target = actor
+                break
 
     if not target:
         self.echo("Can't find that here.")

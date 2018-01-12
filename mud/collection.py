@@ -168,6 +168,8 @@ class Entity(object):
         return Event(self, type, data, unblockable=unblockable)
 
     def __eq__(self, other):
+        if not other:
+            return False
         return other.id == self.id
 
     def __neq__(self, other):
@@ -289,7 +291,7 @@ class Collection(Injector):
         filtered = filter(_filter_function, self.data.values())
         for record in list(filtered):
             if as_dict:
-                yield dict(record)
+                yield record
             else:
                 yield self.wrap_record(record)
 
@@ -320,12 +322,12 @@ class Collection(Injector):
 
     def unwrap_record(self, record):
         if isinstance(record, Entity):
-            return dict(record.get_data())
+            return record.get_data()
         return record
 
     def wrap_record(self, record):
         if isinstance(record, dict):
-            return self.ENTITY_CLASS(data=dict(record), collection=self)
+            return self.ENTITY_CLASS(data=record, collection=self)
         return record
 
     def delete(self, record):

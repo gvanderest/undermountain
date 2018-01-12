@@ -1013,6 +1013,13 @@ class Room(Entity):
     }
 
     @property
+    @inject("Actors", "Characters")
+    def actors(self, Actors, Characters):
+        for collection in (Actors, Characters):
+            for entity in collection.query({"room_id": self.id}):
+                yield entity
+
+    @property
     @inject("Actors", "Characters", "Objects")
     def children(self, Actors, Characters, Objects):
         # TODO Make this flexible, to define model relationships?
