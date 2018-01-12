@@ -2,7 +2,7 @@ from datetime import datetime
 from mud.module import Module
 from mud.collection import Collection, Entity, FileStorage
 from mud.inject import inject
-from utils.ansi import pad_right
+from utils.ansi import pad_right, stop_color_bleed
 from utils.hash import get_random_hash
 from mud.timer_manager import TimerManager
 
@@ -500,6 +500,8 @@ def look_command(self, args, Actors, Objects, Directions, **kwargs):
 
     for obj in Objects.query(spec):
         lines.append("{} is on the ground here.".format(obj["name"]))
+
+    lines = list(stop_color_bleed(lines))
 
     MINIMAP_ENABLED = True
     MINIMAP_WIDTH = 16

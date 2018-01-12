@@ -4,6 +4,7 @@ ANSI MUD Colorization.
 Colorization library for helping with MUD-style color symbols to transform
 them to/from their special escape codes.
 """
+import collections
 import random
 
 
@@ -120,3 +121,36 @@ def pad_right(message, length, symbol=" "):
     """Pad a colorized string's right."""
     stripped = decolorize(message)
     return message + (symbol * max(0, length - len(stripped)))
+
+
+def stop_color_bleed(message):
+    """
+    Iterates over a message or list of messages to stop color bleeds.
+
+    Color bleeds could be caused by future surrounding content, so this
+    will ensure that the lines properly start with the correct colors and
+    end with the correct colors.
+    """
+    # Convert to a list, to iterate over content.
+    is_list = True
+    lines = message
+    if not isinstance(lines, collections.Iterable):
+        is_list = False
+        lines = [lines]
+
+    RESET_COLOR = "{x"
+    last_color = RESET_COLOR
+    for line in lines:
+        cleaned = "{}{}{}".format(last_color, line, RESET_COLOR)
+
+        if not is_list:
+            return cleaned
+
+        yield cleaned
+
+        # Find the last color of the line, store it for the next line
+        for index, char in enumerate(line):
+            if char == "{":
+                whole_color = line[index:index+2]
+                if whole_color != "{{":
+                    last_color = whole_color
