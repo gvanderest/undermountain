@@ -563,11 +563,13 @@ class TelnetConnection(Connection):
         self.write_buffer += message
 
         if not self.flush_thread:
-            self.flush_thread = gevent.spawn(self.flush)
+            self.flush_thread = gevent.spawn(self.start_flush_thread)
+
+    def start_flush_thread(self):
+        gevent.sleep(0.05)
+        self.flush()
 
     def flush(self):
-        gevent.sleep(0.05)
-
         if not self.socket:
             return
 

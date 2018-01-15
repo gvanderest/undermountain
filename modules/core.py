@@ -539,7 +539,14 @@ def look_command(self, args, Actors, Characters, Objects, Directions, **k):
 
 
 def quit_command(self, **kwargs):
-    self.echo("You're logging out...")
+    self.echo("{RYou feel a hand grab you, you begin to fly upwards!")
+    self.echo("{BYou pass through the clouds and out of the world!")
+    self.echo("{GYou have rejoined Reality!")
+    self.echo()
+    self.echo(
+        "{WFor {RNews{W, {CRoleplaying{W and {MInfo{W, Visit our website!")
+    self.echo("{Ch{cttp://{Cw{cww.{Cw{caterdeep.{Co{crg{x")
+
     self.quit()
 
 
