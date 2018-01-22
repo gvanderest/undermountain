@@ -417,8 +417,6 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         output = template
 
         """
-        |      %g : Displays your hps color coded.  (green, yellow, red)     |
-        |      %x : Displays your current experience.                        |
         |      %e : Displays the exits from the room in NESWDU style.        |
         |      %R : Displays the vnum you are in (Immortal Only).            |
         |      %z : Displays the area name you are in (Immortal Only).       |
@@ -428,16 +426,31 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         stats = actor.stats
         room = actor.room
 
+        total_xp = ((actor.level - 1) * actor.experience_per_level) + \
+            actor.experience
         xp_tnl = actor.experience_per_level - actor.experience
+
+        hp_color = "{G"
+        hp = stats.hp.total
+        current_hp = stats.current_hp.total
+        hp_percent = float(current_hp) / float(hp)
+        if hp_percent < (1.0 / 3.0):
+            hp_color = "{R"
+        elif hp_percent < (2.0 / 3.0):
+            hp_color = "{Y"
+
+        colored_hp = "{}{}".format(hp_color, current_hp)
 
         values = {
             "%N": actor.name,
-            "%H": stats.hp.total,
-            "%h": stats.current_hp.total,
+            "%H": hp,
+            "%g": colored_hp,
+            "%h": current_hp,
             "%M": stats.mana.total,
             "%m": stats.current_mana.total,
             "%V": stats.moves.total,
             "%v": stats.current_moves.total,
+            "%x": total_xp,
             "%X": xp_tnl,
             "%a": stats.alignment.total,
             "%q": stats.next_quest_time.total,
