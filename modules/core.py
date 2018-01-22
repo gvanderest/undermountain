@@ -122,6 +122,73 @@ class Map(object):
         return ["".join(row) for row in self.grid]
 
 
+def _check_aliases(self):
+    aliases = self.aliases
+
+    if aliases is None:
+        self.aliases = {}
+        self.save()
+        aliases = self.aliases
+
+    return aliases
+
+
+def unalias_command(self, args, **kwargs):
+    """Allow a player to remove an alias."""
+    aliases = _check_aliases(self)
+
+    if not args:
+        self.echo("Which alias do you wish to remove?")
+        return
+
+    keyword = args.pop(0)
+
+    if keyword not in aliases:
+        self.echo("An alias by that name does not exist.")
+        return
+
+    commands = aliases[keyword]
+    del aliases[keyword]
+
+    self.echo("Alias {} removed.".format(keyword))
+    self.echo("Its commands were: {}".format(commands))
+
+
+def alias_command(self, args, **kwargs):
+    """Allow a player to alias commands."""
+    aliases = _check_aliases(self)
+
+    if not args:
+        if aliases:
+            self.echo("Your current aliases are:")
+            for keyword, commands in self.aliases.items():
+                self.echo("    {}: {}".format(keyword, commands))
+        else:
+            self.echo("You have no aliases set.")
+            return
+        return
+
+    keyword = args.pop(0)
+    if not args:
+        commands = aliases.get(keyword, None)
+        if commands:
+            self.echo("{} aliases to: {}".format(keyword, commands))
+        else:
+            self.echo("That alias is not defined.")
+        return
+
+    # TODO Clean up keyword to make sure it's valid?
+    # TODO Any potential auditing on commands
+    commands = " ".join(args)
+    previous_commands = self.aliases.get(keyword, None)
+    self.aliases[keyword] = commands
+    self.save()
+
+    self.echo("{} aliased to: {}".format(keyword, commands))
+    if previous_commands:
+        self.echo("Previous commands: {}".format(previous_commands))
+
+
 def equipment_command(self, **kwargs):
     self.echo("You are using:")
     self.echo("Nothing.")
@@ -1287,6 +1354,8 @@ class CoreModule(Module):
         self.game.register_command("inventory", inventory_command)
         self.game.register_command("group", group_command)
         self.game.register_command("finger", finger_command)
+        self.game.register_command("alias", alias_command)
+        self.game.register_command("unalias", unalias_command)
 
         self.game.register_manager(TickManager)
 

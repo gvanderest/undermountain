@@ -477,6 +477,14 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         name = parts[0].lower()
         args = parts[1:]
 
+        # Detect and use an alias, if triggered
+        aliases = actor.aliases
+        alias = aliases.get(name, None)
+        if alias:
+            parts = alias.split(" ")
+            name = parts[0].lower()
+            args = parts[1:]
+
         kwargs = {"args": args, "name": name, "message": " ".join(args)}
 
         command = None
