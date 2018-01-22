@@ -122,6 +122,11 @@ class Map(object):
         return ["".join(row) for row in self.grid]
 
 
+def save_command(self):
+    self.save()
+    self.echo("Your character has been saved.")
+
+
 def _check_aliases(self):
     aliases = self.aliases
 
@@ -719,10 +724,6 @@ def delete_command(self, Characters, **kwargs):
     self.echo("Removing your character from the game.")
     Characters.delete(self)
     self.quit(skip_save=True)
-
-
-def save_command(self, **kwargs):
-    self.echo("Your character has been saved.")
 
 
 @inject("Characters")
@@ -1356,6 +1357,7 @@ class CoreModule(Module):
         self.game.register_command("finger", finger_command)
         self.game.register_command("alias", alias_command)
         self.game.register_command("unalias", unalias_command)
+        self.game.register_command("save", save_command)
 
         self.game.register_manager(TickManager)
 
