@@ -188,17 +188,9 @@ def save_command(self):
     self.echo("Your character has been saved.")
 
 
-def _check_aliases(self):
-    if not isinstance(self.aliases, dict):
-        self.aliases = {}
-        self.save()
-
-    return self.aliases
-
-
 def unalias_command(self, args, **kwargs):
     """Allow a player to remove an alias."""
-    aliases = _check_aliases(self)
+    aliases = self.aliases
 
     if not args:
         self.echo("Which alias do you wish to remove?")
@@ -219,7 +211,7 @@ def unalias_command(self, args, **kwargs):
 
 def alias_command(self, args, **kwargs):
     """Allow a player to alias commands."""
-    aliases = _check_aliases(self)
+    aliases = self.aliases
 
     if not args:
         if aliases:
@@ -1074,6 +1066,10 @@ class Actor(Entity):
     @property
     def parents(self):
         return [self.room]
+
+    @property
+    def aliases(self):
+        return self._data.get("aliases", {})
 
 
 class Account(Entity):
