@@ -218,7 +218,6 @@ Please choose a gender for your character: """
             self.writeln("That is not a valid gender, please try again.")
             return
 
-        print("BOOPLE", gender.id)
         self.temporary_actor.gender_id = gender.id
         self.start_select_class()
 

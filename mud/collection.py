@@ -80,7 +80,9 @@ class FileStorage(CollectionStorage):
 
 
 class Entity(object):
-    DEFAULT_DATA = {}
+    DEFAULT_DATA = {
+        "flags": [],
+    }
 
     @property
     def children(self):
@@ -89,6 +91,30 @@ class Entity(object):
     @property
     def parents(self):
         return []
+
+    def add_flag(self, flag):
+        flags = self.flags or []
+        if flag not in flags:
+            flags.append(flag)
+        self.flags = flags
+
+    def remove_flag(self, flag):
+        flags = self.flags or []
+        if flag in flags:
+            flags.remove(flag)
+        self.flags = flags
+
+    def toggle_flag(self, flag):
+        flags = self.flags or []
+        if flag in flags:
+            flags.remove(flag)
+        else:
+            flags.append(flag)
+        self.flags = flags
+
+    def has_flag(self, flag):
+        flags = self.flags or []
+        return flag in flags
 
     def emit(self, type, data=None, unblockable=False):
         event = self.generate_event(type, data, unblockable=unblockable)
@@ -215,7 +241,7 @@ class Entity(object):
         if prop:
             return prop.fget(self, default)
         else:
-            return self._data.get(name, None)
+            return self._data.get(name, default)
 
     def set(self, name, value):
         prop = self._get_property(name)

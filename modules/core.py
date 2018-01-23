@@ -11,6 +11,11 @@ import settings
 import logging
 
 
+EXIT_DOOR = "door"
+EXIT_CLOSED = "closed"
+EXIT_SECRET = "secret"
+
+
 class Map(object):
     @classmethod
     def from_actor(cls, actor, width=45, height=23, border=False):
@@ -120,6 +125,62 @@ class Map(object):
 
     def to_lines(self):
         return ["".join(row) for row in self.grid]
+
+
+@inject("Directions")
+def open_command(self, args, Directions, **kwargs):
+    if not args:
+        self.echo("Open what?")
+        return
+
+    name = args.pop(0)
+
+    direction = Directions.fuzzy_get(name)
+    if not direction:
+        self.echo("You can't find that.")
+        return
+
+    exit = self.room.exits[direction.id]
+    if not exit.has_flag(EXIT_DOOR):
+        self.echo("You can't open that.")
+        return
+
+    if not exit.has_flag(EXIT_CLOSED):
+        self.echo("That is already open.")
+        return
+
+    exit.remove_flag(EXIT_CLOSED)
+    exit.save()
+
+    self.echo("You open the {}.".format(exit.get("name", "door")))
+
+
+@inject("Directions")
+def close_command(self, args, Directions, **kwargs):
+    if not args:
+        self.echo("Close what?")
+        return
+
+    name = args.pop(0)
+
+    direction = Directions.fuzzy_get(name)
+    if not direction:
+        self.echo("You can't find that.")
+        return
+
+    exit = self.room.exits[direction.id]
+    if not exit.has_flag(EXIT_DOOR):
+        self.echo("You can't close that.")
+        return
+
+    if exit.has_flag(EXIT_CLOSED):
+        self.echo("That is already closed.")
+        return
+
+    exit.add_flag(EXIT_CLOSED)
+    exit.save()
+
+    self.echo("You close the {}.".format(exit.get("name", "door")))
 
 
 def save_command(self):
@@ -553,17 +614,28 @@ def look_command(self, args, Actors, Characters, Objects, Directions, **k):
 
     exit_names = []
     door_names = []
+    secret_names = []
 
     for direction in Directions.query():
         exit = room.exits.get(direction.id, None)
         if exit:
-            exit_names.append(direction.colored_name)
+            if exit.has_flag(EXIT_DOOR) and exit.has_flag(EXIT_CLOSED):
+                if exit.has_flag(EXIT_SECRET):
+                    secret_names.append(direction.colored_name)
+                else:
+                    door_names.append(direction.colored_name)
+            else:
+                exit_names.append(direction.colored_name)
 
     exits_line = "{{x[{{GExits{{g:{{x {}{{x]   " \
         "{{x[{{GDoors{{g:{{x {}{{x]   ".format(
             " ".join(exit_names) if exit_names else "none",
             " ".join(door_names) if door_names else "none",
         )
+
+    # if self.has_flag("immortal"):
+    exits_line += "{{x[{{GSecrets{{g:{{x {}{{x]".format(
+        " ".join(secret_names) if secret_names else "none")
     lines.append(exits_line)
 
     for actor in Characters.query({"room_id": room["id"], "online": True}):
@@ -651,6 +723,13 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
     exit = room.exits.get(name, None)
     if not exit:
         self.echo("You can't go that way.")
+        return
+
+    if exit.has_flag(EXIT_DOOR) and exit.has_flag(EXIT_CLOSED):
+        if exit.has_flag(EXIT_SECRET):
+            self.echo("You can't go that way.")
+        else:
+            self.echo("The door is closed.")
         return
 
     direction = Directions.get(name)
@@ -1078,11 +1157,21 @@ class Areas(Collection):
         pass
 
 
+class RoomExit(Entity):
+    def __init__(self, data, room):
+        super(RoomExit, self).__init__(data)
+        super(Entity, self).__setattr__("room", room)
+
+    def save(self):
+        self.room.save()
+
+
 class Room(Entity):
     DEFAULT_DATA = {
         "name": "",
         "exits": {},
         "description": [],
+        "flags": [],
     }
 
     @property
@@ -1113,6 +1202,11 @@ class Room(Entity):
     @property
     def room(self):
         return self
+
+    @property
+    def exits(self):
+        exits = self._data.get("exits", {})
+        return {k: RoomExit(v, self) for k, v in exits.items()}
 
 
 class Direction(Entity):
@@ -1358,6 +1452,8 @@ class CoreModule(Module):
         self.game.register_command("alias", alias_command)
         self.game.register_command("unalias", unalias_command)
         self.game.register_command("save", save_command)
+        self.game.register_command("open", open_command)
+        self.game.register_command("close", close_command)
 
         self.game.register_manager(TickManager)
 
