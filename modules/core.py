@@ -189,14 +189,11 @@ def save_command(self):
 
 
 def _check_aliases(self):
-    aliases = self.aliases
-
-    if aliases is None:
+    if not isinstance(self.aliases, dict):
         self.aliases = {}
         self.save()
-        aliases = self.aliases
 
-    return aliases
+    return self.aliases
 
 
 def unalias_command(self, args, **kwargs):
