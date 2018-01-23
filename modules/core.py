@@ -1069,7 +1069,10 @@ class Actor(Entity):
 
     @property
     def aliases(self):
-        return self._data.get("aliases", {})
+        if not self._data.get("aliases", None):
+            self._data["aliases"] = {}
+            self.save()
+        return self._data["aliases"]
 
 
 class Account(Entity):
