@@ -490,7 +490,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         args = parts[1:]
 
         # Detect and use an alias, if triggered
-        aliases = actor.aliases
+        aliases = actor.settings.get("aliases", {})
         alias = aliases.get(name, None)
         if alias:
             parts = alias.split(" ")

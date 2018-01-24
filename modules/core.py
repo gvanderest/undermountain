@@ -190,7 +190,7 @@ def save_command(self):
 
 def unalias_command(self, args, **kwargs):
     """Allow a player to remove an alias."""
-    aliases = self.aliases
+    aliases = self.settings.get("aliases", {})
 
     if not args:
         self.echo("Which alias do you wish to remove?")
@@ -203,7 +203,10 @@ def unalias_command(self, args, **kwargs):
         return
 
     commands = aliases[keyword]
+
     del aliases[keyword]
+    self.settings["aliases"] = aliases
+    self.save()
 
     self.echo("Alias {} removed.".format(keyword))
     self.echo("Its commands were: {}".format(commands))
@@ -211,19 +214,19 @@ def unalias_command(self, args, **kwargs):
 
 def alias_command(self, args, **kwargs):
     """Allow a player to alias commands."""
-    aliases = self.aliases
+    aliases = self.settings.get("aliases", {})
 
     if not args:
         if aliases:
             self.echo("Your current aliases are:")
-            for keyword, commands in self.aliases.items():
+            for keyword, commands in aliases.items():
                 self.echo("    {}: {}".format(keyword, commands))
         else:
             self.echo("You have no aliases set.")
             return
         return
 
-    keyword = args.pop(0)
+    keyword = args.pop(0).lower()
     if not args:
         commands = aliases.get(keyword, None)
         if commands:
@@ -232,11 +235,11 @@ def alias_command(self, args, **kwargs):
             self.echo("That alias is not defined.")
         return
 
-    # TODO Clean up keyword to make sure it's valid?
-    # TODO Any potential auditing on commands
     commands = " ".join(args)
     previous_commands = self.aliases.get(keyword, None)
-    self.aliases[keyword] = commands
+    aliases[keyword] = commands
+
+    self.settings["aliases"] = aliases
     self.save()
 
     self.echo("{} aliased to: {}".format(keyword, commands))
@@ -910,6 +913,7 @@ class Actor(Entity):
         "room_vnum": settings.INITIAL_ROOM_VNUM,
         "race_ids": ["human"],
         "class_ids": ["adventurer"],
+        "settings": {},
     }
 
     def die(self):
@@ -1066,13 +1070,6 @@ class Actor(Entity):
     @property
     def parents(self):
         return [self.room]
-
-    @property
-    def aliases(self):
-        if not self._data.get("aliases", None):
-            self._data["aliases"] = {}
-            self.save()
-        return self._data["aliases"]
 
 
 class Account(Entity):
