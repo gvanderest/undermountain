@@ -261,7 +261,7 @@ def group_command(self, **kwargs):
     self.echo("{}'s group:".format(self.name))
 
     self.echo("[{} {}] {} {}/{} hp {}/{} mana {} xp".format(
-        self.level,
+        self.stats.level.base,
         self.classes[0].short_name,
 
         self.name.ljust(20),
@@ -772,7 +772,7 @@ def who_command(self, Characters, **kwargs):
         count += 1
 
         self.echo("{{x{} {} {} {} {{x[.{{BN{{x......] {} {}".format(
-            str(actor.level).rjust(3),
+            str(actor.stats.level.base).rjust(3),
             pad_right(actor.gender.colored_short_name, 1),
             pad_right(actor.races[0].colored_name, 5),
             pad_right(actor.classes[0].colored_short_name, 3),
@@ -835,7 +835,7 @@ def finger_command(self, args, Characters, **kwargs):
         "",
         actor.races[0].name,
         "",
-        str(actor.level),
+        str(actor.stats.level.base),
         "",
         "",
         str(0),
@@ -906,13 +906,13 @@ class Actor(Entity):
         "name": "",
         "title": "",
         "bracket": "",
-        "level": 1,
         "experience": 0,
         "experience_per_level": 3000,
         "room_id": "",
         "room_vnum": settings.INITIAL_ROOM_VNUM,
         "race_ids": ["human"],
         "class_ids": ["adventurer"],
+        "stats": {},
         "settings": {},
     }
 
@@ -931,17 +931,17 @@ class Actor(Entity):
         self.echo("{{BYou gain {{W{} {{Bexperience points!{{x".format(amount))
         self.experience += amount
 
-        while self.level < settings.LEVEL_MAXIMUM and \
+        while self.stats.level.base < settings.LEVEL_MAXIMUM and \
                 self.experience >= self.experience_per_level:
-            self.level += 1
+            self.stats.level.base += 1
             self.echo("You gained a level! You are now level {}".format(
-                self.level))
+                self.stats.level.base))
             self.experience -= self.experience_per_level
 
-            if self.level >= settings.LEVEL_MAXIMUM:
+            if self.stats.level.base >= settings.LEVEL_MAXIMUM:
                 self.echo("Congratulations, you made it to the maximum level!")
 
-        if self.level >= settings.LEVEL_MAXIMUM:
+        if self.stats.level.base >= settings.LEVEL_MAXIMUM:
             self.experience = 0
 
     @inject("Actors")

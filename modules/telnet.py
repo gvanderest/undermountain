@@ -53,6 +53,7 @@ class TelnetClient(Client):
                 "tier": 0,
                 "connection_id": self.connection.id,
                 "stats": {
+                    "level": 1,
                     "current_hp": 100,
                     "hp": 100,
                     "current_mana": 100,
@@ -425,7 +426,8 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         stats = actor.stats
         room = actor.room
 
-        total_xp = ((actor.level - 1) * actor.experience_per_level) + \
+        level = actor.stats.level.base
+        total_xp = ((level - 1) * actor.experience_per_level) + \
             actor.experience
         xp_tnl = actor.experience_per_level - actor.experience
 
