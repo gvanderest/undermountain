@@ -724,7 +724,7 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
             self.echo("The door is closed.")
         return
 
-    if self.targets:
+    if self.target_ids:
         self.echo("You are in combat!")
         return
 
@@ -963,10 +963,15 @@ class Actor(Entity):
     @property
     @inject("Actors", "Characters")
     def targets(self, Actors, Characters):
-        before = [
-            (Actors.get(id) or Characters.get(id))
-            for id in self.get("target_ids", [])]
-        return [a for a in before if a]
+        for id in self.get("target_ids", []):
+            for coll in (Actors, Characters):
+                actor = coll.get(id)
+
+                if not actor:
+                    continue
+
+                yield actor
+                break
 
     @targets.setter
     def targets(self, targets):

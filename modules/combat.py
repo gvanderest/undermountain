@@ -10,8 +10,8 @@ from random import randint, choice
 
 class Battles(Collection):
     def initiate(self, actor, target):
-        actor.targets += [target]
-        target.targets += [actor]
+        actor.target_ids = (actor.target_ids or []) + [target.id]
+        target.target_ids = (target.target_ids or []) + [actor.id]
 
         actor.save()
         target.save()
@@ -26,7 +26,8 @@ class Battle(object):
 
     def process_round(self):
         actor = self.actor
-        target = actor.targets[0]
+        actor.refresh()
+        target = next(actor.targets)
         for i in range(3):
             self.attempt_hit(actor, target)
 
@@ -105,7 +106,7 @@ class CombatManager(TimerManager):
     def process_battles(self, Actors, Characters):
         for coll in [Actors, Characters]:
             for actor in coll.query():
-                if not actor.targets:
+                if not actor.target_ids:
                     continue
 
                 battle = Battle(actor)
@@ -173,7 +174,8 @@ class RegenerationManager(TimerManager):
     def tick(self, Characters):
         debug("Regenerating Characters")
         for char in Characters.query({"online": True}):
-            if char.targets:
+
+            if char.target_ids:
                 continue
 
             stats = char.stats

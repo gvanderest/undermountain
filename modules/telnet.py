@@ -475,7 +475,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             return
         actor = self.actor
 
-        targets = actor.targets
+        targets = list(actor.targets)
         if targets:
             target = targets[0]
 
