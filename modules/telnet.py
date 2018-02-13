@@ -15,6 +15,84 @@ import socket as raw_socket
 monkey.patch_all()
 
 
+def in_edit_mode_prompt(self):
+    return "> "
+
+
+def output_edit_lines(self, lines):
+    self.echo("###: " + ("-" * 79))
+
+    for index, line in enumerate(lines):
+        line_number = str(index + 1).rjust(3, " ")
+        self.echo("{}: {}".format(line_number, line))
+
+    self.echo("###: " + ("-" * 79))
+
+
+def in_edit_mode(self, message, args, context, **kwargs):
+    args = list(args)
+    command = args.pop(0)
+
+    if command in ["@", "~"]:
+        self.client.end_edit_mode()
+        return True
+    elif message == ".h":
+        self.echo("""\
+String edit help (commands on blank line):
+NO .r 'old' 'new'   - replace a substring
+                   (requires '', "")
+.h               - get help (this info)
+.s               - show string so far
+NO .f               - word wrap string
+NO .x ##            - smart word wrap
+                   ## = width, default = 70
+.c               - clear string so far
+.i ## string   - insert string on new line before...
+                   ## = line number
+.d ##            - delete line
+                   ## = line number, default is last line
+@ or ~           - end string
+""")
+        return True
+
+    elif command == ".c":
+        context["lines"] = []
+        self.echo("Lines cleared.")
+        return True
+
+    elif command == ".s":
+        self.echo("Lines so far:")
+        output_edit_lines(self, context["lines"])
+        return True
+
+    elif command == ".d":
+        line_number = int(args.pop(0))
+        line_index = line_number - 1
+        line = context["lines"].pop(line_index)
+        self.echo("Line {} deleted: {}".format(line_number, line))
+        return True
+
+    elif command == ".i":
+        line_number = int(args.pop(0))
+        line_index = line_number - 1
+
+        new_line = " ".join(args)
+        old_line = context["lines"][line_index]
+
+        context["lines"].insert(line_index, new_line)
+
+        self.echo("Line: {}".format(new_line))
+        self.echo("Insered before line {}: {}".format(line_number, old_line))
+
+        return True
+
+    else:
+        context["lines"].append(message)
+        return True
+
+    return False
+
+
 class TelnetClient(Client):
     INITIAL_STATE = "login_username"
 
@@ -22,12 +100,62 @@ class TelnetClient(Client):
         super(TelnetClient, self).__init__(*args, **kwargs)
         self.write_ended_with_newline = False
 
+        self.edit_data = []
+        self.edit_callback = None
+
         self.temporary_actor = None
         self.prompt_thread = False
         self.resolver = FuzzyResolver(self.game.commands)
         self.color = True
         self.write_from_random_template("banners")
         self.write("What is your name, adventurer? ")
+
+    def start_proxy_command(
+            self, command, callback=None, context=None, prompt=None):
+        self.proxy_commands.append(command)
+        self.proxy_callbacks.append(callback)
+        self.proxy_contexts.append(context)
+        self.proxy_prompts.append(prompt)
+
+    def end_proxy_command(self, command=None):
+        index = len(self.proxy_commands) - 1
+        if command:
+            index = self.proxy_commands.index(command)
+
+        self.proxy_commands.pop(index)
+
+        callback = self.proxy_callbacks.pop(index)
+        context = self.proxy_contexts.pop(index)
+        self.proxy_prompts.pop(index)
+
+        if callback:
+            callback(context)
+
+        return context
+
+    def start_edit_mode(self, callback, context=None):
+        self.writeln("""\
+-=======- Entering APPEND Mode -========-
+    Type .h on a new line for help
+ Terminate with a ~ or @ on a blank line.
+-=======================================-
+""")
+        if not context:
+            context = {}
+
+        if "lines" not in context:
+            context["lines"] = []
+
+        self.start_proxy_command(
+            command=in_edit_mode,
+            callback=callback,
+            context=context,
+            prompt=in_edit_mode_prompt,
+        )
+        output_edit_lines(self.actor, context["lines"])
+
+    def end_edit_mode(self):
+        return self.end_proxy_command(in_edit_mode)
 
     @property
     @inject("Characters")
@@ -473,39 +601,62 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
     def write_prompt(self):
         if self.state != "playing":
             return
-        actor = self.actor
 
-        targets = list(actor.targets)
-        if targets:
-            target = targets[0]
+        prompt_function = None
+        for proxy_prompt in reversed(self.proxy_prompts):
+            if proxy_prompt:
+                prompt_function = proxy_prompt
+                break
 
-            current_hp = target.stats.current_hp.total
-            total_hp = target.stats.hp.total
-            health_text = "now considers you a force to be reckoned with"
+        if prompt_function:
+            template = prompt_function(self)
+        else:
+            actor = self.actor
 
-            percent = (current_hp / total_hp) if total_hp else 0
-            display_percent = "%0.1f" % (percent * 100)
+            targets = list(actor.targets)
+            if targets:
+                target = targets[0]
 
-            self.write("{{R{} {}. {{x[{{R{}%{{x]".format(
-                target.name, health_text, display_percent))
+                current_hp = target.stats.current_hp.total
+                total_hp = target.stats.hp.total
+                health_text = "now considers you a force to be reckoned with"
 
-        self.writeln()
-        template = (
-            "{8[{R%h{8/{r%H{8h {B%m{8/{b%M{8m {M%v{8v {W%N{8({Y%X{8) "
-            "{W%r{8({w%q{8/{w%t{8) {W%a{8]{x")
+                percent = (current_hp / total_hp) if total_hp else 0
+                display_percent = "%0.1f" % (percent * 100)
+
+                self.write("{{R{} {}. {{x[{{R{}%{{x]".format(
+                    target.name, health_text, display_percent))
+
+            self.writeln()
+
+            template = (
+                "{8[{R%h{8/{r%H{8h {B%m{8/{b%M{8m {M%v{8v {W%N{8({Y%X{8) "
+                "{W%r{8({w%q{8/{w%t{8) {W%a{8]{x")
+
         self.write(self.format_prompt_template(template))
 
     @inject("Characters")
-    def handle_playing_input(self, message, Characters):
+    def handle_playing_input(self, message, Characters, allow_proxy=True):
         actor = Characters.get(self.connection.actor_id)
         delay = None
 
-        while self.inputs and not self.inputs[0]:
-            self.inputs.pop(0)
+        parts = message.split(" ") if message else []
 
-        parts = message.split(" ")
-        name = parts[0].lower()
-        args = parts[1:]
+        proxy_command = \
+            self.proxy_commands[-1] if self.proxy_commands else None
+        if proxy_command:
+            context = self.proxy_contexts[-1]
+            result = proxy_command(
+                self=actor,
+                message=message,
+                args=tuple(parts),
+                context=context,
+            )
+            if result is not False:
+                return result
+
+        name = parts[0].lower() if parts else ""
+        args = tuple(parts[1:] if parts else [])
 
         # Detect and use an alias, if triggered
         aliases = actor.settings.get("aliases", {})
@@ -528,12 +679,17 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
                 self.game.wiznet(
                     "log", "{}: {}".format(actor.name, message),
                     exclude=[actor])
+
                 delay = command(actor, **kwargs)
+
             except Exception as e:
                 self.game.handle_exception(e)
                 self.writeln("Huh?!")
-        else:
+
+        elif message:
             self.writeln("Huh?")
+        else:
+            self.writeln()
 
         return delay
 

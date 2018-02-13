@@ -13,6 +13,14 @@ class Client(object):
         self.inputs = []
         self.parse_thread = None
         self.state = self.INITIAL_STATE
+
+        self.prompt_disabled = False
+
+        self.proxy_commands = []
+        self.proxy_contexts = []
+        self.proxy_callbacks = []
+        self.proxy_prompts = []
+
         self.last_input = ""
         self.spam_count = 0
 

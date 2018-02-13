@@ -32,6 +32,7 @@ MODULES = (
     "modules.core.CoreModule",
     "modules.telnet.TelnetModule",
     "modules.combat.CombatModule",
+    "modules.build.BuildModule",
 )
 
 DIRECTIONS = {
