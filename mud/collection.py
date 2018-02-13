@@ -71,8 +71,12 @@ class FileStorage(CollectionStorage):
 
         os.makedirs(folder, exist_ok=True)
 
-        with open(path, "w") as fh:
+        temp_path = path + ".TMP"
+
+        with open(temp_path, "w") as fh:
             fh.write(json.dumps(record, indent=4, sort_keys=True))
+
+        os.rename(temp_path, path)
 
     def post_delete(self, record):
         path = self.get_record_path(record)
