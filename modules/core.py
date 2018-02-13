@@ -724,6 +724,10 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
             self.echo("The door is closed.")
         return
 
+    if self.targets:
+        self.echo("You are in combat!")
+        return
+
     direction = Directions.get(name)
 
     walk_data = {"direction": name}
@@ -957,6 +961,18 @@ class Actor(Entity):
         return Actors.save(data)
 
     @property
+    @inject("Actors", "Characters")
+    def targets(self, Actors, Characters):
+        before = [
+            (Actors.get(id) or Characters.get(id))
+            for id in self.get("target_ids", [])]
+        return [a for a in before if a]
+
+    @targets.setter
+    def targets(self, targets):
+        self.target_ids = [target.id for target in targets]
+
+    @property
     @inject("Classes")
     def classes(self, Classes):
         return [Classes.get(class_id) for class_id in self.class_ids]
@@ -1153,7 +1169,16 @@ class Areas(Collection):
 class RoomExit(Entity):
     def __init__(self, data, room):
         super(RoomExit, self).__init__(data)
-        super(Entity, self).__setattr__("room", room)
+        super(Entity, self).__setattr__("from_room", room)
+
+    @property
+    def game(self):
+        return self.from_room.game
+
+    @property
+    @inject("Rooms")
+    def room(self, Rooms):
+        return Rooms.get({"vnum": self.room_vnum})
 
     def save(self):
         self.room.save()

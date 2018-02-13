@@ -5,10 +5,66 @@ from mud.module import Module
 from mud.inject import inject
 from mud.collection import Collection
 from modules.core import Character
-from random import randint
+from random import randint, choice
 
 
 class Battles(Collection):
+    def initiate(self, actor, target):
+        actor.targets += [target]
+        target.targets += [actor]
+
+        actor.save()
+        target.save()
+
+        battle = Battle(actor)
+        battle.process_round()
+
+
+class Battle(object):
+    def __init__(self, actor):
+        self.actor = actor
+
+    def process_round(self):
+        actor = self.actor
+        target = actor.targets[0]
+        for i in range(3):
+            self.attempt_hit(actor, target)
+
+            if target.stats.current_hp.base > 0:
+                continue
+
+            event = target.emit("before:death")
+            if event.blocked:
+                target.stats.current_hp.base = 0
+                continue
+
+            target.act("{{c{}{{c is {{CDEAD{{c!{{x".format(target.name))
+            target.echo("You have been {RKILLED{x!")
+
+            experience = randint(200, 300)
+            actor.gain_experience(experience)
+
+            target.act("You hear {self.name}{x's death cry.")
+            actor.echo("Death gives you one silver coin for your sacrifice.")
+            target.echo()
+
+            target.emit("after:death", unblockable=True)
+
+            for target_target in target.targets:
+                target_target.target_ids.remove(target.id)
+                target_target.save()
+
+            target.target_ids = []
+
+            if not isinstance(target, Character):
+                target.delete()
+            else:
+                target.die()
+                target.save()
+                target.force("look")
+
+            break
+
     def get_damage_amount_text(self, amount):
         if amount < 10:
             return "scratches"
@@ -16,8 +72,7 @@ class Battles(Collection):
             return "{B<{w<{B< {BE{bRA{wD{WIC{wA{bTE{BS {B>{W>{B>"
 
     def attempt_hit(self, actor, target):
-        amount = \
-            randint(1, 3) if actor.name != "a giant bear" else randint(50, 70)
+        amount = randint(1, 20)
         noun = "punch" if isinstance(actor, Character) else "claw"
         self.damage(actor, target, noun=noun, amount=amount, silent=False)
 
@@ -37,45 +92,6 @@ class Battles(Collection):
 
         target.stats.current_hp.base -= amount
 
-    def initiate(self, actor, target):
-        actor.fighting = True
-        target.fighting = True
-
-        for _ in range(3):
-            self.attempt_hit(actor, target)
-
-            if target.stats.current_hp.base > 0:
-                continue
-
-            event = target.emit("before:death")
-            if event.blocked:
-                continue
-
-            target.act("{{c{}{{c is {{CDEAD{{c!{{x".format(target.name))
-            target.echo("You have been {RKILLED{x!")
-
-            experience = randint(200, 300)
-            actor.gain_experience(experience)
-
-            target.act("You hear {self.name}{x's death cry.")
-            actor.echo("Death gives you one silver coin for your sacrifice.")
-            target.echo()
-
-            target.emit("after:death", unblockable=True)
-
-            target.fighting = False
-            actor.fighting = False
-            actor.save()
-
-            if not isinstance(target, Character):
-                target.delete()
-            else:
-                target.die()
-                target.save()
-                target.force("look")
-
-            break
-
 
 class CombatManager(TimerManager):
     TIMER_DELAY = 1.0
@@ -83,6 +99,40 @@ class CombatManager(TimerManager):
     @inject("Battles")
     def tick(self, Battles):
         debug("Battles!! {}".format(Battles.query()))
+        self.process_battles()
+
+    @inject("Actors", "Characters")
+    def process_battles(self, Actors, Characters):
+        for coll in [Actors, Characters]:
+            for actor in coll.query():
+                if not actor.targets:
+                    continue
+
+                battle = Battle(actor)
+                battle.process_round()
+
+
+def flee_command(self, *args, **kwargs):
+    if not self.target_ids:
+        self.echo("You aren't fighting anyone!")
+        return
+
+    room = self.room
+    exits = room.exits
+    if not exits:
+        self.echo("There is nowhere to go!")
+        return
+
+    random_exit = choice(list(exits.values()))
+
+    # TODO Make this better
+    for target in self.targets:
+        target.target_ids.remove(self.id)
+        target.save()
+    self.targets = []
+    self.room = random_exit.room
+    self.save()
+    self.force("look")
 
 
 @inject("Actors", "Battles")
@@ -123,6 +173,9 @@ class RegenerationManager(TimerManager):
     def tick(self, Characters):
         debug("Regenerating Characters")
         for char in Characters.query({"online": True}):
+            if char.targets:
+                continue
+
             stats = char.stats
 
             hp = stats.current_hp.base
@@ -153,3 +206,4 @@ class CombatModule(Module):
         self.game.register_command("murder", kill_command)
         self.game.register_command("attack", kill_command)
         self.game.register_command("battle", kill_command)
+        self.game.register_command("flee", flee_command)

@@ -473,6 +473,22 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
     def write_prompt(self):
         if self.state != "playing":
             return
+        actor = self.actor
+
+        targets = actor.targets
+        if targets:
+            target = targets[0]
+
+            current_hp = target.stats.current_hp.total
+            total_hp = target.stats.hp.total
+            health_text = "now considers you a force to be reckoned with"
+
+            percent = (current_hp / total_hp) if total_hp else 0
+            display_percent = "%0.1f" % (percent * 100)
+
+            self.write("{{R{} {}. {{x[{{R{}%{{x]".format(
+                target.name, health_text, display_percent))
+
         self.writeln()
         template = (
             "{8[{R%h{8/{r%H{8h {B%m{8/{b%M{8m {M%v{8v {W%N{8({Y%X{8) "
