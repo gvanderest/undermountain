@@ -260,6 +260,9 @@ class Entity(object):
     def get_data(self):
         return self._data
 
+    def refresh(self):
+        self.set_data(self._collection.data.get(self.id, {}))
+
     def save(self):
         return self._collection.save(self)
 
