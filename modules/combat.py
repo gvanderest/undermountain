@@ -150,15 +150,15 @@ def kill_command(self, args, Actors, Battles, **kwargs):
         if target:
             break
 
-        # Enable player-killing later.
-        if isinstance(actor, Character):
-            continue
-
         keywords = actor.name.lower().split()
         for keyword in keywords:
             if keyword.startswith(name):
                 target = actor
                 break
+
+    if target == self:
+        self.echo("You can't attack yourself.")
+        return
 
     if not target:
         self.echo("Can't find that here.")
