@@ -355,6 +355,7 @@ def time_command(self, **kwargs):
     # great_realms_time = "Wed Dec 20 22:02:27 2017"
 
     current_time = now.strftime(date_format)
+    reboot_time = self.game.start_date.strftime(date_format)
 
     self.echo("""\
 {{B+{{b---------------------------------------------------------{{B+{{x
@@ -366,7 +367,7 @@ def time_command(self, **kwargs):
 """.format(
         current_time,
         current_time,
-        current_time,
+        reboot_time,
     ))
 
     pass

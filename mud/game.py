@@ -1,3 +1,4 @@
+from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from mud.inject import inject
 
@@ -33,6 +34,7 @@ class Game(object):
         self.managers = []
         self.connections = {}
         self.commands = {}
+        self.start_date = datetime.now()
 
         self.import_modules_from_settings()
 
