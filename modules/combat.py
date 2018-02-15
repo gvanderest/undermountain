@@ -27,6 +27,11 @@ class Battle(object):
     def process_round(self):
         actor = self.actor
         actor.refresh()
+
+        event = actor.handle("before:combat_turn")
+        if event.blocked:
+            return
+
         target = next(actor.targets)
 
         for i in range(3):
@@ -66,7 +71,9 @@ class Battle(object):
                 target.save()
                 target.force("look")
 
-            break
+            return
+
+        actor.handle("after:combat_turn")
 
     def get_damage_amount_text(self, amount):
         if amount < 10:
@@ -111,14 +118,8 @@ class CombatManager(TimerManager):
                 if not actor.target_ids:
                     continue
 
-                event = actor.handle("before:combat_round")
-                if event.blocked:
-                    continue
-
                 battle = Battle(actor)
                 battle.process_round()
-
-                actor.handle("after:combat_round")
 
 
 def flee_command(self, *args, **kwargs):
