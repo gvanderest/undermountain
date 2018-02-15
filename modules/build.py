@@ -8,7 +8,7 @@ def format_field_value(name, value):
 
 
 def in_room_edit_prompt(self):
-    return "> "
+    return ">"
 
 
 @inject("Rooms")
