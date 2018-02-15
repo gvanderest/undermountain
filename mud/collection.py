@@ -171,6 +171,10 @@ class Entity(object):
 
         return event
 
+    def handle(self, type, data=None):
+        event = self.generate_event(type, data)
+        return self.handle_event(event)
+
     # FIXME Move this out of Collection, which is meant to be more generic
     @inject("Scripts", "Behaviors")
     def handle_event(self, event, Scripts, Behaviors):

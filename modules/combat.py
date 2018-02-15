@@ -28,6 +28,7 @@ class Battle(object):
         actor = self.actor
         actor.refresh()
         target = next(actor.targets)
+
         for i in range(3):
             self.attempt_hit(actor, target)
 
@@ -52,7 +53,8 @@ class Battle(object):
             target.emit("after:death", unblockable=True)
 
             for target_target in target.targets:
-                target_target.target_ids.remove(target.id)
+                if target.id in target_target.target_ids:
+                    target_target.target_ids.remove(target.id)
                 target_target.save()
 
             target.target_ids = []
@@ -109,8 +111,14 @@ class CombatManager(TimerManager):
                 if not actor.target_ids:
                     continue
 
+                event = actor.handle("before:combat_round")
+                if event.blocked:
+                    continue
+
                 battle = Battle(actor)
                 battle.process_round()
+
+                actor.handle("after:combat_round")
 
 
 def flee_command(self, *args, **kwargs):
@@ -128,7 +136,8 @@ def flee_command(self, *args, **kwargs):
 
     # TODO Make this better
     for target in self.targets:
-        target.target_ids.remove(self.id)
+        if target.target_ids and self.id in target.target_ids:
+            target.target_ids.remove(self.id)
         target.save()
     self.targets = []
     self.room = random_exit.room
