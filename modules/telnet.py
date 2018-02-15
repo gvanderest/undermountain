@@ -649,14 +649,14 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             result = proxy_command(
                 self=actor,
                 message=message,
-                args=tuple(parts),
+                args=list(parts),
                 context=context,
             )
             if result is not False:
                 return result
 
         name = parts[0].lower() if parts else ""
-        args = tuple(parts[1:] if parts else [])
+        args = list(parts[1:] if parts else [])
 
         # Detect and use an alias, if triggered
         aliases = actor.settings.get("aliases", {})
