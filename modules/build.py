@@ -7,23 +7,21 @@ def format_field_value(name, value):
     return "{}[{}]".format(name.ljust(FIELD_LENGTH, "."), value)
 
 
-def in_room_edit_prompt(self):
-    return ">"
-
-
 @inject("Rooms")
 def in_room_edit(self, Rooms, context=None, args=None, **kwargs):
     room = Rooms.get(context["room_id"]) if context else self.room
 
-    args = list(args) if args else []
-
-    if not args:
+    def display_redit_summary():
         self.echo(format_field_value("Name", room.name))
 
         self.echo("Description:")
         for line in room.description:
             self.echo(line)
 
+    args = list(args) if args else []
+
+    if not args:
+        display_redit_summary()
         return
 
     command = args.pop(0).lower()
@@ -38,6 +36,7 @@ def in_room_edit(self, Rooms, context=None, args=None, **kwargs):
         def description_edit_callback(context):
             room.description = context["lines"]
             room.save()
+            display_redit_summary()
 
         self.client.start_edit_mode(description_edit_callback, context={
             "lines": room.description or [],
