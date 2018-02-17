@@ -345,7 +345,14 @@ class Collection(Injector):
     def save(self, record, skip_storage=False):
         logging.debug("Saving {} record {}".format(
             self.__class__.__name__, record.get("vnum", None)))
+
         record = self.unwrap_record(record)
+
+        default_data = self.ENTITY_CLASS.DEFAULT_DATA
+        if default_data:
+            for key, value in default_data.items():
+                if key not in record:
+                    record[key] = value
 
         if "id" not in record:
             record["id"] = get_random_hash()
@@ -369,7 +376,16 @@ class Collection(Injector):
 
     def delete(self, record):
         record = self.unwrap_record(record)
+
+        wrapped = self.wrap_record(record)
+        for child in wrapped.children:
+            if child._collection.PERSISTENT:
+                continue
+
+            child.delete()
+
         del self.data[record["id"]]
+
         self.storage.post_delete(record)
         self.post_delete(record)
 

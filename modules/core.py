@@ -1112,6 +1112,10 @@ class Character(Actor):
 
 
 class Area(Entity):
+    DEFAULT_DATA = {
+        "name": "Unnamed",
+    }
+
     @property
     @inject("Rooms")
     def rooms(self, Rooms):
@@ -1192,6 +1196,8 @@ class RoomExit(Entity):
 
 class Room(Entity):
     DEFAULT_DATA = {
+        "vnum": "",
+        "area_vnum": "",
         "name": "",
         "exits": {},
         "description": [],
@@ -1359,6 +1365,7 @@ class Behaviors(Collection):
 
 
 class Characters(Collection):
+    PERSISTENT = True
     STORAGE_CLASS = FileStorage
     STORAGE_FILENAME_FIELD = "name"
     ENTITY_CLASS = Character
@@ -1461,7 +1468,7 @@ class CoreModule(Module):
         self.game.register_command("dig", dig_command)
         self.game.register_command("link", link_command)
         self.game.register_command("unlink", unlink_command)
-        self.game.register_command("areas", areas_command)
+        # self.game.register_command("areas", areas_command)
         self.game.register_command("goto", goto_command)
         self.game.register_command("rooms", rooms_command)
         self.game.register_command("time", time_command)
