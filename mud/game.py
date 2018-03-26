@@ -62,6 +62,8 @@ class Game(object):
 
         for conn in self.connections.values():
             actor = conn.client.actor
+            if not actor:
+                continue
 
             if actor in exclude:
                 continue

@@ -183,6 +183,33 @@ def close_command(self, args, Directions, **kwargs):
     self.echo("You close the {}.".format(exit.get("name", "door")))
 
 
+def sockets_command(self, **kwargs):
+    connections = self.game.connections.values()
+
+    count = 0
+    self.echo("[Num Connected_State Login@ Idl] Name        Host")
+    self.echo("-" * 79)
+
+    for conn in connections:
+        count += 1
+
+        client = conn.client
+        actor = conn.actor
+
+        self.echo("[{} {}  {} {}] {} {}:{}".format(
+            str(conn.id).rjust(3),
+            client.state.center(15),
+            conn.created_date.strftime("%H:%M"),
+            "   ",
+            (actor.name if actor else "(None)").ljust(11),
+            conn.hostname,
+            conn.port,
+        ))
+
+    self.echo()
+    self.echo("{} users".format(count))
+
+
 def save_command(self):
     self.save()
     self.echo("Your character has been saved.")
@@ -1485,6 +1512,7 @@ class CoreModule(Module):
         self.game.register_command("save", save_command)
         self.game.register_command("open", open_command)
         self.game.register_command("close", close_command)
+        self.game.register_command("sockets", sockets_command)
 
         self.game.register_manager(TickManager)
 

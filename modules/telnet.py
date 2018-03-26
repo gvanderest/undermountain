@@ -700,8 +700,18 @@ class TelnetConnection(Connection):
         self.read_buffer = ""
         self.write_buffer = ""
         self.socket = socket
-        self.address = address
+        self.hostname = address[0]
+        self.port = address[1]
         self.flush_thread = None
+
+    @property
+    def actor(self):
+        client = self.client
+
+        if not client:
+            return None
+
+        return client.actor
 
     def start(self):
         self.client = TelnetClient(self)
