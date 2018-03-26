@@ -333,11 +333,15 @@ class Collection(Injector):
                 yield self.wrap_record(record)
 
     def get(self, spec):
-        if isinstance(spec, str):
+        if spec is None:
+            return None
+
+        elif isinstance(spec, str):
             record = self.data.get(spec, None)
             if not record:
                 return None
             return self.wrap_record(record)
+
         else:
             for record in self.query(spec):
                 return record
