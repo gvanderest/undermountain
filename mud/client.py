@@ -32,6 +32,10 @@ class Client(object):
         """Read a random file from a data folder and output it."""
         path = "{}/{}".format(settings.DATA_FOLDER, folder)
         paths = glob.glob("{}/*".format(path))
+
+        if not paths:
+            return
+
         template_path = random.choice(paths)
         with open(template_path, "r") as fh:
             output = fh.read()
