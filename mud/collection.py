@@ -76,7 +76,12 @@ class FileStorage(CollectionStorage):
         with open(temp_path, "w") as fh:
             fh.write(json.dumps(record, indent=4, sort_keys=True))
 
+        windows_temp_path = temp_path + ".WIN"
+        os.rename(path, windows_temp_path)
+
         os.rename(temp_path, path)
+
+        os.remove(windows_temp_path)
 
     def post_delete(self, record):
         path = self.get_record_path(record)
