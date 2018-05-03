@@ -20,7 +20,7 @@ A modular MUD platform for flexibly creating worlds, written in Python.
 2. Download the code from this repository
 
     ```
-    git clone git@github.com:gvanderest/undermountain.git
+    git clone https://github.com/gvanderest/undermountain.git
     ```
 
 3. Create a virtual environment (recommended)
