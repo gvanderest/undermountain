@@ -29,6 +29,7 @@ A modular MUD platform for flexibly creating worlds, written in Python.
     the virtual environment system.
 
     ```
+    brew install python3 virtualenv  # on mac
     virtualenv -p python3 venv
     source venv/bin/activate
     ```
@@ -39,6 +40,13 @@ A modular MUD platform for flexibly creating worlds, written in Python.
 
     ```
     pip install -r requirements.txt
+    ```
+
+6. Restore from the example backup
+    Run the undermountain restore script to load the example backup file.
+
+    ```
+    ./um restore example
     ```
 
 ## Interacting with the Engine
@@ -55,7 +63,7 @@ Get the game running and able to accept players.
 
     ./um start
 
-### Backup Data (Not Yet Implemented)
+### Backup Data
 You can either manually make a copy of the `data` folder yourself, but if you
 prefer to have the scripts handle it:
 
@@ -69,7 +77,7 @@ Essentially the same as listing the files in the `backups` folder, but via an
 internal command.  This may filter out only valid-looking backup files.
 
 
-### Restoring Data (Not Yet Implemented)
+### Restoring Data
 You can restore data by providing a partial backups filename (must be present
 in the `backups` folder) or the direct path to a file.
 
