@@ -77,24 +77,7 @@ class FileStorage(CollectionStorage):
         with open(temp_path, "w") as fh:
             fh.write(json.dumps(record, indent=4, sort_keys=True))
 
-        # Windows does not allow moving a file to a destination that already
-        # exists.  Attempt a normal one, then try the long-form.
-        try:
-            os.rename(temp_path, path)
-
-        except OSError:
-            windows_temp_path = temp_path + ".WIN"
-
-            if os.path.exists(windows_temp_path):
-                os.remove(windows_temp_path)
-
-            if os.path.exists(path):
-                os.rename(path, windows_temp_path)
-
-            os.rename(temp_path, path)
-
-            if os.path.exists(windows_temp_path):
-                os.remove(windows_temp_path)
+        os.replace(temp_path, path)
 
     def post_delete(self, record):
         path = self.get_record_path(record)
