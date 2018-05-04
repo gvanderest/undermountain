@@ -195,7 +195,7 @@ class Entity(object):
 
     # FIXME Move this out of Collection, which is meant to be more generic
     @inject("Scripts", "Behaviors")
-    def handle_event(self, event, Scripts, Behaviors):
+    def handle_event(self, event, Scripts=None, Behaviors=None):
         # TODO HAVE COLLECTION CREATE DEEPCOPIES OF EVERYTHING
         triggers = list(self.triggers or [])
 
