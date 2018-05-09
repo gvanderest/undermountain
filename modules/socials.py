@@ -9,16 +9,9 @@ from random import randint, choice
 
 
 class Socials(Collection):
-    def initiate(self, actor, target):
-        actor.target_ids = (actor.target_ids or []) + [target.id]
-        target.target_ids = (target.target_ids or []) + [actor.id]
-
-        actor.save()
-        target.save()
-
-        battle = Battle(actor)
-        battle.process_round()
-
+    def initiate(self, actor, target=None):
+        social = Social(actor, target)
+        social.process_social()
 
 class Social(object):
     """
@@ -32,43 +25,69 @@ class Social(object):
     self.target_found = "<actor> smiles at you."                                    # target found, to target
     self.actor_auto = "You smile at yourself... you feel good about YOU!"           # actor == target, to actor
     self.others_auto = "<actor> smiles at himself. What a wacko."                   # actor == target, to others
-
-    From Kel:
-
-    because this will use an “act” type method, we’ll let it handle that itself.. and within the string, I’d say put a placeholder that will be replaced out, just designate whether it’s the actor or target
-    so.. the following would work: `{actor.himself}` `{target.herself}` `{actor.itself}` `{actor.him}` `{target.her}` (edited)
-    so you could technically do `{actor.himself}` or `{actor.him}self`
-    ther’es also `actor_nobody_actor` and `actor_nobody_room` templates (edited)
-    and `{actor.name}` and `{target.name}` placeholders
-
-
     """
-    def __init__(self, actor):
-        self.actor = actor
 
-    def get_damage_amount_text(self, amount):
-        if amount < 10:
-            return "scratches"
-        else:
-            return "{B<{w<{B< {BE{bRA{wD{WIC{wA{bTE{BS {B>{W>{B>"
+#    From Kel:
+#    because this will use an “act” type method, we’ll let it handle that itself.. and within the string,
+#    I’d say put a placeholder that will be replaced out, just designate whether it’s the actor or target
+#    the following would work: `{actor.himself}` `{target.herself}` `{actor.itself}` `{actor.him}` `{target.her}`
+#    so you could technically do `{actor.himself}` or `{actor.him}self`
+#    ther’es also `actor_nobody_actor` and `actor_nobody_room` templates (edited)
+#    and `{actor.name}` and `{target.name}` placeholders
+#    REVIEW: combat, core and telnet usage of Actor.act code
 
-    def attempt_hit(self, actor, target):
-        amount = randint(1, 20)
-        noun = "punch" if isinstance(actor, Character) else "claw"
-        self.damage(actor, target, noun=noun, amount=amount, silent=False)
 
-    def damage(self, actor, target, noun, amount, silent=False):
-        if not silent:
-            amount_text = self.get_damage_amount_text(amount)
-            actor.echo(
-                "{{BYour {}{{B {}{{B {}{{B! {{B-{{R={{C{}{{R={{B-{{x".format(
-                    noun, amount_text, target.name, amount))
-            actor.act(
-                "{{c{}'s {}{{c {}{{c {}{{c! {{B-{{R={{C{}{{R={{B-{{x".format(
-                    actor.name, noun, amount_text, target.name, amount),
-                exclude=target)
-            target.echo(
-                "{{B{}'s {}{{B {}{{B you! {{B-{{R={{C{}{{R={{B-{{x".format(
-                    actor.name, noun, amount_text, amount))
+    def __init__(self, name):
+        self.name = name  # The name of the social; 'smile', 'hug', etc.
 
-        target.stats.current_hp.base -= amount
+    def set_actor_no_arg(self, echo):
+        self.actor_no_arg = echo
+
+    def set_others_no_arg(self, echo):
+        self.others_no_arg = echo
+
+    def set_actor_found_target(self, echo):
+        self.actor_found_target = echo
+
+    def set_others_found(self, echo):
+        self.others_found = echo
+
+    def set_target_found(self, echo):
+        self.target_found = echo
+
+    def set_actor_auto(self, echo):
+        self.actor_auto = echo
+
+    def set_others_auto(self, echo):
+        self.others_auto = echo
+
+    # processing
+
+    def others_are_present(self):
+        pass
+
+    def target_was_found(self):
+        pass
+
+    @inject("Characters")
+    def process_social(self):
+        pass
+
+
+class CombatManager(TimerManager):
+    TIMER_DELAY = 1.0
+
+    @inject("Battles")
+    def tick(self, Battles):
+        debug("Battles!! {}".format(Battles.query()))
+        self.process_battles()
+
+    @inject("Actors", "Characters")
+    def process_battles(self, Actors, Characters):
+        for coll in [Actors, Characters]:
+            for actor in coll.query():
+                if not actor.target_ids:
+                    continue
+
+                battle = Battle(actor)
+                battle.process_round()
