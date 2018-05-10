@@ -71,10 +71,17 @@ class Social(object):
     def target_was_found(self):
         pass
 
-    @inject("Characters")
+    @inject("Characters", "Actors")
     def process_social(self):
         pass
 
+
+@inject("Socials")
+def socials_command(self, Socials):
+    # TO_DO Table-fy this.
+    self.echo("Socials List")
+    for social in Socials:
+        self.echo(social)
 
 class SocialsModule(Module):
     DESCRIPTION = "Allow players to edit socials."
