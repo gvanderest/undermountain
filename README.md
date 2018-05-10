@@ -124,37 +124,21 @@ ability to be blocked, and example data that should be available with them.
 Events that are blockable will be noted.
 
 
-#### acting (blockable) -> acted
-
-TBD
-
-
-#### attacking (blockable) -> attacked
-
-TBD
-
-
-#### casting (blockable) -> cast
+#### before:act -> after:act
+#### before:attack -> after:attack
+#### before:cast -> after:cast
 > param {Actor} target - The target that is casting.
 
 > param {Ability} ability - The skill or spell being used.
 
-TBD
+#### before:despawn
 
+When an Entity is going to be removed from the Game.
 
-#### despawning
+Note: Unblockable.
 
-TBD - When an Entity is going to be removed from the Game.
-
-Note: This cannot be blocked.
-
-
-#### drinking (blockable) -> drank
-
-TBD
-
-
-#### dying (blockable) -> died
+#### before:drink -> after:drink
+###e before:death -> after:death
 > param {Actor} target - The target that is dying.
 
 When an Actor's health is reduced to zero, or they are outright killed by
@@ -168,46 +152,35 @@ Note: If *dying* is blocked, the Actor's "current_hp" stat must be changed
 to a positive value in order for it to truly be blocked.  This may be
 automatically enforced in the future.
 
+#### before:eat -> after:eat
+#### before:enter -> after:enter
+#### before:input -> after:input
 
-#### eating (blockable) -> ate
+Handle raw input of a player.  Allows interception of inputs to perform custom
+commands handled by scripts within the game.
 
-TBD
-
-
-#### inputting (blockable) -> inputted
-
-TBD - Handle raw input of a player
-Might be renamed to commanding, commanded?
-
-
-#### killing (blockable) -> killed
+#### before:attack -> after:attack
 
 TBD
 
+#### before:leave -> after:leave
+### before:message -> after:message
 
-#### messaging (blockable) -> messaged
+Channel messages.
 
-TBD - Channel messages.
+#### before:respawn -> after:respawn
 
+This is what happens when an area/entity resets or regenerates from inactivity.
 
-#### respawning (blockable) -> respawned
-
-TBD - This is what happens when an area resets or regenerates from inactivity.
-
-
-#### skilling (blockable) -> skill
+#### before:skill -> after:skill
 
 See: casting -> cast
 
+#### after:spawn
 
-#### spawned
+When Entity is created
 
-TBD - When Entity is created
-
-Note: This cannot be blocked.
-
-
-#### walking (blockable) -> walked
+#### before:walk -> after:walk
 > param {Actor} target - The target that is walking or walked.
 
 > param {Direction} direction - The direction that the target walked or
@@ -218,8 +191,6 @@ the *walking* was initiated in.
 
 When an Actor arrives in the Room, this will will fire in the Room that the
 *walked* arrives in.
-
-See: leaving -> left, entering -> entered
 
 
 ### Methods Available
