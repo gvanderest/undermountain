@@ -138,7 +138,7 @@ When an Entity is going to be removed from the Game.
 Note: Unblockable.
 
 #### before:drink -> after:drink
-###e before:death -> after:death
+#### before:death -> after:death
 > param {Actor} target - The target that is dying.
 
 When an Actor's health is reduced to zero, or they are outright killed by
@@ -164,7 +164,7 @@ commands handled by scripts within the game.
 TBD
 
 #### before:leave -> after:leave
-### before:message -> after:message
+#### before:message -> after:message
 
 Channel messages.
 
