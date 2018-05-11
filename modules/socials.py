@@ -1,95 +1,55 @@
 from mud.module import Module
 from mud.inject import inject
-from mud.collection import Collection
-from modules.core import Character
+from mud.collection import Collection, Entity, FileStorage
 
 
 class Socials(Collection):
-    ENTITY_CLASS = Social
+    ENTITY_CLASS = Entity
     STORAGE_CLASS = FileStorage
 
-class Social(object):
-    """
-    Socials should have: actor, target(can be None, actor, or target)
-
-    self.name = "smile"                                                             # name of the social
-    self.actor_no_arg = "Smile at who?"  | "You smile."                             # no target, to actor
-    self.others_no_arg = "<actor> tries to smile, but fails." | "<actor> smiles."   # no target,  to others
-    self.actor_found_target = "You smile at <target>."                              # target found, to actor
-    self.others_found = "<actor> smiles at <target>."                               # target found, to others
-    self.target_found = "<actor> smiles at you."                                    # target found, to target
-    self.actor_auto = "You smile at yourself... you feel good about YOU!"           # actor == target, to actor
-    self.others_auto = "<actor> smiles at himself. What a wacko."                   # actor == target, to others
-    """
-
-#    From Kel:
-#    because this will use an “act” type method, we’ll let it handle that itself.. and within the string,
-#    I’d say put a placeholder that will be replaced out, just designate whether it’s the actor or target
-#    the following would work: `{actor.himself}` `{target.herself}` `{actor.itself}` `{actor.him}` `{target.her}`
-#    so you could technically do `{actor.himself}` or `{actor.him}self`
-#    theres also `actor_nobody_actor` and `actor_nobody_room` templates (edited)
-#    and `{actor.name}` and `{target.name}` placeholders
-#    REVIEW: combat, core and telnet usage of Actor.act code
-
-
-    def __init__(self, name, actor_no_arg=None, others_no_arg=None, actor_found_target=None, others_found=None, target_found=None, actor_auto=None, others_auto=None):
-        self.name = name  # The name of the social; 'smile', 'hug', etc.
-        self.actor_no_arg = actor_no_arg
-        self.others_no_arg = others_no_arg
-        self.actor_found_target = actor_found_target
-        self.others_found = others_found
-        self.target_found = target_found
-        self.actor_auto = actor_auto
-        self.others_auto = others_auto
-
-    def set_actor_no_arg(self, echo):
-        self.actor_no_arg = echo
-
-    def set_others_no_arg(self, echo):
-        self.others_no_arg = echo
-
-    def set_actor_found_target(self, echo):
-        self.actor_found_target = echo
-
-    def set_others_found(self, echo):
-        self.others_found = echo
-
-    def set_target_found(self, echo):
-        self.target_found = echo
-
-    def set_actor_auto(self, echo):
-        self.actor_auto = echo
-
-    def set_others_auto(self, echo):
-        self.others_auto = echo
-
-    # processing
-
-    def others_are_present(self):
-        pass
-
-    def target_was_found(self):
-        pass
-
-    @inject("Characters", "Actors")
-    def process_social(self):
-        pass
-
-
 @inject("Socials")
-def socials_command(self, Socials):
+def socials_command(self, Socials, *args, **kwargs):
     # TO_DO Table-fy this.
     self.echo("Socials List")
-    for social in Socials:
-        self.echo(social)
+    for social in Socials.query():
+        self.echo(social.name)
 
 class SocialsModule(Module):
     DESCRIPTION = "Allow players to edit socials."
 
     def __init__(self, game):
-        super(SocialModule, self).__init__(game)
+        super(SocialsModule, self).__init__(game)
         self.game.register_command("socials", socials_command)
-        #self.game.register_command("sedit", social_edit_command)
+        # self.game.register_command("sedit", social_edit_command)
+        self.game.register_injector(Socials)
+        coll = self.game.get_injector("Socials")
+        for social in coll.query():
+            self.game.register_command(social.name, handle_social)
+
+
+@inject("Socials")
+def handle_social(self, name, args, Socials, **kwargs):
+    social = Socials.get({"name": name})
+    self.echo("args: {}".format(args))
+    if not social:
+        self.echo("Could not find social.")
+        return
+
+    if args:
+        self.echo("arguments are: {}".format(args))
+        target = args[0]
+    else:
+        target = None
+
+    if target:
+        self.echo("You are trying to use the {} social and your target is: {}".format(social.name, target))
+    else:
+        self.echo("You are trying to use the {} social.".format(social.name))
+        self.echo("target_is_required: {}".format(social.target_is_required))
+        self.echo("actor_no_arg: {}".format(social.actor_no_arg))
+        self.echo("others_no_arg: {}".format(social.others_no_arg))
+        self.echo("actor_found_target: {}".format(social.actor_found_target))
+
 
 
 """
@@ -219,7 +179,7 @@ SEDIT ( sedit_char_no_arg )
   return TRUE;
 }
 
-SEDIT ( sedit_others_no_arg )
+SEDIT ( sedit_others_no_target )
 {
   SOCIAL_TYPE * social;
 
@@ -231,9 +191,9 @@ SEDIT ( sedit_others_no_arg )
     return FALSE;
   }
 
-  free_string ( &social->others_no_arg );
+  free_string ( &social->others_no_target );
 
-  str_dup ( &social->others_no_arg, argument );
+  str_dup ( &social->others_no_target, argument );
 
   send_to_char ( "No Target, to others string set.\n\r", ch );
   return TRUE;
