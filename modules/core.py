@@ -957,6 +957,22 @@ class Actor(Entity):
         room = Rooms.get({"vnum": settings.INITIAL_ROOM_VNUM})
         self.room = room
 
+    def find_targets(self, target):
+        """
+        This should perform a fuzzy search for targets matching.
+        :param target:
+        :return:
+        """
+        pass
+
+    def find_target(self, target):
+        """
+        This should call find_targets and select the very first target.
+        :param target:
+        :return:
+        """
+        pass
+
     def gain_experience(self, amount):
         amount = int(abs(amount))
 

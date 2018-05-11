@@ -1,93 +1,223 @@
-from logging import debug
-from math import ceil
-from mud.timer_manager import TimerManager
 from mud.module import Module
 from mud.inject import inject
-from mud.collection import Collection
-from modules.core import Character
-from random import randint, choice
+from mud.collection import Collection, Entity, FileStorage
 
 
 class Socials(Collection):
-    def initiate(self, actor, target=None):
-        social = Social(actor, target)
-        social.process_social()
+    ENTITY_CLASS = Entity
+    STORAGE_CLASS = FileStorage
 
-class Social(object):
-    """
-    Socials should have: actor, target(can be None, actor, or target)
+@inject("Socials")
+def socials_command(self, Socials, *args, **kwargs):
+    # TO_DO Table-fy this.
+    self.echo("Socials List")
+    for social in Socials.query():
+        self.echo(social.name)
 
-    self.name = "smile"                                                             # name of the social
-    self.actor_no_arg = "Smile at who?"  | "You smile."                             # no target, to actor
-    self.others_no_arg = "<actor> tries to smile, but fails." | "<actor> smiles."   # no target,  to others
-    self.actor_found_target = "You smile at <target>."                              # target found, to actor
-    self.others_found = "<actor> smiles at <target>."                               # target found, to others
-    self.target_found = "<actor> smiles at you."                                    # target found, to target
-    self.actor_auto = "You smile at yourself... you feel good about YOU!"           # actor == target, to actor
-    self.others_auto = "<actor> smiles at himself. What a wacko."                   # actor == target, to others
-    """
+class SocialsModule(Module):
+    DESCRIPTION = "Allow players to edit socials."
 
-#    From Kel:
-#    because this will use an “act” type method, we’ll let it handle that itself.. and within the string,
-#    I’d say put a placeholder that will be replaced out, just designate whether it’s the actor or target
-#    the following would work: `{actor.himself}` `{target.herself}` `{actor.itself}` `{actor.him}` `{target.her}`
-#    so you could technically do `{actor.himself}` or `{actor.him}self`
-#    ther’es also `actor_nobody_actor` and `actor_nobody_room` templates (edited)
-#    and `{actor.name}` and `{target.name}` placeholders
-#    REVIEW: combat, core and telnet usage of Actor.act code
+    def __init__(self, game):
+        super(SocialsModule, self).__init__(game)
+        self.game.register_command("socials", socials_command)
+        # self.game.register_command("sedit", social_edit_command)
+        self.game.register_injector(Socials)
+        coll = self.game.get_injector("Socials")
+        for social in coll.query():
+            self.game.register_command(social.name, handle_social)
 
 
-    def __init__(self, name):
-        self.name = name  # The name of the social; 'smile', 'hug', etc.
+@inject("Socials")
+def handle_social(self, name, args, Socials, **kwargs):
+    social = Socials.get({"name": name})
+    self.echo("args: {}".format(args))
+    if not social:
+        self.echo("Could not find social.")
+        return
 
-    def set_actor_no_arg(self, echo):
-        self.actor_no_arg = echo
+    if args:
+        self.echo("arguments are: {}".format(args))
+        target = args[0]
+    else:
+        target = None
 
-    def set_others_no_arg(self, echo):
-        self.others_no_arg = echo
-
-    def set_actor_found_target(self, echo):
-        self.actor_found_target = echo
-
-    def set_others_found(self, echo):
-        self.others_found = echo
-
-    def set_target_found(self, echo):
-        self.target_found = echo
-
-    def set_actor_auto(self, echo):
-        self.actor_auto = echo
-
-    def set_others_auto(self, echo):
-        self.others_auto = echo
-
-    # processing
-
-    def others_are_present(self):
-        pass
-
-    def target_was_found(self):
-        pass
-
-    @inject("Characters")
-    def process_social(self):
-        pass
+    if target:
+        self.echo("You are trying to use the {} social and your target is: {}".format(social.name, target))
+    else:
+        self.echo("You are trying to use the {} social.".format(social.name))
+        self.echo("target_is_required: {}".format(social.target_is_required))
+        self.echo("actor_no_arg: {}".format(social.actor_no_arg))
+        self.echo("others_no_arg: {}".format(social.others_no_arg))
+        self.echo("actor_found_target: {}".format(social.actor_found_target))
 
 
-class CombatManager(TimerManager):
-    TIMER_DELAY = 1.0
 
-    @inject("Battles")
-    def tick(self, Battles):
-        debug("Battles!! {}".format(Battles.query()))
-        self.process_battles()
+"""
+borrowed from olc_act.c from wdmud
+check these for how to handle 'setters'
 
-    @inject("Actors", "Characters")
-    def process_battles(self, Actors, Characters):
-        for coll in [Actors, Characters]:
-            for actor in coll.query():
-                if not actor.target_ids:
-                    continue
+// Dynamic Socials - Coyote
+SEDIT ( sedit_char_auto )
+{
+  SOCIAL_TYPE * social;
 
-                battle = Battle(actor)
-                battle.process_round()
+  EDIT_SOCIAL ( ch, social );
+
+
+  if ( argument[0] == '\0' )
+  {
+    send_to_char ( "Syntax:  1 [string]\n\r", ch );
+    return FALSE;
+  }
+
+  free_string ( &social->char_auto );
+
+  str_dup ( &social->char_auto, argument );
+
+  send_to_char ( "Self-Target, to Character string set.\n\r", ch );
+  return TRUE;
+}
+
+SEDIT ( sedit_others_auto )
+{
+  SOCIAL_TYPE * social;
+
+  EDIT_SOCIAL ( ch, social );
+
+  if ( argument[0] == '\0' )
+  {
+    send_to_char ( "Syntax:  2 [string]\n\r", ch );
+    return FALSE;
+  }
+
+  free_string ( &social->others_auto );
+
+  str_dup ( &social->others_auto, argument );
+
+  send_to_char ( "Self-Target, to others string set.\n\r", ch );
+  return TRUE;
+}
+
+SEDIT ( sedit_char_found )
+{
+  SOCIAL_TYPE * social;
+
+  EDIT_SOCIAL ( ch, social );
+
+  if ( argument[0] == '\0' )
+  {
+    send_to_char ( "Syntax:  3 [string]\n\r", ch );
+    return FALSE;
+  }
+
+  free_string ( &social->char_found );
+
+  str_dup ( &social->char_found, argument );
+
+  send_to_char ( "Other-Target, to Character string set.\n\r", ch );
+  return TRUE;
+}
+
+SEDIT ( sedit_vict_found )
+{
+  SOCIAL_TYPE * social;
+
+  EDIT_SOCIAL ( ch, social );
+
+  if ( argument[0] == '\0' )
+  {
+    send_to_char ( "Syntax:  4 [string]\n\r", ch );
+    return FALSE;
+  }
+
+  free_string ( &social->vict_found );
+
+  str_dup ( &social->vict_found, argument );
+
+  send_to_char ( "Other-Target, to Victim string set.\n\r", ch );
+  return TRUE;
+}
+
+SEDIT ( sedit_others_found )
+{
+  SOCIAL_TYPE * social;
+
+  EDIT_SOCIAL ( ch, social );
+
+  if ( argument[0] == '\0' )
+  {
+    send_to_char ( "Syntax:  5 [string]\n\r", ch );
+    return FALSE;
+  }
+
+  free_string ( &social->others_found );
+
+  str_dup ( &social->others_found, argument );
+
+  send_to_char ( "Other-Target, to others string set.\n\r", ch );
+  return TRUE;
+
+}
+
+SEDIT ( sedit_char_no_arg )
+{
+  SOCIAL_TYPE * social;
+
+  EDIT_SOCIAL ( ch, social );
+
+  if ( argument[0] == '\0' )
+  {
+    send_to_char ( "Syntax:  6 [string]\n\r", ch );
+    return FALSE;
+  }
+
+  free_string ( &social->char_no_arg );
+
+  str_dup ( &social->char_no_arg, argument );
+
+  send_to_char ( "No Target, to Character string set.\n\r", ch );
+  return TRUE;
+}
+
+SEDIT ( sedit_others_no_target )
+{
+  SOCIAL_TYPE * social;
+
+  EDIT_SOCIAL ( ch, social );
+
+  if ( argument[0] == '\0' )
+  {
+    send_to_char ( "Syntax:  7 [string]\n\r", ch );
+    return FALSE;
+  }
+
+  free_string ( &social->others_no_target );
+
+  str_dup ( &social->others_no_target, argument );
+
+  send_to_char ( "No Target, to others string set.\n\r", ch );
+  return TRUE;
+
+}
+
+SEDIT ( sedit_char_not_found )
+{
+  SOCIAL_TYPE * social;
+
+  EDIT_SOCIAL ( ch, social );
+
+  if ( argument[0] == '\0' )
+  {
+    send_to_char ( "Syntax:  3 [string]\n\r", ch );
+    return FALSE;
+  }
+
+  free_string ( &social->char_not_found );
+
+  str_dup ( &social->char_not_found , argument );
+
+  send_to_char ( "Target not found string set.\n\r", ch );
+  return TRUE;
+}
+
+"""

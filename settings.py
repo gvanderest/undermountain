@@ -33,6 +33,7 @@ MODULES = (
     "modules.telnet.TelnetModule",
     "modules.combat.CombatModule",
     "modules.build.BuildModule",
+    "modules.socials.SocialsModule",
 )
 
 DIRECTIONS = {
