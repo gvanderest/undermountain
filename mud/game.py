@@ -85,23 +85,27 @@ class Game(object):
 
     def register_command(self, name, command):
         self.commands[name] = {"handler": command}
+        return command
 
     def register_module(self, module_path):
         module_class = self.import_class_path(module_path)
         instance = module_class(self)
         self.modules.append(instance)
+        return instance
 
     def register_manager(self, manager):
         instance = manager(self)
         self.managers.append(instance)
         logging.info("Registered manager {}".format(
             instance.__class__.__name__))
+        return instance
 
     def register_injector(self, injector):
         instance = injector(self)
         self.injectors[injector.__name__] = instance
         logging.info("Registered injector {}".format(
             instance.__class__.__name__))
+        return instance
 
     def get_injector(self, name):
         if name not in self.injectors:
