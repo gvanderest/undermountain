@@ -28,7 +28,133 @@ class SocialsModule(Module):
 
 
 @inject("Socials")
-def handle_social(self, name, args, Socials, **kwargs):
+def handle_social_new(self, args, Socials, **kwargs):
+
+    bad_target = False  # In the event that a bad target is supplied 'hug zkjhkfjh' the social itself fails.
+
+    if args:
+        prop_target = args.pop[0].lower()
+    else:
+        prop_target = None
+
+    room = self.room
+    room_targets = []
+    for actor in room.actors:
+        if actor is not self:  # only 'others'
+            room_targets + actor.name.lower().split()
+
+    if prop_target:
+        target = None
+        if room_targets:
+            for _ in room_targets:
+                if target:
+                    break
+
+                for keyword in _:
+                    if keyword.startswith(prop_target):
+                        target = actor
+                        break
+        if not target:
+            bad_target = True  # A proposed target was supplied but no match found in the room.
+    else:
+        target = None
+
+    if not bad_target:  # either a target was supplied and found, or none supplied.
+        social = Socials.get({"name": name})
+        if target:
+            if target == self:
+                self.echo(social.actor_auto)
+                if len(room_targets) > 0:
+                    for rt in room_targets:
+                        rt[]
+
+
+
+            if target in room:
+                if target == actor # using the social on themselves
+                    actor_auto
+                    if others:
+                        others_auto
+                else:
+                    target_found
+                    actor_found_target
+                    if others:
+                        others_found
+            else:
+                echo to actor "They aren't here."
+        else:
+            if social.target_is_required:
+                echo to actor "social.name.title() who?"
+            else:
+                actor_no_target
+                if others:
+                    others_no_target
+
+        :return:
+
+    else:
+        self.echo("Target not found.")
+
+///
+
+
+    if not args:
+        target = None
+    else:
+        prop_target = args.pop(0)  # the proposed target
+        target = None
+        for actor in room.actors:
+            if target:
+                break
+
+            keywords = actor.name.lower().split()
+            for keyword in keywords:
+                if keyword.startswith(prop_target):
+                    target = actor
+                    break
+
+        if target == self:
+            pass
+
+        if not target:
+            self.echo("Can't find that here.")
+            return
+
+
+
+
+    # process the social
+
+@inject("Socials")
+def handle_social_old(self, name, args, Socials, **kwargs):
+
+    room = self.room
+
+    if args:
+        self.echo("arguments are: {}".format(args))
+        prop_target = args[0]
+
+    target = None
+    for actor in room.actors:
+        if target:
+            break
+
+        keywords = actor.name.lower().split()
+        for keyword in keywords:
+            if keyword.startswith(prop_target):
+                target = actor
+                break
+
+    if target == self:
+        pass
+
+    if not target:
+        self.echo("Cannot find that person.")
+        return
+    else:
+
+
+
     social = Socials.get({"name": name})
     self.echo("args: {}".format(args))
     if not social:
@@ -44,11 +170,13 @@ def handle_social(self, name, args, Socials, **kwargs):
     if target:
         self.echo("You are trying to use the {} social and your target is: {}".format(social.name, target))
     else:
-        self.echo("You are trying to use the {} social.".format(social.name))
-        self.echo("target_is_required: {}".format(social.target_is_required))
-        self.echo("actor_no_arg: {}".format(social.actor_no_arg))
-        self.echo("others_no_arg: {}".format(social.others_no_arg))
-        self.echo("actor_found_target: {}".format(social.actor_found_target))
+        self.echo("You are trying to use the {} social without a target.".format(social.name))
+
+    self.echo("You are trying to use the {} social.".format(social.name))
+    self.echo("target_is_required: {}".format(social.target_is_required))
+    self.echo("actor_no_arg: {}".format(social.actor_no_arg))
+    self.echo("others_no_arg: {}".format(social.others_no_arg))
+    self.echo("actor_found_target: {}".format(social.actor_found_target))
 
 
 
