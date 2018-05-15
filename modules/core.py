@@ -980,11 +980,43 @@ class Actor(Entity):
 
             keywords = actor.name.lower().split()
             for keyword in keywords:
+                #self.echo("keyword: {} | prop_target: {}".format(keyword, prop_target.lower()))  # troubleshoot
                 if keyword.startswith(prop_target.lower()):
                     target = actor
                     break
 
         return target
+
+    def replace_tokens(self, msg=None, target=None):
+        """
+        This will replace interactive tokens like <subject>, <object>, $n, $m with "his" "her", etc.
+        :param msg: The starting msg string to be altered.
+        :param target: this should be the targeted Actor, whose gender may also be checked.
+        :return:
+        $n = actor.name
+        $s = actor.gender.possessive -- his, her, its
+        $m = actor.gender.object -- him, her, it
+        $e = actor.gender.subject -- he, she, it
+
+        $N = target.name
+        $S = target.gender.possessive
+        $M = target.gender.object
+        $E = actor.gender.subject
+        """
+        if msg:
+            #self.echo("replace tokens: name:{} gender:{} object:{}".format(self.name, self.gender, self.gender.object))
+            msg = msg.replace('$n', self.name)
+            msg = msg.replace('$s', self.gender.possessive)
+            msg = msg.replace('$m', self.gender.object)
+            msg = msg.replace('$e', self.gender.subject)
+            if target:  # Do this later.
+                msg = msg.replace('$N', target.name)
+                msg = msg.replace('$S', target.gender.possessive)
+                msg = msg.replace('$M', target.gender.object)
+                msg = msg.replace('$E', target.gender.subject)
+            return msg
+        else:
+            return
 
     def gain_experience(self, amount):
         amount = int(abs(amount))

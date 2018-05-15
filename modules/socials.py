@@ -2,7 +2,6 @@ from mud.module import Module
 from mud.inject import inject
 from mud.collection import Collection, Entity, FileStorage
 
-
 class Socials(Collection):
     ENTITY_CLASS = Entity
     STORAGE_CLASS = FileStorage
@@ -33,7 +32,10 @@ def handle_social(self, name, args, Socials, **kwargs):
     bad_target = False  # In the event that a bad target is supplied 'hug zkjhkfjh' the social itself fails.
 
     if args:
-        prop_target = args.pop[0].lower()
+        #self.echo("name is: {} and args are: {} with type {}".format(name, args, type(args)))  # troubleshooting
+        prop_target = args.pop(0).lower()
+        targets = list(self.find_targets())
+        #self.echo("targets returns are: {}".format(targets))  # troubleshooting
         target = self.find_target(prop_target)
     else:
         prop_target = None
@@ -51,24 +53,45 @@ def handle_social(self, name, args, Socials, **kwargs):
         others.remove(self)
         if target:
             if target == self:
-                self.echo(social.actor_auto)
-                if others:
-                    for other in others:
-                        other.echo(social.others_auto)
+                # self.echo(social.actor_auto)
+                msg = self.replace_tokens(social.actor_auto, target)
+                if msg:
+                    self.echo(msg)
+                    if others:
+                        msg = self.replace_tokens(social.others_auto, target)
+                        if msg:
+                            for other in others:
+                                other.echo(msg)
             else:
-                self.echo(social.actor_found_target)
-                target.echo(social.target_found)
+                # handle_targeted social, but not targeted at self.
+                msg = self.replace_tokens(social.actor_found_target, target)
+                if msg:
+                    self.echo(msg)  # echo to actor
+
+                # now echo to the target
+                msg = self.replace_tokens(social.target_found, target)
+                if msg:
+                    target.echo(msg)
+
+                # handle any remaining spectators
                 others.remove(target)
                 if others:
-                    for other in others:
-                        other.echo(social.others_found)
+                    msg = self.replace_tokens(social.others_found, target)
+                    if msg:
+                        for other in others:
+                            other.echo(msg)
         else:
-            self.echo(social.actor_no_arg)
+            msg = self.replace_tokens(social.actor_no_arg)
+            if msg:
+                self.echo(msg)
+
             if others:
-                for other in others:
-                    other.echo(social.others_no_arg)
+                msg = self.replace_tokens(social.others_no_arg)
+                if msg:
+                    for other in others:
+                        other.echo(msg)
     else:
-        self.echo("Target not found.")
+        self.echo("You couldn't find your target.")
 
 
 """
