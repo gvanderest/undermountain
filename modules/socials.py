@@ -1,6 +1,7 @@
 from mud.module import Module
 from mud.inject import inject
 from mud.collection import Collection, Entity, FileStorage
+from utils.tablefy import tablefy
 
 class Socials(Collection):
     ENTITY_CLASS = Entity
@@ -9,9 +10,16 @@ class Socials(Collection):
 @inject("Socials")
 def socials_command(self, Socials, *args, **kwargs):
     # TO_DO Table-fy this.
-    self.echo("Socials List")
+    all_socials = []
     for social in Socials.query():
-        self.echo(social.name)
+        all_socials.append(social.name)
+
+    if all_socials:
+        msg = tablefy(all_socials)
+        self.echo(msg)
+    else:
+        self.echo("There are no social commands loaded.")
+
 
 class SocialsModule(Module):
     DESCRIPTION = "Allow players to edit socials."
