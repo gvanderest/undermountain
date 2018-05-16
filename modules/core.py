@@ -946,6 +946,7 @@ class Actor(Entity):
         "class_ids": ["adventurer"],
         "stats": {},
         "settings": {},
+        "gender_id": "male",
     }
 
     def die(self):
