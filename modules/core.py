@@ -974,19 +974,23 @@ class Actor(Entity):
         :return:
         """
 
-        target = None
-        for actor in self.find_targets():
-            if target:
-                break
-
-            keywords = actor.name.lower().split()
-            for keyword in keywords:
-                #self.echo("keyword: {} | prop_target: {}".format(keyword, prop_target.lower()))  # troubleshoot
-                if keyword.startswith(prop_target.lower()):
-                    target = actor
+        if prop_target.lower() in ("self", "myself"):
+            target = self
+            return target
+        else:
+            target = None
+            for actor in self.find_targets():
+                if target:
                     break
 
-        return target
+                keywords = actor.name.lower().split()
+                for keyword in keywords:
+                    #self.echo("keyword: {} | prop_target: {}".format(keyword, prop_target.lower()))  # troubleshoot
+                    if keyword.startswith(prop_target.lower()):
+                        target = actor
+                        break
+
+            return target
 
     def replace_tokens(self, msg=None, target=None):
         """
