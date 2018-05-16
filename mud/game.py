@@ -1,12 +1,16 @@
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from mud.inject import inject
+from mud.module import Module
+from mud.manager import Manager
+from mud.event import Event
 
 import gevent
 import importlib
 import logging
 import settings
 import traceback
+from typing import Callable, Type, Any
 
 
 logger = logging.getLogger()
@@ -27,6 +31,8 @@ class InvalidInjector(Exception):
 
 
 class Game(object):
+    running: bool
+
     def __init__(self):
         self.data = {}
         self.injectors = {}
@@ -74,7 +80,7 @@ class Game(object):
         for class_path in settings.MODULES:
             self.register_module(class_path)
 
-    def import_class_path(self, path):
+    def import_class_path(self, path: str):
         parts = path.split(".")
 
         module_path = ".".join(parts[:-1])
@@ -83,27 +89,31 @@ class Game(object):
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
 
-    def register_command(self, name, command):
+    def register_command(self, name, command: Callable) -> Callable:
         self.commands[name] = {"handler": command}
+        return command
 
-    def register_module(self, module_path):
+    def register_module(self, module_path: str) -> Module:
         module_class = self.import_class_path(module_path)
         instance = module_class(self)
         self.modules.append(instance)
+        return instance
 
-    def register_manager(self, manager):
+    def register_manager(self, manager: Type[Manager]) -> Manager:
         instance = manager(self)
         self.managers.append(instance)
         logging.info("Registered manager {}".format(
             instance.__class__.__name__))
+        return instance
 
-    def register_injector(self, injector):
+    def register_injector(self, injector: Type[Any]) -> Any:
         instance = injector(self)
         self.injectors[injector.__name__] = instance
         logging.info("Registered injector {}".format(
             instance.__class__.__name__))
+        return instance
 
-    def get_injector(self, name):
+    def get_injector(self, name: str) -> Any:
         if name not in self.injectors:
             raise InvalidInjector(
                 "{} is not a valid injector name".format(name))
@@ -113,14 +123,22 @@ class Game(object):
         return map(self.get_injector, names)
 
     @inject("Areas")
-    def broadcast(self, type, data=None, unblockable=False, Areas=None):
+    def broadcast(
+        self, type, data=None, unblockable=False, Areas=None,
+    ) -> Event | None:
+
+        if not Areas:
+            return None
+
         event = None
+
         for area in Areas.query():
             event = area.broadcast(type, data=data, unblockable=unblockable)
+
         return event
 
     @inject("Rooms")
-    def start(self, Rooms):
+    def start(self, Rooms) -> None:
         self.running = True
 
         for manager in self.managers:
@@ -131,5 +149,5 @@ class Game(object):
         while self.running:
             gevent.sleep(1.0)
 
-    def stop(self):
+    def stop(self) -> None:
         self.running = False
