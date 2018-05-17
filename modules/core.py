@@ -1145,7 +1145,7 @@ class Actor(Entity):
         self.client.handle_input(message)
 
     def echo(self, message=""):
-        if not self.client:
+        if not self.client:  # Only characters controlled by players have clients. Mobiles don't get echos.
             return
 
         if isinstance(message, list):
