@@ -1145,11 +1145,9 @@ class Actor(Entity):
         data["actor"] = self
 
         # Exclude people from the display of this
-        exclude = data.pop("exclude", [])
+        exclude = data.pop("exclude", [self])
         if exclude is None:
             exclude = [self]
-        elif not isinstance(exclude, list):
-            exclude.append(self)
 
         # Iterate over actors and act_to them
         for collection in (Characters, Actors):
