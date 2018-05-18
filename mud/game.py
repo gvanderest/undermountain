@@ -1,6 +1,7 @@
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from mud.inject import inject
+from collections import OrderedDict
 
 import gevent
 import importlib
@@ -84,7 +85,7 @@ class Game(object):
         return getattr(module, class_name)
 
     def register_command(self, name, command):
-        self.commands[name] = {"handler": command}
+        self.commands[name] = OrderedDict({"handler": command})
         return command
 
     def register_module(self, module_path):

@@ -16,6 +16,32 @@ EXIT_CLOSED = "closed"
 EXIT_SECRET = "secret"
 
 
+class WorldEntity(Entity):
+    def name_matches(self, provided: str) -> bool:
+        """Return whether the Entity's name matches the provided string.
+
+        TODO: Split this into fuzzy/exact matching somehow
+        TODO: Support the multi-word aspect of it
+
+        :param provided: the attempted match string, may contain spaces
+        :returns: whether it matches or not
+        """
+
+        return self.name.lower().startswith(provided.lower())
+
+    def name_to(self, target) -> str:
+        """Return the name that this Entity will show to a target.
+
+        This takes visibility into account.
+        TODO: Take visibility into account.
+
+        :param target: the target being reviewed for name presentation
+        :returns: the name to show the target
+        """
+
+        return self.name
+
+
 class Map(object):
     @classmethod
     def from_actor(cls, actor, width=45, height=23, border=False):
@@ -125,6 +151,79 @@ class Map(object):
 
     def to_lines(self):
         return ["".join(row) for row in self.grid]
+
+
+def get_command(self, params, **kw):
+    """Pick an item up from the ground.
+
+    TODO: Allow picking up an item from a container in the room or inventory.
+    :param args: list of arguments
+    """
+    if not params:
+        self.echo("Get what?")
+        return
+
+    # Get the name of the object being gotten
+    obj_param = params.pop(0)
+    if obj_param is not None:
+
+        # There is no container mentioned, assume room
+        if not params:
+            obj = self.find_room_object(obj_param)
+
+            # Could not find what you're looking for
+            if not obj:
+                self.echo("You cannot find {} here.".format(
+                    obj_param["keywords"]))
+                return
+
+            self.echo("You get {}.".format(obj.name_to(self)))
+
+            obj.room_id = None
+            obj.save()
+            self.inventory.append(obj)
+            return
+
+        # Container is mentioned, try to grab from it
+        container_param = params.pop(0)
+        if container_param["keywords"] == "from":
+            if not params:
+                self.echo("Get from what?")
+                return
+            else:
+                container_param = params.pop(0)
+
+        # Attempt to find spcific container
+        # TODO: Support inventory containers, prioritizing them
+        container = self.find_room_object(container_param)
+
+        # Container not found
+        if not container:
+            self.echo("You cannot find {} here.".format(
+                container_param["keywords"]))
+            return
+
+        self.echo("Getting from containers not yet implemented.")
+
+
+def drop_command(self, **kw):
+    self.echo("Not yet implemented.")
+
+
+def give_command(self, **kw):
+    self.echo("Not yet implemented.")
+
+
+def put_command(self, **kw):
+    self.echo("Not yet implemented.")
+
+
+def wear_command(self, **kw):
+    self.echo("Not yet implemented.")
+
+
+def remove_command(self, **kw):
+    self.echo("Not yet implemented.")
 
 
 @inject("Directions")
@@ -281,7 +380,13 @@ def equipment_command(self, **kwargs):
 
 def inventory_command(self, **kwargs):
     self.echo("You are carrying:")
-    self.echo("     Nothing.")
+    items = self.inventory
+    if not items:
+        self.echo("     Nothing.")
+        return
+
+    for item in self.inventory:
+        self.echo("     {}".format(item.name))
 
 
 def group_command(self, **kwargs):
@@ -933,7 +1038,7 @@ class ActorStats(object):
         return ActorStat(key, self.stats[key], self.actor)
 
 
-class Actor(Entity):
+class Actor(WorldEntity):
     DEFAULT_DATA = {
         "name": "",
         "title": "",
@@ -946,11 +1051,44 @@ class Actor(Entity):
         "class_ids": ["adventurer"],
         "stats": {},
         "settings": {},
+        "objects": [],
     }
 
     def die(self):
         self.recall()
         self.stats.current_hp.base = 1
+
+    def find_room_object(self, param):
+        """Find an Object inside a Room.
+
+        :param param: either a string, or a parameter dictionary
+        :returns: the found Object or None
+
+        See: self.find_room_objects
+        """
+        for obj in self.find_room_objects(param):
+            print("READY TO RETURN", obj)
+            return obj
+
+    def find_room_objects(self, param):
+        """Find Objects inside a Room.
+
+        Takes visibility into account.
+
+        :param param: either a string, or a parameter dictionary
+        :returns: generator of filtered Objects
+        """
+        for obj in self.room.objects:
+            if obj.name_matches(param["keywords"]):
+                yield obj
+
+    @property
+    def inventory(self) -> list:
+        """Return your carried Objects, minus those in containers and worn.
+
+        :return: list of objects
+        """
+        return self.objects
 
     @inject("Rooms")
     def recall(self, Rooms):
@@ -1130,7 +1268,7 @@ class Accounts(Collection):
     STORAGE_CLASS = FileStorage
 
 
-class Object(Entity):
+class Object(WorldEntity):
     pass
 
 
@@ -1237,6 +1375,11 @@ class Room(Entity):
         for collection in (Actors, Characters):
             for entity in collection.query({"room_id": self.id}):
                 yield entity
+
+    @property
+    @inject("Objects")
+    def objects(self, Objects):
+        return list(Objects.query({"room_id": self.id}))
 
     @property
     @inject("Actors", "Characters", "Objects")
@@ -1438,7 +1581,7 @@ class Actors(Collection):
 
 
 class Objects(Collection):
-    pass
+    ENTITY_CLASS = Object
 
 
 class Directions(Collection):
@@ -1485,6 +1628,12 @@ class CoreModule(Module):
             self.game.register_command(channel_name, channel_command)
 
         self.game.register_command("look", look_command)
+        self.game.register_command("get", get_command)
+        self.game.register_command("drop", drop_command)
+        self.game.register_command("give", give_command)
+        self.game.register_command("wear", wear_command)
+        self.game.register_command("remove", remove_command)
+        self.game.register_command("put", put_command)
         self.game.register_command("who", who_command)
         self.game.register_command("title", title_command)
         self.game.register_command("score", score_command)

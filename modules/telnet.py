@@ -677,6 +677,12 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
 
         name = parts[0].lower() if parts else ""
         args = list(parts[1:] if parts else [])
+        params = [{
+            "keywords": a,
+            "param_index": n,
+            "offset": 0,
+            "quantity": 1,
+        } for n, a in enumerate(args)]  # TODO: make this real
 
         # Detect and use an alias, if triggered
         aliases = actor.settings.get("aliases", {})
@@ -685,8 +691,19 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             parts = alias.split(" ")
             name = parts[0].lower()
             args = parts[1:]
+            params = [{
+                "keywords": a,
+                "param_index": n,
+                "offset": 0,
+                "quantity": 1,
+            } for n, a in enumerate(args)]  # TODO: make this real
 
-        kwargs = {"args": args, "name": name, "message": " ".join(args)}
+        kwargs = {
+            "args": args,
+            "name": name,
+            "params": params,
+            "message": " ".join(args),
+        }
 
         command = None
         for real_name, entry in self.resolver.query(name):

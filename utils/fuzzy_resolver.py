@@ -1,6 +1,10 @@
+from collections import OrderedDict
+
+
 class FuzzyResolver(object):
     def __init__(self, mapping=None):
-        self.commands = {}
+        self.commands = OrderedDict({})
+
         if not mapping:
             mapping = {}
 
