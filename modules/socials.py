@@ -53,6 +53,46 @@ def handle_social(self, name, args, Socials, **kwargs):
         bad_target = True
 
     if not bad_target:  # either a target was supplied and found, or none supplied.
+
+        social = Socials.get({"name": name})
+
+        if target:
+            if target == self:
+                self.act_to(self, social.actor_auto)
+                self.act(social.others_auto)
+                return
+
+            self.act_to(target, social.target_found)
+            self.act_to(self, social.actor_found_target)
+            self.act(social.others_found, exclude=[self, target])
+
+        else:  # untargeted social
+            self.act_to(self, social.actor_no_arg)
+            self.act(social.others_no_arg, exclude=self)
+
+    else:
+        self.echo("You couldn't find your target.")
+
+
+@inject("Socials")
+def handle_social_old(self, name, args, Socials, **kwargs):
+
+    bad_target = False  # In the event that a bad target is supplied 'hug zkjhkfjh' the social itself fails.
+
+    if args:
+        #self.echo("name is: {} and args are: {} with type {}".format(name, args, type(args)))  # troubleshooting
+        prop_target = args.pop(0).lower()
+        targets = list(self.find_targets())
+        #self.echo("targets returns are: {}".format(targets))  # troubleshooting
+        target = self.find_target(prop_target)
+    else:
+        prop_target = None
+        target = None
+
+    if prop_target and not target:
+        bad_target = True
+
+    if not bad_target:  # either a target was supplied and found, or none supplied.
         social = Socials.get({"name": name})
         targets = self.find_targets()
 

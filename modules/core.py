@@ -1172,13 +1172,14 @@ class Actor(Entity):
         data["self"] = self
 
         # Iterate over the data provided
+        
         for key, value in data.items():
 
             # If string, do a simple token replace
             if isinstance(value, str):
                 token = "{{{}}}".format(key)
                 if token in message:
-                    message = message.replace(token, value)
+                    message = message.replace(token, value)  # {$N} -->
 
             # If object, look up OBJECT_ATTRIBUTES to replace with function
             # calls as needed.
@@ -1189,7 +1190,7 @@ class Actor(Entity):
                         func = getattr(self, attr_func)
                         message = message.replace(token, func(target))
 
-            # Otherwise, it's invalid tata.
+            # Otherwise, it's invalid data.
             else:
                 raise Exception("Invalid data '{}'.".format(key))
 
