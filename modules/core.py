@@ -1167,6 +1167,17 @@ class Actor(Entity):
         # target as the parameter-- this can allow visibility checks, etc.
         OBJECT_ATTRIBUTES = {
             "name": "name_to",
+
+            "him": "objective_to",
+            "her": "objective_to",
+            "objective": "objective_to",
+
+            "he": "subjective_to",
+            "she": "subjective_to",
+            "subjective": "subjective_to",
+
+            "his": "possessive_to",
+            "possessive": "possessive_to",
         }
 
         data["self"] = self
@@ -1193,6 +1204,11 @@ class Actor(Entity):
             # Otherwise, it's invalid data.
             else:
                 raise Exception("Invalid data '{}'.".format(key))
+
+        # Support old replacement format
+        if "$" in message:
+            if "$n" in message:
+                message = message.replace("$n", self.name_to(target))
 
         target.echo(message)
 
@@ -1225,6 +1241,21 @@ class Actor(Entity):
                 # TODO: Visibility?
 
                 self.act_to(actor, template, **data)
+
+    def subjective_to(self, target):
+        if not target.can_see(self):
+            return "it"
+        return self.gender.subjective
+
+    def possessive_to(self, target):
+        if not target.can_see(self):
+            return "its"
+        return self.gender.possessive
+
+    def objective_to(self, target):
+        if not target.can_see(self):
+            return "it"
+        return self.gender.objective
 
     def name_to(self, target):
         """Format an Actor's name towards a target.
