@@ -1,0 +1,419 @@
+{
+    "actors": [
+        {
+            "id": "330770601199",
+            "name": "Bill, the guard",
+            "room_id": "658687769484",
+            "room_vnum": "east_path",
+            "triggers": [
+                {
+                    "script_vnum": "bill_greets_you",
+                    "type": "after:enter"
+                }
+            ],
+            "vnum": "bill"
+        },
+        {
+            "behaviors": [
+                "happy"
+            ],
+            "id": "346114001969",
+            "name": "the town crier",
+            "room_id": "472263332730",
+            "room_vnum": "market_square",
+            "stats": {
+                "current_hp": 10000000,
+                "hp": 10000000
+            },
+            "triggers": [
+                {
+                    "script_vnum": "greetings",
+                    "type": "after:enter"
+                },
+                {
+                    "script_vnum": "fail",
+                    "type": "after:say"
+                },
+                {
+                    "script_vnum": "after_turn",
+                    "type": "after:combat_turn"
+                },
+                {
+                    "script_vnum": "after_turn",
+                    "type": "after:combat_turn"
+                },
+                {
+                    "script_vnum": "before_turn",
+                    "type": "before:combat_turn"
+                },
+                {
+                    "script_vnum": "before_turn",
+                    "type": "before:combat_turn"
+                }
+            ],
+            "vnum": "town_crier"
+        }
+    ],
+    "flags": [],
+    "id": "89a497a7492e9c3473f8c371369e4aa620927205",
+    "name": "Haven",
+    "objects": [
+        {
+            "id": "418747655911",
+            "name": "a piece of bread",
+            "room_id": "472263332730",
+            "room_vnum": "market_square",
+            "vnum": "piece_bread"
+        }
+    ],
+    "rooms": [
+        {
+            "description": [
+                "Beneath you, a rough mosaic of paving stones marks the center of the",
+                "market of Westbridge.  Nearby, bakers and butchers can be seen, ",
+                "hawking their wares to the passers by."
+            ],
+            "exits": {
+                "east": {
+                    "room_vnum": "east_ms"
+                },
+                "north": {
+                    "room_vnum": "north_ms"
+                },
+                "south": {
+                    "flags": [
+                        "door",
+                        "closed"
+                    ],
+                    "room_vnum": "south_ms"
+                },
+                "west": {
+                    "room_vnum": "west_ms"
+                }
+            },
+            "id": "472263332730",
+            "name": "Market Square",
+            "vnum": "market_square"
+        },
+        {
+            "description": [
+                "Surrounding you is a natural cavern carved into the stone hill.  It",
+                "is peaceful here, with a small pool of water being fed by a spring in",
+                "the cracked stone of the western wall.  From the entrance, a small",
+                "trail to the east is visible."
+            ],
+            "exits": {
+                "east": {
+                    "room_vnum": "west_ms"
+                }
+            },
+            "id": "3fd0605855fdb45bce62f893d79c08ced55c1291",
+            "name": "{8A Dark and Dry Cavern",
+            "vnum": "cave"
+        },
+        {
+            "description": [
+                "Something!"
+            ],
+            "exits": {
+                "east": {
+                    "room_vnum": "east_path"
+                },
+                "west": {
+                    "room_vnum": "market_square"
+                }
+            },
+            "flags": [],
+            "id": "500505050679",
+            "name": "East of Market Square",
+            "vnum": "east_ms"
+        },
+        {
+            "description": [],
+            "exits": {
+                "south": {
+                    "room_vnum": "market_square"
+                }
+            },
+            "id": "102058043801",
+            "name": "North of Market Square",
+            "vnum": "north_ms"
+        },
+        {
+            "description": [],
+            "exits": {
+                "north": {
+                    "room_vnum": "market_square"
+                }
+            },
+            "id": "975059915384",
+            "name": "South of Market Square",
+            "vnum": "south_ms"
+        },
+        {
+            "description": [],
+            "exits": {
+                "east": {
+                    "room_vnum": "market_square"
+                },
+                "west": {
+                    "flags": [
+                        "door",
+                        "closed",
+                        "secret"
+                    ],
+                    "name": "secret door",
+                    "room_vnum": "cave"
+                }
+            },
+            "id": "948821073547",
+            "name": "West of Market Square",
+            "vnum": "west_ms"
+        },
+        {
+            "description": [
+                "To the west, you can see the makeshift wooden walls surrounding the",
+                "small village of Westbridge.  To the east, the forest looms menacingly,",
+                "its thick canopy enveloping the ground in near darkness."
+            ],
+            "exits": {
+                "north": {
+                    "room_vnum": "c5f5b4"
+                },
+                "west": {
+                    "room_vnum": "east_ms"
+                }
+            },
+            "id": "658687769484",
+            "name": "The Forest Path",
+            "vnum": "east_path"
+        },
+        {
+            "description": [],
+            "exits": {},
+            "id": "55286c1296d2cf722de521dd7dcd31e94a349708",
+            "name": "Unnamed Room",
+            "vnum": "7809ef"
+        },
+        {
+            "description": [],
+            "exits": {
+                "east": {
+                    "room_vnum": "baf6e6"
+                },
+                "south": {
+                    "room_vnum": "east_path"
+                }
+            },
+            "id": "d9c1859e728a6940dbae09c53fb2d297e9984026",
+            "name": "Unnamed Room",
+            "triggers": [
+                {
+                    "script_vnum": "spawn_rabbit",
+                    "type": "after:spawn"
+                },
+                {
+                    "script_vnum": "respawn_rabbit",
+                    "type": "after:death"
+                }
+            ],
+            "vnum": "c5f5b4"
+        },
+        {
+            "description": [],
+            "exits": {
+                "south": {
+                    "room_vnum": "a7387b"
+                },
+                "west": {
+                    "room_vnum": "c5f5b4"
+                }
+            },
+            "flags": [],
+            "id": "26cce774d8505ede1ece63f3f252298b800eb38d",
+            "name": "Test",
+            "triggers": [
+                {
+                    "script_vnum": "spawn_rabbit",
+                    "type": "after:spawn"
+                },
+                {
+                    "script_vnum": "respawn_rabbit",
+                    "type": "after:death"
+                }
+            ],
+            "vnum": "baf6e6"
+        },
+        {
+            "description": [],
+            "exits": {
+                "north": {
+                    "room_vnum": "baf6e6"
+                },
+                "south": {
+                    "room_vnum": "7e7b4f"
+                }
+            },
+            "id": "9b7abb30882d06c81962c7291a936b4e6c5060f6",
+            "name": "Unnamed Room",
+            "triggers": [
+                {
+                    "script_vnum": "spawn_rabbit",
+                    "type": "after:spawn"
+                },
+                {
+                    "script_vnum": "respawn_rabbit",
+                    "type": "after:death"
+                }
+            ],
+            "vnum": "a7387b"
+        },
+        {
+            "description": [],
+            "exits": {
+                "east": {
+                    "room_vnum": "26eb4a"
+                },
+                "north": {
+                    "room_vnum": "a7387b"
+                }
+            },
+            "id": "db04cefdf89860bfdb5330f5f1ab8e568ce94678",
+            "name": "Unnamed Room",
+            "triggers": [
+                {
+                    "script_vnum": "spawn_rabbit",
+                    "type": "after:spawn"
+                },
+                {
+                    "script_vnum": "respawn_rabbit",
+                    "type": "after:death"
+                }
+            ],
+            "vnum": "7e7b4f"
+        },
+        {
+            "description": [],
+            "exits": {
+                "north": {
+                    "room_vnum": "600f24"
+                },
+                "west": {
+                    "room_vnum": "7e7b4f"
+                }
+            },
+            "id": "7b265a90f2aacc00621a23fa694275f47be019db",
+            "name": "Unnamed Room",
+            "triggers": [
+                {
+                    "script_vnum": "spawn_rabbit",
+                    "type": "after:spawn"
+                },
+                {
+                    "script_vnum": "respawn_rabbit",
+                    "type": "after:death"
+                }
+            ],
+            "vnum": "26eb4a"
+        },
+        {
+            "description": [
+                "To the east, the mouth of a large cave looms above you, its stony roof and floor",
+                "resembling the teeth of a ferocious beast.  Something tells you that you should",
+                "avoid this place because of its danger."
+            ],
+            "exits": {
+                "east": {
+                    "room_vnum": "e44a90"
+                },
+                "south": {
+                    "room_vnum": "26eb4a"
+                }
+            },
+            "id": "4d5ada65e79b4206c004a619b44d0d24d8c6cf40",
+            "name": "Outside of a Cavern",
+            "triggers": [
+                {
+                    "script_vnum": "spawn_corpse_of_adventurer",
+                    "type": "after:spawn"
+                }
+            ],
+            "vnum": "600f24"
+        },
+        {
+            "description": [],
+            "exits": {
+                "west": {
+                    "room_vnum": "600f24"
+                }
+            },
+            "id": "26a4fa47b6971c560756007176de1c33d23f249b",
+            "name": "A Large Cavern",
+            "triggers": [
+                {
+                    "script_vnum": "spawn_bear",
+                    "type": "after:spawn"
+                }
+            ],
+            "vnum": "e44a90"
+        }
+    ],
+    "scripts": [
+        {
+            "code": "wait(3.0)\ncall('spawn_rabbit')",
+            "id": "respawn_rabbit",
+            "vnum": "respawn_rabbit"
+        },
+        {
+            "code": "spawn('actor', {'name': 'a giant bear', 'behaviors': ['aggressive'], 'stats': {'hp': 100000, 'current_hp': 100000}})",
+            "id": "spawn_bear",
+            "vnum": "spawn_bear"
+        },
+        {
+            "code": "spawn('object', {'name': 'a dead adventurer', 'flags': ['no_get']})",
+            "id": "spawn_corpse_of_adventurer",
+            "vnum": "spawn_corpse_of_adventurer"
+        },
+        {
+            "code": "echo('A rabbit starts hippity-hopping around.')\nspawn('actor', {'name': 'a small rabbit', 'stats': {'hp': 10}})",
+            "id": "spawn_rabbit",
+            "vnum": "spawn_rabbit"
+        },
+        {
+            "code": "say('Be careful, there are vicious creatures to the east..')",
+            "id": "bill_greets_you",
+            "vnum": "bill_greets_you"
+        },
+        {
+            "code": "\nif message.lower() in [\"fail\", \"exception\"]:\n    say(\"You want an exception? I'll give you an exception!\")\n    act(\"{self.name} pauses for dramatic effect..\")\n    wait(1.0)\n    non_existent_function()\n        ",
+            "id": "fail",
+            "vnum": "fail"
+        },
+        {
+            "code": "\nsay(\"Hello {}!\".format(target.name))\n        ",
+            "id": "greetings",
+            "vnum": "greetings"
+        },
+        {
+            "code": "\nwait(1)\nsay(\"Boy golly, am I a happy fella!\")\n        ",
+            "id": "happy",
+            "vnum": "happy"
+        },
+        {
+            "code": "act('{self.name} sees you enter and attacks.')\nkill(target)",
+            "id": "attack",
+            "vnum": "attack"
+        },
+        {
+            "code": "act('{self.name} performs something before the combat turn.')",
+            "id": "before_turn",
+            "vnum": "before_turn"
+        },
+        {
+            "code": "act('{self.name} performs something after the combat turn.')",
+            "id": "after_turn",
+            "vnum": "after_turn"
+        }
+    ],
+    "vnum": "haven"
+}

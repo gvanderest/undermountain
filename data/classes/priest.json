@@ -1,0 +1,9 @@
+{
+    "id": "priest",
+    "name": "Priest",
+    "colored_name": "{WP{5riest{x",
+    "short_name": "Pri",
+    "colored_short_name": "{YP{yre{x",
+    "desc": "Holy or unholy priests who specialize in healing",
+    "tier": 0
+}

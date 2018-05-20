@@ -1,0 +1,9 @@
+{
+    "id": "lizard",
+    "name": "Lizard",
+    "short_name": "Lizr",
+    "colored_name": "{CL{cizard{x",
+    "colored_short_name": "{CL{cizr{x",
+    "desc": "Claw, Tailslap, Scale Skin",
+    "bonuses": "+2S +1C +2D -3W -3I -2c -----"
+}

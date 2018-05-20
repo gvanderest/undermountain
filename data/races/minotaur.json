@@ -1,0 +1,9 @@
+{
+    "id": "minotaur",
+    "name": "Minotaur",
+    "short_name": "Mino",
+    "colored_name": "{CM{cinotaur{x",
+    "colored_short_name": "{CM{cino{x",
+    "desc": "Bloodlust, Gore, Intimidation",
+    "bonuses": "+3S +1C -1D -1W -2I -3c -0.5V"
+}

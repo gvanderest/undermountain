@@ -1,0 +1,10 @@
+{
+    "id": "drow",
+    "name": "Drow",
+    "short_name": "Drow",
+    "colored_name": "{CD{crow{x",
+    "colored_short_name": "{CD{crow{x",
+    "desc": "Black Calm, Defiance, Night Orb",
+    "bonuses": "--- -1C +2D -2W -4I -1c +1.0V"
+
+}

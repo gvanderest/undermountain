@@ -1,0 +1,9 @@
+{
+    "id": "troll",
+    "name": "Troll",
+    "short_name": "Troll",
+    "colored_name": "{CT{croll{x",
+    "colored_short_name": "{CT{crol{x",
+    "desc": "Greenblood, Regrow, Recovery",
+    "bonuses": "+1S +4C -1D -2W -4I -3c +1.5V"
+}

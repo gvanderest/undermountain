@@ -1,0 +1,35 @@
+{
+    "bracket": "",
+    "class_ids": [
+        "necromancer"
+    ],
+    "connection_id": 1,
+    "experience": 0,
+    "experience_per_level": 3000,
+    "gender_id": "male",
+    "id": "c5f9ef2f8120bc9cd2cd12086b2139d89978eecd",
+    "name": "Kk",
+    "online": true,
+    "password": "e17caae2b136135e1edb8866b4f1c08c16e1a18e220d33ec2d6600fe27b288bc",
+    "race_ids": [
+        "aroca"
+    ],
+    "room_id": "472263332730",
+    "room_vnum": "market_square",
+    "settings": {},
+    "stats": {
+        "alignment": 0,
+        "current_hp": 100,
+        "current_mana": 100,
+        "hp": 100,
+        "level": 1,
+        "mana": 100,
+        "move": 100,
+        "moves": 0,
+        "next_quest_time": 0,
+        "quest_time": 0,
+        "saves": 0
+    },
+    "tier": 0,
+    "title": ""
+}

@@ -1,0 +1,9 @@
+{
+    "id": "centaur",
+    "name": "Centaur",
+    "short_name": "Cent",
+    "colored_name": "{CC{centaur{x",
+    "colored_short_name": "{CC{cent{x",
+    "desc": "Hardiness, Stamp, Survival ",
+    "bonuses": "--- +1C --- +1W -2I --- +4.5V"
+}

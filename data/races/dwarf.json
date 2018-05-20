@@ -1,0 +1,9 @@
+{
+    "id": "dwarf",
+    "name": "Dwarf",
+    "short_name": "Dwrf",
+    "colored_name": "{CD{cwarf{x",
+    "colored_short_name": "{CD{cwrf{x",
+    "desc": "Lore, Repair, Tenacity",
+    "bonuses": "+1S +2C -1D --- --- -2c +1.5V"
+}

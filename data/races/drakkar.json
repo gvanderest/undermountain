@@ -1,0 +1,9 @@
+{
+    "id": " drakkar",
+    "name": "Drakkar",
+    "short_name": "Drak",
+    "colored_name": "{CD{crakkar{x",
+    "colored_short_name": "{CD{crak{x",
+    "desc": "Steadiness, Vigor, Flight",
+    "bonuses": "+1S +1C +1D -2W +1I -1c +0.5V"
+}

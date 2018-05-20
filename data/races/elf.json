@@ -1,0 +1,9 @@
+{
+    "id": "elf",
+    "name": "Elf",
+    "short_name": "Elf",
+    "colored_name": "{CE{clf{x",
+    "colored_short_name": "{CE{clf{x",
+    "desc": "Affect Magic, Grace, Keen Sense",
+    "bonuses": "--- -1C +1D --- +1I +1c +1.5V"
+}

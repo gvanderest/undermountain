@@ -1,0 +1,9 @@
+{
+    "id": "kender",
+    "name": "Kender",
+    "short_name": "Kend",
+    "colored_name": "{CK{cender{x",
+    "colored_short_name": "{CK{cend{x",
+    "desc": "Peek, Reflex, Steal",
+    "bonuses": "-1S -1C +3D --- --- --- +1.5V"
+}

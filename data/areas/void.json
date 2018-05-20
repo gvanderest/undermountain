@@ -1,0 +1,18 @@
+{
+    "actors": [],
+    "id": "void",
+    "name": "The Void",
+    "objects": [],
+    "rooms": [
+        {
+            "description": [],
+            "exits": {},
+            "flags": [],
+            "id": "debd6cff16f109942fd7d11156d397c4c0f9aa12",
+            "name": "Unnamed Room",
+            "vnum": "ecc23c"
+        }
+    ],
+    "scripts": [],
+    "vnum": "void"
+}
