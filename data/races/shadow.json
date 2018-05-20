@@ -1,0 +1,9 @@
+{
+    "id": "shadow",
+    "name": "Shadow",
+    "short_name": "Shad",
+    "colored_name": "{CS{chadow{x",
+    "colored_short_name": "{CS{chad{x",
+    "desc": "Dissipate, Realmgate, Darkener",
+    "bonuses": "-3S --- --- --- +3I --- -----"
+}
