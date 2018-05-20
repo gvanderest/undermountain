@@ -1,0 +1,9 @@
+{
+    "id": "orc",
+    "name": "Orc",
+    "short_name": "Orc",
+    "colored_name": "{CO{crc{x",
+    "colored_short_name": "{CO{crc{x",
+    "desc": "Blood Pact, Brute Force, Wargcall",
+    "bonuses": "+2S +2C --- -2W -2I -2c +0.5V"
+}

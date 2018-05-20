@@ -1,0 +1,9 @@
+{
+    "id": "vampire",
+    "name": "Vampire",
+    "short_name": "Vamp",
+    "colored_name": "{CV{camp{x",
+    "colored_short_name": "{CV{camp{x",
+    "desc": "Bite, Batform, Dark Power",
+    "bonuses": "--- -4C +2D --- --- +4c +1.0V"
+}
