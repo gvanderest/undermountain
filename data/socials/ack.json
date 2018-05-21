@@ -1,0 +1,10 @@
+{
+    "name":"ack",
+    "actor_no_arg":"What? You smell something really bad?",
+    "others_no_arg":"$n turns away at some really bad smell...Maybe they farted.",
+    "actor_found_target":"You hold your nose at the smell $N made!",
+    "others_found":"$n pinches $s nose and turns away from $N, disgusted by the smell $E made.",
+    "target_found":"$n pinches $s nose and turns away from you, disgusted by the smell you made.",
+    "actor_auto":"$",
+    "others_auto":"$n turns away from $mself, seemingly disgusted by what $e did."
+}

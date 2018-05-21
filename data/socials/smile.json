@@ -1,0 +1,10 @@
+{
+    "name":"smile",
+    "actor_no_arg":"You smile happily.",
+    "others_no_arg":"$n smiles happily.",
+    "actor_found_target":"You smile at $M.",
+    "others_found":"$n beams a smile at $N.",
+    "target_found":"$n smiles at you.",
+    "actor_auto":"There's no one by that name around.",
+    "others_auto":"$n smiles at $mself."
+}

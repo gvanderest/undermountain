@@ -1,0 +1,10 @@
+{
+    "name":"anticipate",
+    "actor_no_arg":"You murmur 'Sssssoonnn, my presssssciousssss...'",
+    "others_no_arg":"$n murmurs 'Ssssssooonnnn, my pressssscioussss...'",
+    "actor_found_target":"You can't wait for what $N is about to do!",
+    "others_found":"$",
+    "target_found":"$n eagerly anticipates your actions.",
+    "actor_auto":"$",
+    "others_auto":"$n rubs $s hands together in eager anticipation."
+}

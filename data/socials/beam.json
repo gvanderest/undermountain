@@ -1,0 +1,10 @@
+{
+    "name":"beam",
+    "actor_no_arg":"You beam delightedly at nothing in particular.",
+    "others_no_arg":"$n beams broadly at nothing in particular.",
+    "actor_found_target":"You dazzle $N with your smile.",
+    "others_found":"$n must like $N a great deal to beam at $M so broadly!",
+    "target_found":"$n must like you a great deal to beam at you so broadly!",
+    "actor_auto":"You look pretty silly beaming at imaginary friends...",
+    "others_auto":"$n beams at $mself, obviously pleased."
+}

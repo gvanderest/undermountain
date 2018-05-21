@@ -1,0 +1,10 @@
+{
+    "name":"gack",
+    "actor_no_arg":"Gaaack!",
+    "others_no_arg":"$n gacks with dismay!",
+    "actor_found_target":"Appalled, you gack at $N.",
+    "others_found":"$n gacks expressively, shooting $N a dismayed look.",
+    "target_found":"$n gacks, and looks your way, dismayed.",
+    "actor_auto":"That person isn't here.",
+    "others_auto":"Appalled, $n gacks at $mself!"
+}

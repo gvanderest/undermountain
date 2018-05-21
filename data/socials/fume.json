@@ -1,0 +1,10 @@
+{
+    "name":"fume",
+    "actor_no_arg":"Take it easy now! count to ten, very slowly.",
+    "others_no_arg":"$n grits $s teeth and fumes with rage.",
+    "actor_found_target":"You stare at $M, fuming.",
+    "others_found":"$n stares at $N, fuming with rage.",
+    "target_found":"$n stares at you, fuming with rage!",
+    "actor_auto":"Fume away... they ain't here.",
+    "others_auto":"$n clenches $s fists and stomps his feet, fuming with anger."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"sweep",
+    "actor_no_arg":"You look at your empty arms and sigh.",
+    "others_no_arg":"$n looks at $s empty arms and sighs.",
+    "actor_found_target":"You sweep $M into your arms and kiss $M long and deeply.",
+    "others_found":"$n sweeps $N into $s arms and kisses $M long and deeply.",
+    "target_found":"$n sweeps you into $s arms and kisses you long and deeply.",
+    "actor_auto":"The object of your kiss is absent.",
+    "others_auto":"$"
+}

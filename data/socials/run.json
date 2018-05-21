@@ -1,0 +1,10 @@
+{
+    "name":"run",
+    "actor_no_arg":"You run away in terror and horror!",
+    "others_no_arg":"$n runs away in utter terror!",
+    "actor_found_target":"You run away from $N in complete terror!",
+    "others_found":"$n runs away from $N in utter terror and horror!",
+    "target_found":"$n runs from you, fearing for $s life!",
+    "actor_auto":"No reason to be afraid, they aren't here.",
+    "others_auto":"$n sees $s own reflection and runs away terrified!"
+}

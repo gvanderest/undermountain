@@ -1,0 +1,10 @@
+{
+    "name":"swoon",
+    "actor_no_arg":"You swoon.",
+    "others_no_arg":"$n swoons in absolute ecstasy.",
+    "actor_found_target":"You look at $N and swoon in ecstasy.",
+    "others_found":"$n looks at $N and swoons in ecstasy.",
+    "target_found":"$n looks at you and swoons in ecstasy.",
+    "actor_auto":"Who?",
+    "others_auto":"$"
+}

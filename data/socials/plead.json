@@ -1,0 +1,10 @@
+{
+    "name":"plead",
+    "actor_no_arg":"You beg and plead to anyone who will listen.",
+    "others_no_arg":"$n pleads $s case to anyone who will listen... You ALMOST feel sorry for $s.",
+    "actor_found_target":"You fall to the feet of $N, pleading desperately for your life!",
+    "others_found":"$n pleads at the feet of $N.",
+    "target_found":"$n falls to the ground at your feet, pleading for $s life.",
+    "actor_auto":"$",
+    "others_auto":"$n's eyes water as $e pleads frantically with $mself to stop."
+}

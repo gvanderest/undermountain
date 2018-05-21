@@ -1,0 +1,10 @@
+{
+    "name":"bearhug",
+    "actor_no_arg":"You open your arms, beckoning everyone to join you in a group hug.",
+    "others_no_arg":"$n opens $s arms, calling for a group hug.",
+    "actor_found_target":"You overwhelm $N with a great, big, hulking bearhug.",
+    "others_found":"$n encompasses $N in an ENORMOUS bearhug!",
+    "target_found":"$n clutches you tightly in an overwhelming bearhug!",
+    "actor_auto":"Perhaps you should shower your affections on someone who is here?",
+    "others_auto":"$n hugs $mself as tightly as possible.  Looks like $e could use a hand."
+}

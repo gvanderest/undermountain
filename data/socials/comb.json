@@ -1,0 +1,10 @@
+{
+    "name":"comb",
+    "actor_no_arg":"You comb your hair - perfect.",
+    "others_no_arg":"$n combs $s hair, what a dashing specimen !",
+    "actor_found_target":"You patiently untangle $N's hair - what a mess !",
+    "others_found":"$n tries patiently to untangle $N's hair.",
+    "target_found":"$n pulls your hair in an attempt to comb it.",
+    "actor_auto":"That person is not here.",
+    "others_auto":"$n combs $s hair back, obviously too cool for the likes of you. *roll*"
+}

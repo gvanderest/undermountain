@@ -1,0 +1,10 @@
+{
+    "name":"worship",
+    "actor_no_arg":"You prostrate yourself and worship the gods!",
+    "others_no_arg":"$n prostrates $mself and worships the gods!",
+    "actor_found_target":"You fall on your knees and worship $N.",
+    "others_found":"$n falls on $s knees and worships $N.",
+    "target_found":"$n falls to the ground and worships you.",
+    "actor_auto":"You can't worship someone who isn't here.",
+    "others_auto":"$n worships $mself."
+}

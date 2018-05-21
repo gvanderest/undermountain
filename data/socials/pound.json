@@ -1,0 +1,10 @@
+{
+    "name":"pound",
+    "actor_no_arg":"You make vague pounding motions with your fist at the thought.",
+    "others_no_arg":"$n makes vague pounding motions with $m fist at the thought.",
+    "actor_found_target":"You pound $M into a bloody mass.",
+    "others_found":"$n pounds $N into a bloody mass.",
+    "target_found":"$n pounds you into a bloody mass.",
+    "actor_auto":"Sorry, friend, I can't see that person here.",
+    "others_auto":"$n pounds $s chest like the ape that $e is."
+}

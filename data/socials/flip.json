@@ -1,0 +1,10 @@
+{
+    "name":"flip",
+    "actor_no_arg":"You flip head over heels.",
+    "others_no_arg":"$n flips head over heels.",
+    "actor_found_target":"You flip $M over your shoulder.",
+    "others_found":"$n flips $N over $s shoulder.",
+    "target_found":"$n flips you over $s shoulder.  Hmmmm.",
+    "actor_auto":"You can't find the person.",
+    "others_auto":"$n does some nice tumbling and gymnastics."
+}

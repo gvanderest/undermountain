@@ -1,0 +1,10 @@
+{
+    "name":"snarl",
+    "actor_no_arg":"You grizzle your teeth and look mean.",
+    "others_no_arg":"$n snarls angrily.",
+    "actor_found_target":"You snarl at $M.",
+    "others_found":"$n snarls at $N.",
+    "target_found":"$n snarls at you, for some reason.",
+    "actor_auto":"No need to snarl!",
+    "others_auto":"$n snarls at $mself."
+}

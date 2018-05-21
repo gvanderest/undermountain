@@ -1,0 +1,10 @@
+{
+    "name":"peer",
+    "actor_no_arg":"You peer around yourself intently.",
+    "others_no_arg":"$n peers around $mself intently.",
+    "actor_found_target":"You peer intently at $N.",
+    "others_found":"$n peers intently at $N.",
+    "target_found":"$n peers at you intently.",
+    "actor_auto":"They aren't here.",
+    "others_auto":"$n peers at $mself, crossing $s eyes in the process."
+}

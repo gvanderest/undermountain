@@ -1,0 +1,10 @@
+{
+    "name":"clap",
+    "actor_no_arg":"You clap your hands together.",
+    "others_no_arg":"$n shows $s approval by clapping $s hands together.",
+    "actor_found_target":"You clap at $S performance.",
+    "others_found":"$n claps at $N's performance.",
+    "target_found":"$n claps at your performance.",
+    "actor_auto":"You clap for nothing.",
+    "others_auto":"$n claps at $s own performance."
+}

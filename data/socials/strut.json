@@ -1,0 +1,10 @@
+{
+    "name":"strut",
+    "actor_no_arg":"Strut your stuff.",
+    "others_no_arg":"$n struts proudly.",
+    "actor_found_target":"You strut to get $S attention.",
+    "others_found":"$n struts, hoping to get $N's attention.",
+    "target_found":"$n struts, hoping to get your attention.",
+    "actor_auto":"You don't see an audience.",
+    "others_auto":"$n struts to $mself, lost in $s own world."
+}

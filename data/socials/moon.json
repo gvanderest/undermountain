@@ -1,0 +1,10 @@
+{
+    "name":"moon",
+    "actor_no_arg":"You drop your drawers and moon everyone in the room!",
+    "others_no_arg":"$n drops $s pants and gives you the vertical smile!",
+    "actor_found_target":"You bend over and moon $N.",
+    "others_found":"$n drops $s pants and rudely moons $N!",
+    "target_found":"$n bends over and gives you the vertical smile!",
+    "actor_auto":"You stand, with your pants around your ankles, looking VERY silly!",
+    "others_auto":"$n nearly goes into convulsions while trying to moon $mself."
+}

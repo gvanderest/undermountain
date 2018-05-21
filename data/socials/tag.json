@@ -1,0 +1,10 @@
+{
+    "name":"tag",
+    "actor_no_arg":"Tag whom?",
+    "others_no_arg":"$n casts about for someone to tag.",
+    "actor_found_target":">From nowhere, you pounce on $N and TAG $M remorselessly!  BWAHAHA!!!",
+    "others_found":"$n dives from the shadows and TAGS $N.  $N IS IT!",
+    "target_found":"$n pounces on you and >>> TAGS <<< you!  You're IT!",
+    "actor_auto":"Who were you going to tag, then?",
+    "others_auto":"Unable to catch anyone else, $n tags $mself.  Are you impressed?"
+}

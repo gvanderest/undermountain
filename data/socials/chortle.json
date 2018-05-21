@@ -1,0 +1,10 @@
+{
+    "name":"chortle",
+    "actor_no_arg":"Heh.",
+    "others_no_arg":"$n chortles mischievously.",
+    "actor_found_target":"You chortle mischievously at $N.",
+    "others_found":"$n chortles mischievously at $N.",
+    "target_found":"$n chortles mischievously at you.",
+    "actor_auto":"Took you a while to get that....they aren't here.",
+    "others_auto":"$n chortles at $s own joke.  Don't bother."
+}

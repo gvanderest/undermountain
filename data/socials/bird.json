@@ -1,0 +1,10 @@
+{
+    "name":"bird",
+    "actor_no_arg":"You flick a bird...How obscene!",
+    "others_no_arg":"$n flicks a bird at no one in particular.",
+    "actor_found_target":"You shoot a bird at $N.",
+    "others_found":"$n gives $N the bird.",
+    "target_found":"$n gives you the bird...What an ass!",
+    "actor_auto":"Don't you hate to waste a good obscene gesture like that?",
+    "others_auto":"$n angrily flips himself off.  Take that!!"
+}

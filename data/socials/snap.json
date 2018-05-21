@@ -1,0 +1,10 @@
+{
+    "name":"snap",
+    "actor_no_arg":"Eureka!  You snap your fingers.",
+    "others_no_arg":"$n snaps $s fingers.",
+    "actor_found_target":"You snap back at $M.",
+    "others_found":"$n snaps back at $N.",
+    "target_found":"$n snaps back at you!",
+    "actor_auto":"You must be very agitated.",
+    "others_auto":"$n snaps $mself to attention."
+}

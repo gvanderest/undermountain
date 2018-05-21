@@ -1,0 +1,10 @@
+{
+    "name":"salute",
+    "actor_no_arg":"You put your hand above your right eye, and salute the air.",
+    "others_no_arg":"$n salutes the air.",
+    "actor_found_target":"You raise your hand and salute $N.",
+    "others_found":"$n salutes $N in respect and honor.",
+    "target_found":"$n shows there respect and honor to you by saluting you.",
+    "actor_auto":"You look for someone to salute.",
+    "others_auto":"$n salutes at nothing."
+}

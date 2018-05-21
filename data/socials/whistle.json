@@ -1,0 +1,10 @@
+{
+    "name":"whistle",
+    "actor_no_arg":"You whistle innocently.",
+    "others_no_arg":"$n whistles innocently.",
+    "actor_found_target":"You whistle at the sight of $M.",
+    "others_found":"$n whistles at the sight of $N.",
+    "target_found":"$n whistles at the sight of you.",
+    "actor_auto":"You don't see nothing special to whistle at.",
+    "others_auto":"$n whistles a little tune to $mself."
+}

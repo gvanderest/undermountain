@@ -1,0 +1,10 @@
+{
+    "name":"polite",
+    "actor_no_arg":"You give a polite little chuckle.",
+    "others_no_arg":"$n gives a polite little chuckle.",
+    "actor_found_target":"You indicate your underappreciation of $S joke.",
+    "others_found":"$n gives a polite little chuckle to $N's joke.",
+    "target_found":"$n gives a politle but unappreciative chuckle to your joke.",
+    "actor_auto":"You can't find a friend to chuckle with.",
+    "others_auto":"$n chuckles at $s own joke, since none of you would."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"bark",
+    "actor_no_arg":"You bark loudly.",
+    "others_no_arg":"$n barks like a dog.  You hope it's worse than $s bite.",
+    "actor_found_target":"You bark at $N scaring $M silly -- SHAME ON YOU!!",
+    "others_found":"$n barks at $N scaring $M senseless.",
+    "target_found":"$n barks loudly at you, you back away, because $e might bite too!!",
+    "actor_auto":"Bark at whom?",
+    "others_auto":"$n barks at $mself and cowers in fear."
+}

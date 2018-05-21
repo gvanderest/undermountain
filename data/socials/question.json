@@ -1,0 +1,10 @@
+{
+    "name":"question",
+    "actor_no_arg":"Is your question in the form of an answer?",
+    "others_no_arg":"$n looks like they want to ask a question.",
+    "actor_found_target":"You give $N that 'Hey, I want to know' face.",
+    "others_found":"$n gives $N a questioning look.",
+    "target_found":"$n raises an eyebrow as in questioning your actions.",
+    "actor_auto":"You must b slow",
+    "others_auto":"$n has questioned themselves, maybe the voices asked something."
+}

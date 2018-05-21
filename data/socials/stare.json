@@ -1,0 +1,10 @@
+{
+    "name":"stare",
+    "actor_no_arg":"You stare at the sky.",
+    "others_no_arg":"$n stares at the sky.",
+    "actor_found_target":"You stare dreamily at $N, completely lost in $S eyes..",
+    "others_found":"$n stares dreamily at $N.",
+    "target_found":"$n stares dreamily at you, completely lost in your eyes.",
+    "actor_auto":"You stare and stare but can't see that person anywhere...",
+    "others_auto":"$n stares dreamily at $mself - NARCISSIST!"
+}

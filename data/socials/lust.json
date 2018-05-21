@@ -1,0 +1,10 @@
+{
+    "name":"lust",
+    "actor_no_arg":"Your hormones begin to rage.",
+    "others_no_arg":"$n has that look of lust in $s eyes --- Get away QUICK!",
+    "actor_found_target":"You have lust after $N.",
+    "others_found":"$n looks lustily at $N.",
+    "target_found":"$n lusts after your delectable body.",
+    "actor_auto":"Whom are you trying to lust after?",
+    "others_auto":"$n lusts after $mself, lonely eh?"
+}

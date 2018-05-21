@@ -1,0 +1,10 @@
+{
+    "name":"rack",
+    "actor_no_arg":"You look for someone to rack.",
+    "others_no_arg":"$n looks around the room for someone to rack.",
+    "actor_found_target":"You grab $N and slap $m across your shoulders, racking $m viciously.",
+    "others_found":"$n picks $N up and racks $m.",
+    "target_found":"$n picks you up and racks you.",
+    "actor_auto":"There is no one to rack......oh no",
+    "others_auto":"$n twists into a knot trying to rack $mself."
+}

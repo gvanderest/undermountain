@@ -1,0 +1,10 @@
+{
+    "name":"wait",
+    "actor_no_arg":"You wait patiently.",
+    "others_no_arg":"$n waits patiently.",
+    "actor_found_target":"You patiently wait for $N.",
+    "others_found":"$n patiently waits for $N.",
+    "target_found":"$n patiently waits on you.  You better hurry!",
+    "actor_auto":"$",
+    "others_auto":"$n is being patient with $mself."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"cigar",
+    "actor_no_arg":"You sit back and light up a large cigar.",
+    "others_no_arg":"$n sits back and lights up a large cigar.",
+    "actor_found_target":"You offer $N a cigar.",
+    "others_found":"$n offers $N a cigar.",
+    "target_found":"$n has offered you a cigar.  How nice.",
+    "actor_auto":"Cubans r illegal brother...",
+    "others_auto":"$n inhales on $s fine quality cigar.  Mmmm tasty."
+}

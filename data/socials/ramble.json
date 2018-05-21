@@ -1,0 +1,10 @@
+{
+    "name":"ramble",
+    "actor_no_arg":"You ramble on and on.",
+    "others_no_arg":"$n rambles on about a boring exploit.",
+    "actor_found_target":"You ramble on to $N about your past adventures.",
+    "others_found":"$n blithers on and on to $N about something.",
+    "target_found":"$n tells you a rather boring tale, you feign interest.",
+    "actor_auto":"EH?",
+    "others_auto":"$n begins rambling on to himself about something.  You aren't interested enough to find out what."
+}

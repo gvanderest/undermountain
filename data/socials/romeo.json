@@ -1,0 +1,10 @@
+{
+    "name":"romeo",
+    "actor_no_arg":"You light up a Romeo y Julietta cigar and puff contentedly.",
+    "others_no_arg":"$n lights up a Romeo y Julietta cigar and puffs contentedly.",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

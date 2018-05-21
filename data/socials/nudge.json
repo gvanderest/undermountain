@@ -1,0 +1,10 @@
+{
+    "name":"nudge",
+    "actor_no_arg":"You scoot over, as if nudged.",
+    "others_no_arg":"$n scoots over, as if nudged.",
+    "actor_found_target":"You nudge $M.",
+    "others_found":"$n nudges $N.",
+    "target_found":"$n nudges you.",
+    "actor_auto":"Who?",
+    "others_auto":"$n nudges $mself, to keep $mself awake."
+}

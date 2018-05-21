@@ -1,0 +1,10 @@
+{
+    "name":"tickle",
+    "actor_no_arg":"Whom do you want to tickle?",
+    "others_no_arg":"$n looks around for someone to tickle.",
+    "actor_found_target":"You tickle $N.",
+    "others_found":"$n tickles $N.",
+    "target_found":"$n tickles you - ho ho ho.",
+    "actor_auto":"Who is that??",
+    "others_auto":"$n tickles $mself."
+}

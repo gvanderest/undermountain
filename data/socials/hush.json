@@ -1,0 +1,10 @@
+{
+    "name":"hush",
+    "actor_no_arg":"SHHHHHHHHHHHHHHHHHHHHHH",
+    "others_no_arg":"$n requests everyone quiet down.  Shhhhhhhhhhh...",
+    "actor_found_target":"You nicely ask $N to be more quiet.",
+    "others_found":"$n nicely asks $N to be more quiet.",
+    "target_found":"$n kindly requests that you please quiet down.",
+    "actor_auto":"Who needs to be silenced?",
+    "others_auto":"$n covers $s mouth in an attempt to silence $mself."
+}

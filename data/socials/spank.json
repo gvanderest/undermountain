@@ -1,0 +1,10 @@
+{
+    "name":"spank",
+    "actor_no_arg":"You grab your imaginary pony and spank the air playfully.",
+    "others_no_arg":"$n holds out $s hand, making a spanking motion in the air.",
+    "actor_found_target":"You spank $M playfully.",
+    "others_found":"$n spanks $N playfully.",
+    "target_found":"$n spanks you playfully.  OUCH!",
+    "actor_auto":"Your hand can't find your victim!",
+    "others_auto":"$n spanks $mself....HMMMMMMM..."
+}

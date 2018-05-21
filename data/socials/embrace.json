@@ -1,0 +1,10 @@
+{
+    "name":"embrace",
+    "actor_no_arg":"You hold your arms out, longing for someone to embrace you.",
+    "others_no_arg":"$n holds $s arms out, longing for someone to embrace $m.",
+    "actor_found_target":"You wrap your arms around $N in a warm and loving embrace.",
+    "others_found":"$n wraps $s arms around $N in a warm and loving embrace.",
+    "target_found":"$n takes you in $s arms in a warm and loving embrace.",
+    "actor_auto":"Your heart breaks as you realize you are alone.",
+    "others_auto":"$n tries to console $mself by wrapping $s arms around $mself."
+}

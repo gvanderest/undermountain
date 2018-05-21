@@ -1,0 +1,10 @@
+{
+    "name":"ruffle",
+    "actor_no_arg":"You've got to ruffle SOMEONE.",
+    "others_no_arg":"$",
+    "actor_found_target":"You ruffle $N's hair playfully.",
+    "others_found":"$n ruffles $N's hair playfully.",
+    "target_found":"$n ruffles your hair playfully.",
+    "actor_auto":"Might be a bit difficult.",
+    "others_auto":"$n ruffles $s hair - weirdo!"
+}

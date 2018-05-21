@@ -1,0 +1,10 @@
+{
+    "name":"fart",
+    "actor_no_arg":"Where are your manners ?",
+    "others_no_arg":"$n lets off a real rip-roarer ... a greenish cloud envelops $n!",
+    "actor_found_target":"You fart at $M.  Boy, you are sick.",
+    "others_found":"$n farts in the direction of $N.  Better flee before $e turns to you!",
+    "target_found":"$n farts in your direction.  You gasp for air.",
+    "actor_auto":"You can't hold it that long!",
+    "others_auto":"$n farts at $mself.  Better $m than you."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"criticize",
+    "actor_no_arg":"You begin to criticize everyone in the room!  Meanie!",
+    "others_no_arg":"$n begins to criticize everyone in the room.  What a jerk!",
+    "actor_found_target":"You criticize $M with all the warmth of a snake.",
+    "others_found":"With a nasty grin, $n rips apart $Ns efforts.",
+    "target_found":"$n informs you that your attempts need some MAJOR adjustments.",
+    "actor_auto":"Where oh where has my victim gone, oh where oh where...",
+    "others_auto":"$n tears $mself apart, cursing $s own stupidity."
+}

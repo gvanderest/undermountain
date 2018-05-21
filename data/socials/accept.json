@@ -1,0 +1,10 @@
+{
+    "name":"accept",
+    "actor_no_arg":"You accept the profferred apology graciously.",
+    "others_no_arg":"$n graciously accepts the profferred apology.",
+    "actor_found_target":"You graciously accept $N's apology.",
+    "others_found":"$n graciously accepts $N's apology.  Whew!",
+    "target_found":"$n graciously accepts your apology.  Did you even offer it??",
+    "actor_auto":"You look for someone to accept an apology from, but resort to feeling sorry for yourself instead.",
+    "others_auto":"$n rather reluctantly accepts his own apology."
+}

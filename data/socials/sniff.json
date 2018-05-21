@@ -1,0 +1,10 @@
+{
+    "name":"sniff",
+    "actor_no_arg":"You sniff sadly. *SNIFF*",
+    "others_no_arg":"$n sniffs sadly.",
+    "actor_found_target":"You sniff sadly at the way $E is treating you.",
+    "others_found":"$n sniffs sadly at the way $N is treating $m.",
+    "target_found":"$n sniffs sadly at the way you are treating $m.",
+    "actor_auto":"You see no reason to sniff.",
+    "others_auto":"$n sniffs sadly at $mself.  Something MUST be bothering $m."
+}

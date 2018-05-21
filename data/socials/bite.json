@@ -1,0 +1,10 @@
+{
+    "name":"bite",
+    "actor_no_arg":"You glare around, muttering \"Bite me...\" under your breath.",
+    "others_no_arg":"$n glares around, muttering \"Bite me...\" under $s breath.",
+    "actor_found_target":"You bite $N on the neck.",
+    "others_found":"$n bites $N on the neck!",
+    "target_found":"$n bites you on the neck.",
+    "actor_auto":"Hungry?  No such luck.",
+    "others_auto":"$n bites $s knuckle in anguish...the tragedy!"
+}

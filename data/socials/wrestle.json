@@ -1,0 +1,10 @@
+{
+    "name":"wrestle",
+    "actor_no_arg":"You search for a victim to take on with your mad sleeper hold.",
+    "others_no_arg":"$n searches for someone to wrestle down.",
+    "actor_found_target":"You wrestle $M to the floor and pin $M there.",
+    "others_found":"$n wrestles $N to the floor, pinning $M there.",
+    "target_found":"$n wrestles you to the floor and pins you.",
+    "actor_auto":"Sorry, friend, I can't see that person here.",
+    "others_auto":"$n wrestles with $m conscience."
+}

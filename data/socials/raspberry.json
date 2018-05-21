@@ -1,0 +1,10 @@
+{
+    "name":"raspberry",
+    "actor_no_arg":"You stick your tongue out at ... well, no one.",
+    "others_no_arg":"$n sticks $s tongue out, catching a few flies in the process.",
+    "actor_found_target":"You give $N the raspberry... and spit all over yourself.",
+    "others_found":"$n gives $N the raspberry... PHBT!  What a mess... Spit EVERYWHERE!",
+    "target_found":"You are splattered with saliva as $n gives you the raspberry... HOW RUDE!",
+    "actor_auto":"Hang your tongue out if you like, $e isn't here.",
+    "others_auto":"$n sticks $s tongue out and spits all over $mself in the process."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"tease",
+    "actor_no_arg":"What a tease.   SHEESH.",
+    "others_no_arg":"$n looks around for someone to tease.",
+    "actor_found_target":"You tease $N in a playful way.",
+    "others_found":"$n sticks $s tongue out at $N.",
+    "target_found":"$n sticks $s tongue out at you, what a DORK!!",
+    "actor_auto":"Tease whom?",
+    "others_auto":"$n teases $mself."
+}

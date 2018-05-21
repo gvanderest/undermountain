@@ -1,0 +1,10 @@
+{
+    "name":"sneer",
+    "actor_no_arg":"You sneer in disdain.",
+    "others_no_arg":"$n sneers in open disdain.",
+    "actor_found_target":"You sneer in open contempt at $N.",
+    "others_found":"$n sneers at $N's stupidity.",
+    "target_found":"$n sneers at you....what's $s fucking problem.",
+    "actor_auto":"Nothing is worth sneering at...",
+    "others_auto":"$n sneers at $N...in open contempt..."
+}

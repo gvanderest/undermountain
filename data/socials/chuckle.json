@@ -1,0 +1,10 @@
+{
+    "name":"chuckle",
+    "actor_no_arg":"You chuckle politely.",
+    "others_no_arg":"$n chuckles politely.",
+    "actor_found_target":"You chuckle at $S joke.",
+    "others_found":"$n chuckles at $N's joke.",
+    "target_found":"$n chuckles at your joke.",
+    "actor_auto":"You can't find a friend to chuckle with.",
+    "others_auto":"$n chuckles at $s own joke, since none of you would."
+}

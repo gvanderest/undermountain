@@ -1,0 +1,10 @@
+{
+    "name":"bounce",
+    "actor_no_arg":"BOIINNNNNNGG!",
+    "others_no_arg":"$n bounces around with a happy smile.",
+    "actor_found_target":"You bounce onto $S lap and wiggle about.",
+    "others_found":"$n bounces onto $N's lap and wiggles about.",
+    "target_found":"$n bounces onto your lap and wiggles about.",
+    "actor_auto":"You don't see your plaything.",
+    "others_auto":"$n plays basketball with $s head."
+}

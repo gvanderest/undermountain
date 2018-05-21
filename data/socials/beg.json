@@ -1,0 +1,10 @@
+{
+    "name":"beg",
+    "actor_no_arg":"You beg the gods for mercy.",
+    "others_no_arg":"The gods fall down laughing at $n's request for mercy.",
+    "actor_found_target":"You desperately try to squeeze a few coins from $M.",
+    "others_found":"$n begs you for money. You graciously let $m peep at your fortune.",
+    "target_found":"$n begs $N for a dime or two - or twenty !",
+    "actor_auto":"Your money-lender seems to be out for the moment.",
+    "others_auto":"$n begins to beg himself.  How odd is that??"
+}

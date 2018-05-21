@@ -1,0 +1,10 @@
+{
+    "name":"nibble",
+    "actor_no_arg":"You begin to nibble for no apparent reason.",
+    "others_no_arg":"$n begins to nibble on something.  You wonder what it is?",
+    "actor_found_target":"You nibble on $N's ear.",
+    "others_found":"$n nibbles on $N's ear.",
+    "target_found":"$n nibbles on your ear.",
+    "actor_auto":"Sorry, not present.",
+    "others_auto":"$n nibbles on $s OWN ear (I wonder how it is done !!)."
+}

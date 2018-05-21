@@ -1,0 +1,10 @@
+{
+    "name":"hop",
+    "actor_no_arg":"You hop around like a little kid.",
+    "others_no_arg":"$n hops around like a little kid.",
+    "actor_found_target":"You try to hop on $N's back, hoping for a ride.",
+    "others_found":"$n tries to hop on $N's back, but fails.",
+    "target_found":"$n attempts to hop on your back!  What the...",
+    "actor_auto":"$",
+    "others_auto":"$n pretends $e is a bunny rabbit."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"slap",
+    "actor_no_arg":"What is the sound of one hand slapping?",
+    "others_no_arg":"$n lifts $s hand up, about to lay the smack on someone.",
+    "actor_found_target":"*thwock!* You slap $N ringingly.",
+    "others_found":"*thwock!* $n slaps $N!",
+    "target_found":"$n slaps you stingingly.",
+    "actor_auto":"How about slapping someone in the same room as you ??",
+    "others_auto":"$n slaps $mself, really strange ..."
+}

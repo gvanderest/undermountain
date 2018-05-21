@@ -1,0 +1,10 @@
+{
+    "name":"ponder",
+    "actor_no_arg":"You ponder the question.",
+    "others_no_arg":"$n sits down and thinks deeply.",
+    "actor_found_target":"You ponder $N's reason for being here.",
+    "others_found":"$n ponders $N's reason for being here.",
+    "target_found":"$n ponders your reason for being here.",
+    "actor_auto":"$",
+    "others_auto":"$n ponders the question deeply to $mself."
+}

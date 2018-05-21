@@ -1,0 +1,10 @@
+{
+    "name":"worry",
+    "actor_no_arg":"You worry about what's going to happen.",
+    "others_no_arg":"A troubled look suddenly crosses $n's face.  Wonder what's wrong?",
+    "actor_found_target":"You look at $N worriedly.",
+    "others_found":"$n looks at $N with a troubled gaze.",
+    "target_found":"$n looks at you worriedly.",
+    "actor_auto":"Well they obviously aren't worried -- they left!",
+    "others_auto":"A troubled look suddenly crosses $n's face.  Wonder what's wrong?"
+}

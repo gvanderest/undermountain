@@ -1,0 +1,10 @@
+{
+    "name":"point",
+    "actor_no_arg":"You point in every direction.",
+    "others_no_arg":"$n points excitedly!",
+    "actor_found_target":"You point at $N.",
+    "others_found":"$n points excitedly at $N!",
+    "target_found":"$n points at you.  How rude!",
+    "actor_auto":"You point at no one in particular.",
+    "others_auto":"$n points at $mself, obviously very confused."
+}

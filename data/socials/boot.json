@@ -1,0 +1,10 @@
+{
+    "name":"boot",
+    "actor_no_arg":"You look for someone to kick!",
+    "others_no_arg":"$n looks for someone to place $s foot up in.",
+    "actor_found_target":"You place your boot up $N's ass!!",
+    "others_found":"$n places his boot firmly up $N's ass.",
+    "target_found":"$n has placed his boot up your ass. Feel The Pain??",
+    "actor_auto":"Where the hell's your foot.....?",
+    "others_auto":"$n flips head over heels literally."
+}

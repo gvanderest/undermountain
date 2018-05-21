@@ -1,0 +1,10 @@
+{
+    "name":"fatality",
+    "actor_no_arg":"You cheer at the carnage before you.",
+    "others_no_arg":"$n cheers as $e looks upon all the carnage.",
+    "actor_found_target":"You intone, '$N wins.  Fatality.'",
+    "others_found":"$n intones, '$N wins.  Fatality.'",
+    "target_found":"$n intones, '$N wins.  Fatality.'",
+    "actor_auto":"$",
+    "others_auto":"$n raises $s arms in the air and yell: VICTOLY!"
+}

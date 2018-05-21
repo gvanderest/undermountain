@@ -1,0 +1,10 @@
+{
+    "name":"make",
+    "actor_no_arg":"You breathe heavily and wetly.",
+    "others_no_arg":"$n breathes heavily and wetly.",
+    "actor_found_target":"You steam up the windows with $M.",
+    "others_found":"$n and $N start steaming up the windows.",
+    "target_found":"$n starts steaming up the windows with you.",
+    "actor_auto":"Sorry, friend, I can't see that person here.",
+    "others_auto":"$n puts $s hand up to $s face, passionately making out with it..."
+}

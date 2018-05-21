@@ -1,0 +1,10 @@
+{
+    "name":"grin",
+    "actor_no_arg":"You grin evilly.",
+    "others_no_arg":"$n grins evilly.",
+    "actor_found_target":"You grin evilly at $M.",
+    "others_found":"$n grins evilly at $N.",
+    "target_found":"$n grins evilly at you.  Hmmm.  Better keep your distance.",
+    "actor_auto":"You must be delirious.",
+    "others_auto":"$n grins at $mself.  You must wonder what's in $s mind."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"pissed",
+    "actor_no_arg":"You are PISSED!",
+    "others_no_arg":"$n is PISSED so watch out!",
+    "actor_found_target":"You turn a stoney gaze toward $N... you are SOOO pissed at $N!",
+    "others_found":"$n glares at $n.... $n is SOOO PISSED at $m!",
+    "target_found":"$n is pissed at you now... What do you think $e'll DO?",
+    "actor_auto":"That person is not here...",
+    "others_auto":"$n is so pissed at $mself.  How could $e be so stupid???"
+}

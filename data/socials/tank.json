@@ -1,0 +1,10 @@
+{
+    "name":"tank",
+    "actor_no_arg":"You boldly offer to tank for your everyone else.  Are you sure you know what you're getting into?",
+    "others_no_arg":"$n offers to tank!",
+    "actor_found_target":"You offer to tank for $N.",
+    "others_found":"$n offers to tank for $N.",
+    "target_found":"$n offers to tank for you!",
+    "actor_auto":"Tank for whom?",
+    "others_auto":"In dazzling chivalry, $n offers to tank-- for $mself!"
+}

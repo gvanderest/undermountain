@@ -1,0 +1,10 @@
+{
+    "name":"tweak",
+    "actor_no_arg":"Tweak who?",
+    "others_no_arg":"$",
+    "actor_found_target":"You gently tweak $S cheek.  Isn't $E so CUTE?",
+    "others_found":"$n tweaked $N's cheek... don't they look so adorable together?",
+    "target_found":"$n lovingly tweaks your cheek.  It reminds you of Grandma... sniff...",
+    "actor_auto":"*Sniff*  That cheek seems to be missing.",
+    "others_auto":"$n is tweaking the fuck out for no reason whatsoever."
+}

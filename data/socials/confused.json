@@ -1,0 +1,10 @@
+{
+    "name":"confused",
+    "actor_no_arg":"Your confusion is showing.",
+    "others_no_arg":"$n blinks slowly...",
+    "actor_found_target":"You blink slowly, trying to decipher $S comment.",
+    "others_found":"$n blinks slowly.  Maybe $N left a word out of $S sentence...",
+    "target_found":"$n blinks slowly.  Maybe you left a word out of your sentence?",
+    "actor_auto":"No wonder you're confused.",
+    "others_auto":"$n has managed to confuse even $mself."
+}

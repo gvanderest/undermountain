@@ -1,0 +1,10 @@
+{
+    "name":"puzzle",
+    "actor_no_arg":"Hmmm you looked puzzled? Something wrong?",
+    "others_no_arg":"$n gets a weird puzzling face. Something must be wrong.",
+    "actor_found_target":"You give $N a puzzling face.",
+    "others_found":"$n gives $N a weird look.",
+    "target_found":"$n gives you a puzzled look.",
+    "actor_auto":"what r u stupid...?",
+    "others_auto":"$n makes a puzzling face."
+}

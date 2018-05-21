@@ -1,0 +1,10 @@
+{
+    "name":"undress",
+    "actor_no_arg":"You start to undress in the shadows, waiting for someone to notice.",
+    "others_no_arg":"$n begins to undress... $e is VERY sexy... *Pant*",
+    "actor_found_target":"You undress $M with your eyes... Kinky.",
+    "others_found":"You feel the temperature of the room rise as $n lusts on $N...",
+    "target_found":"Feeling exposed, you sense $n undressing you with $s eyes...",
+    "actor_auto":"They are not here...",
+    "others_auto":"$n slowly removes $s clothes and armor."
+}

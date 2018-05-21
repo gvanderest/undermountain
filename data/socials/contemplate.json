@@ -1,0 +1,10 @@
+{
+    "name":"contemplate",
+    "actor_no_arg":"You bite your lip contemplatively.",
+    "others_no_arg":"$n bites $s lip contemplatively.",
+    "actor_found_target":"You contemplate the reason why $N is here.",
+    "others_found":"$n contemplates why it is $N is here.",
+    "target_found":"$n begins to contemplate your reason for being here.",
+    "actor_auto":"$",
+    "others_auto":"$n begins to contemplate the situation."
+}

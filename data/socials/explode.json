@@ -1,0 +1,10 @@
+{
+    "name":"explode",
+    "actor_no_arg":"You feel the {Rblood {cb{ro{ci{Rl{ci{rn{cg {xin your veins!{x",
+    "others_no_arg":"$n turns a {rdeep {Rred{x, fighting to contain $s temper...",
+    "actor_found_target":"You feel your rage explode deep in the pit of your stomach...",
+    "others_found":"$n burns holes through $N with his explosive anger!",
+    "target_found":"$n is {RANGRY {xwith you...I'd run if I were you!",
+    "actor_auto":"Temper Temper... they left.",
+    "others_auto":"$n {Rimplodes!{x  Only a {8grease {yspot{x remains where $e once stood."
+}

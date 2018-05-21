@@ -1,0 +1,10 @@
+{
+    "name":"waggle",
+    "actor_no_arg":"You waggle your eyebrows seductively.",
+    "others_no_arg":"$n waggles $s eyebrows seductively.",
+    "actor_found_target":"You waggle your eyebrows seductively at $N.",
+    "others_found":"$n waggles $s eyebrows seductively at $N.",
+    "target_found":"$n waggles $s eyebrows seductively at you.",
+    "actor_auto":"$",
+    "others_auto":"$n waggles $s eyebrows at $mself. What a freak."
+}

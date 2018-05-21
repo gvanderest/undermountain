@@ -1,0 +1,10 @@
+{
+    "name":"bat",
+    "actor_no_arg":"You bat your long, dark lashes and smile innocently.",
+    "others_no_arg":"$n bats $s long, dark lashes and smiles innocently.",
+    "actor_found_target":"You bat your eyelashes at $N and smile innocently.",
+    "others_found":"$",
+    "target_found":"$n bats $s eyelashes at you, acting innocent.",
+    "actor_auto":"$",
+    "others_auto":"$n tries to bat $s eyelashes at himself, but after several moments realizes $e can't."
+}

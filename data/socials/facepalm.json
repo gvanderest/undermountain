@@ -1,0 +1,10 @@
+{
+    "name":"facepalm",
+    "actor_no_arg":"You slap yourself in the forehead, muttering, \"Idiots.\"",
+    "others_no_arg":"$n slaps $mself in the forehead, muttering, \"Idiots.\"",
+    "actor_found_target":"You slap $N in the forehead, driving home the point of what an idiot $E is.",
+    "others_found":"$n slaps $N in the forehead. What an idiot.",
+    "target_found":"$n slaps your forehead. You're STUPID.",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

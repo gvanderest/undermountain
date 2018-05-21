@@ -1,0 +1,10 @@
+{
+    "name":"tackle",
+    "actor_no_arg":"You're going to tackle everyone in the room?!",
+    "others_no_arg":"$n assumes a crouching position and prepares to tackle someone, or everyone!",
+    "actor_found_target":"You tackle $N playfully.",
+    "others_found":"$n playfully tackles $N.",
+    "target_found":"$n brings you down in a playful tackle!",
+    "actor_auto":"$",
+    "others_auto":"$n grabs $mself and falls to the ground.  How odd."
+}

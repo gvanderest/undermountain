@@ -1,0 +1,10 @@
+{
+    "name":"cower",
+    "actor_no_arg":"You cower in a corner.",
+    "others_no_arg":"$n cowers in a corner and whimpers softly.",
+    "actor_found_target":"You cower away from $N and $S harsh words.",
+    "others_found":"$n cowers in a corner, terrified that $N will come after $m.",
+    "target_found":"You scared poor $n!  Now $S is cowering in a corner, afraid for $s life.",
+    "actor_auto":"That person is AWOL at the moment.",
+    "others_auto":"$n cowers in the corner afraid of $s own shadow"
+}

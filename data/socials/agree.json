@@ -1,0 +1,10 @@
+{
+    "name":"agree",
+    "actor_no_arg":"You agree absolutely.",
+    "others_no_arg":"$n agrees absolutely.",
+    "actor_found_target":"You nod in enthusiastic agreement with $N.",
+    "others_found":"$n nods in enthusiastic agreement with $N.",
+    "target_found":"$n nods in enthusiastic agreement with you.",
+    "actor_auto":"Sorry, your target is absent.",
+    "others_auto":"$n finds $mself the most agreeable being alive."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"tip",
+    "actor_no_arg":"You tip your hat gallantly.",
+    "others_no_arg":"$n gallantly tips $s hat.",
+    "actor_found_target":"You tip your hat to $N.",
+    "others_found":"$n gallantly tips $s hat to $N.",
+    "target_found":"$n gallantly tips $s hat to you.",
+    "actor_auto":"But there is no one here to impress?!?!",
+    "others_auto":"$n tips $s hat to one side of $s head."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"atomic",
+    "actor_no_arg":"Who shall suffer the wrath of an Atomic Wedgie?",
+    "others_no_arg":"$n eyes suddenly become very calculating.",
+    "actor_found_target":"You sneak up behind $N and grab $S underwear, and with a mighty yank, put them over $S head.",
+    "others_found":"$n sneaks up behind $N and yanks $S underwear up and over $S head.  ATOMIC WEDGIE!!",
+    "target_found":"You suddenly feel your underwear grow tight into your ass, and with a snap they are over your head.",
+    "actor_auto":"That person isn't here to be atomitized.",
+    "others_auto":"$n reaches behind $mself and yanks $s underwear upwards, smiling afterwards."
+}

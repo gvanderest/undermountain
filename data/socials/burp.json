@@ -1,0 +1,10 @@
+{
+    "name":"burp",
+    "actor_no_arg":"You burp loudly.",
+    "others_no_arg":"$n burps loudly.",
+    "actor_found_target":"You burp loudly to $M in response.",
+    "others_found":"$n burps loudly in response to $N's remark.",
+    "target_found":"$n burps loudly in response to your remark.",
+    "actor_auto":"You can't find your victim.",
+    "others_auto":"$n burps at $mself.  What a sick sight."
+}

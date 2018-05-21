@@ -1,0 +1,10 @@
+{
+    "name":"strip",
+    "actor_no_arg":"You do a slow strip tease for the people...",
+    "others_no_arg":"$n begins a slow, erotic strip-tease act...",
+    "actor_found_target":"You start to undress $N ... one piece of clothing at a time...",
+    "others_found":"$n runs $s hands over $Ns body, slowly stripping away the clothing...",
+    "target_found":"$n has started to strip you... woah BABY!",
+    "actor_auto":"Your toy doesn't seem to be here...",
+    "others_auto":"$"
+}

@@ -1,0 +1,10 @@
+{
+    "name":"lean",
+    "actor_no_arg":"You lean against a nearby wall, looking {Ccool{x.",
+    "others_no_arg":"$n leans against a wall. Yeah, $e THINKS $e's cool.",
+    "actor_found_target":"You lean against $N.",
+    "others_found":"$n leans against $N.",
+    "target_found":"$n leans against you.",
+    "actor_auto":"Nope. Nobody loves you.",
+    "others_auto":"$n tries to lean against itself, and falls over."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"starve",
+    "actor_no_arg":"You show your prominent ribs and hope that someone will take pity.",
+    "others_no_arg":"$n is withering before your eyes!  Starvation!",
+    "actor_found_target":"You throw yourself upon $S mercy, begging for food.",
+    "others_found":"$n begs $N for food.  One would think that magic would have cured hunger by now...",
+    "target_found":"$n is starving before your eyes!  Could you spare some food, please?",
+    "actor_auto":"Sorry, but that person isn't around-- looks like you'll starve.",
+    "others_auto":"$n refuses to eat anymore!"
+}

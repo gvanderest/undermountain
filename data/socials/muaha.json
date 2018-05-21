@@ -1,0 +1,10 @@
+{
+    "name":"muaha",
+    "actor_no_arg":"You throw your head back and start cackling evilly. MUAHAHAHAHAHAHAHAHA!",
+    "others_no_arg":"$n throws $s head back and starts to cakle evilly. MUAHAHAHAHAHAHA!!!",
+    "actor_found_target":"You look at $N and start evilly laughing. MUAHAHAHAHAHA!!!",
+    "others_found":"$n looks at $N, cackling evilly. MUAHAHAHAHAHAHAHAHAHAHAHAHA!!!",
+    "target_found":"$n looks at you and starts cackling evilly. MUAHAHAHAHAHAHAHAHA!",
+    "actor_auto":"$",
+    "others_auto":"$n starts cackling evilly to $mself. What a nutjob."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"dose",
+    "actor_no_arg":"You whip out some {@L{!s{$D{%2{#5{7...it's time to get wasted.",
+    "others_no_arg":"$n pulls out a vial of liquid acid...",
+    "actor_found_target":"You spray liquid acid all over $N...hope they can handle it...",
+    "others_found":"$n sprays liquid acid all over $N...hope they r ready trip out...",
+    "target_found":"$n douses you with {@L{!s{$D{%2{#5{7...have a nice trip...",
+    "actor_auto":"You can find no acid to eat....sob",
+    "others_auto":"$n drops 6 hitz of {@L{!s{$D{%2{#5{7 in each eye...$N's gonna bug right the fuck out..."
+}

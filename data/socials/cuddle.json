@@ -1,0 +1,10 @@
+{
+    "name":"cuddle",
+    "actor_no_arg":"Whom do you feel like cuddling today?",
+    "others_no_arg":"$n throws $s arms wide open, yelling 'Cuddle me!'",
+    "actor_found_target":"You cuddle $M.",
+    "others_found":"$n cuddles $N.",
+    "target_found":"$n cuddles you.",
+    "actor_auto":"They aren't here.",
+    "others_auto":"$n cuddles up to $s shadow.  What a sorry sight."
+}

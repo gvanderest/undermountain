@@ -1,0 +1,10 @@
+{
+    "name":"skull",
+    "actor_no_arg":"You look around for an eye to pluck...",
+    "others_no_arg":"$n glares around the room...what r they thinking....?",
+    "actor_found_target":"You grab $N by the hair and rip out $s left eye, savagely fucking $s skull...",
+    "others_found":"$n tears out $N's eye and skull fucks $m...",
+    "target_found":"From your head your eye is plucked..Give u Savage Socket Fuck",
+    "actor_auto":"There is no eyes to pluck...",
+    "others_auto":"$n rips out $S own eye and skull fucks $mself..."
+}

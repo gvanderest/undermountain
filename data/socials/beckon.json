@@ -1,0 +1,10 @@
+{
+    "name":"beckon",
+    "actor_no_arg":"You beckon for everyone to follow.",
+    "others_no_arg":"$n beckons for everyone to follow.",
+    "actor_found_target":"You beckon for $N to follow -- sure hope they do!",
+    "others_found":"$n beckons $N to follow...hmmm what's going on?",
+    "target_found":"$n beckons for you to follow.",
+    "actor_auto":"So sorry, that person has already left.",
+    "others_auto":"$n beckons to $s shadow to follow."
+}

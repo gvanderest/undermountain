@@ -1,0 +1,10 @@
+{
+    "name":"slit",
+    "actor_no_arg":"You pull out a small dagger and think about opening a few throats..",
+    "others_no_arg":"$n whips put a small dagger and looks around slyly.....",
+    "actor_found_target":"You pull back $N's head and drag a blade across $s throat..",
+    "others_found":"$n lashes out with a small dagger, severing $N's throat in a spray of hot blood...",
+    "target_found":"A hand gags your mouth and you feel steel slide across your throat..",
+    "actor_auto":"You find nothing to slit",
+    "others_auto":"$n shouts \"I cant take it anymore...\" and opens $S wrists.."
+}

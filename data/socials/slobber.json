@@ -1,0 +1,10 @@
+{
+    "name":"slobber",
+    "actor_no_arg":"You slobber down your front.",
+    "others_no_arg":"$n slobbers all over $mself.",
+    "actor_found_target":"You slobber on $N.",
+    "others_found":"$n slobbers on $N  **Yuck**",
+    "target_found":"$n slobbers disgustingly on you.",
+    "actor_auto":"Slobber on WHOM?",
+    "others_auto":"$n slobbers on $mself uncontrollably."
+}

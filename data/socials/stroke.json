@@ -1,0 +1,10 @@
+{
+    "name":"stroke",
+    "actor_no_arg":"You stroke the air vaguely.",
+    "others_no_arg":"$n makes vague stroking motions.",
+    "actor_found_target":"You gently stroke $S inner thigh.  $N inhales sharply.",
+    "others_found":"$N exhales sharply and suddenly.",
+    "target_found":"$n gently strokes your inner thigh.  You inhale sharply.",
+    "actor_auto":"Maybe you should practice on yourself first.",
+    "others_auto":"$n runs $s hands down $s body and begins to stroke $mself."
+}

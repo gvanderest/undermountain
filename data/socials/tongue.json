@@ -1,0 +1,10 @@
+{
+    "name":"tongue",
+    "actor_no_arg":"You slowly give your tongue a nice workout.",
+    "others_no_arg":"$n begins flicking $s tongue to everyone in the room.",
+    "actor_found_target":"Mmmm... you give $N a good working over with your tongue...",
+    "others_found":"$n slides $s tongue over $N's body...",
+    "target_found":"$n wraps $s tongue around you, moving it across your young, nubile flesh...",
+    "actor_auto":"Never around when required...",
+    "others_auto":"$n slowly tongues $mself... ICK."
+}

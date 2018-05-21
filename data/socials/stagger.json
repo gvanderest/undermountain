@@ -1,0 +1,10 @@
+{
+    "name":"stagger",
+    "actor_no_arg":"You stagger blindly around the room.",
+    "others_no_arg":"$n staggers blindly around the room.",
+    "actor_found_target":"You stagger toward $N as the room begins to spin.",
+    "others_found":"$n staggers into $N.",
+    "target_found":"$n staggers blindly into you.",
+    "actor_auto":"Stagger into whom!?!?",
+    "others_auto":"$"
+}

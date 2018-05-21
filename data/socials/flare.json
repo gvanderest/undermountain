@@ -1,0 +1,10 @@
+{
+    "name":"flare",
+    "actor_no_arg":"You flare your nostrils disdainfully.",
+    "others_no_arg":"$n flares $s nostrils disdainfully.",
+    "actor_found_target":"You flare your nostrils disdainfully at $N... HOW RUDE!",
+    "others_found":"$n flares $s nostrils disdainfully at $N and turns up $s snobbish nose.",
+    "target_found":"$n flares $s nostrils disdainfully at you... what'd you DO???",
+    "actor_auto":"Flare if you wish, but that person isn't here to see it.",
+    "others_auto":"$n flares his nostrils and huffs at himself."
+}

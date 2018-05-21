@@ -1,0 +1,10 @@
+{
+    "name":"wave",
+    "actor_no_arg":"You wave.",
+    "others_no_arg":"$n waves happily.",
+    "actor_found_target":"You wave goodbye to $N.",
+    "others_found":"$n waves goodbye to $N.",
+    "target_found":"$n waves goodbye to you.  Have a good journey.",
+    "actor_auto":"They didn't wait for you to wave goodbye.",
+    "others_auto":"$n waves goodbye to $mself."
+}

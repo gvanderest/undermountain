@@ -1,0 +1,10 @@
+{
+    "name":"ram",
+    "actor_no_arg":"You whip out a red hot poker and look around for an ass to ram it up.",
+    "others_no_arg":"$n whips out a red hot poker and glances about the room, a sick grin on $s face.",
+    "actor_found_target":"You grab $N and rape $s up the ass with a red hot poker.",
+    "others_found":"$n bends $N over $S knee and rams a red hot poker up $s ass.",
+    "target_found":"$n grabs you, bends you across $S knee, and rapes you up the ass with a red hot poker....you feel so violated.",
+    "actor_auto":"You can find no one to defile....",
+    "others_auto":"$n crams a red hot poker up $S ass."
+}

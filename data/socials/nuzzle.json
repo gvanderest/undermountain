@@ -1,0 +1,10 @@
+{
+    "name":"nuzzle",
+    "actor_no_arg":"You twitch your nose, contemplating nuzzling someone in the room.",
+    "others_no_arg":"$n's nose twitches.  Maybe $e's thinking of nuzzling you.",
+    "actor_found_target":"You nuzzle $S neck softly.",
+    "others_found":"$n softly nuzzles $N's neck.",
+    "target_found":"$n softly nuzzles your neck.",
+    "actor_auto":"No.. they aren't here..",
+    "others_auto":"$n squirms around trying to nuzzle $mself.  Weirdo."
+}

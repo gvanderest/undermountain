@@ -1,0 +1,10 @@
+{
+    "name":"hump",
+    "actor_no_arg":"You look around for a leg to hump.",
+    "others_no_arg":"$n looks for a leg to hump.",
+    "actor_found_target":"You begin to hump $N's leg.",
+    "others_found":"$n gets on $s knees and begins to hump $N's leg.",
+    "target_found":"$n gets on $s knees and begins to hump your leg.",
+    "actor_auto":"Need a leg to hump?",
+    "others_auto":"$n somehow begins to hump $s own leg."
+}

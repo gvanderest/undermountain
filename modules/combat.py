@@ -94,7 +94,7 @@ class Battle(object):
                     noun, amount_text, target.name, amount))
             actor.act(
                 "{{c{}'s {}{{c {}{{c {}{{c! {{B-{{R={{C{}{{R={{B-{{x".format(
-                    actor.name, noun, amount_text, target.name, amount, exclude=target))
+                    actor.name, noun, amount_text, target.name, amount, exclude=target.name))
             target.echo(
                 "{{B{}'s {}{{B {}{{B you! {{B-{{R={{C{}{{R={{B-{{x".format(
                     actor.name, noun, amount_text, amount))

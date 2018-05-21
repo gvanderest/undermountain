@@ -1,0 +1,10 @@
+{
+    "name":"wince",
+    "actor_no_arg":"You wince in agony.",
+    "others_no_arg":"$n winces in agony.",
+    "actor_found_target":"You look at $N and wince at $S remark.",
+    "others_found":"$n winces at $N's remark.",
+    "target_found":"$n winces at your remark.",
+    "actor_auto":"$",
+    "others_auto":"$n winces at what $e just said."
+}

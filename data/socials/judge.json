@@ -1,0 +1,10 @@
+{
+    "name":"judge",
+    "actor_no_arg":"Yes, but who?",
+    "others_no_arg":"$",
+    "actor_found_target":"You judge $m on a scale of 1 to 10.",
+    "others_found":"On a scale from 1 to 10, $n thinks $N is a complete ZERO!!!",
+    "target_found":"$n judges your actions on a scale of 1 to 10 and comes up with ZERO!!!",
+    "actor_auto":"They aren't here right now.",
+    "others_auto":"$"
+}

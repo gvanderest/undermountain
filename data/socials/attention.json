@@ -1,0 +1,10 @@
+{
+    "name":"attention",
+    "actor_no_arg":"You cough loudly to get everyone's attention.",
+    "others_no_arg":"$n coughs really LOUDLY! Maybe $e wants your ATTENTION.",
+    "actor_found_target":"You cough loudly at $N to get $s attention.",
+    "others_found":"$n coughs loudly at $N, $e must want $s attention.",
+    "target_found":"$n coughs loudy at you. Maybe $e wants your ATTENTION!!!",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

@@ -1,0 +1,10 @@
+{
+    "name":"village",
+    "actor_no_arg":"All these idiots and you can't pick one who's around?",
+    "others_no_arg":"Every Village needs its Idiot.  Let us find Westbridge's.",
+    "actor_found_target":"What better candidate for Village Idiot than $N?",
+    "others_found":"Hark!  $n has decreed $N the official Westbridge Village Idiot!",
+    "target_found":"$n looks at you and hereby dubs thee the Official Village Idiot!",
+    "actor_auto":"Perhaps you need only look in the mirror to see the Village Idiot.",
+    "others_auto":"$n peers around, looking for the Village Idiot."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"accuse",
+    "actor_no_arg":"You look around for someone to accuse.",
+    "others_no_arg":"$n is in an accusing mood.",
+    "actor_found_target":"You look accusingly at $M.",
+    "others_found":"$n looks accusingly at $N.",
+    "target_found":"$n looks accusingly at you.",
+    "actor_auto":"Accuse somebody who's not even there ??",
+    "others_auto":"$n seems to have a bad conscience."
+}

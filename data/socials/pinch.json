@@ -1,0 +1,10 @@
+{
+    "name":"pinch",
+    "actor_no_arg":"You say, 'A pinch of this, and a dab of that.'",
+    "others_no_arg":"$n says, 'A pinch of this and a dab of that.'",
+    "actor_found_target":"You squeeze $S bottom and grin.",
+    "others_found":"$n pinches $N's bottom and grins.",
+    "target_found":"$n pinches your bottom and grins.",
+    "actor_auto":"You'd like to, wouldn't you?",
+    "others_auto":"$n pinches $mself to see if $e is dreaming!"
+}

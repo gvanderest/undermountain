@@ -1,0 +1,10 @@
+{
+    "name":"pant",
+    "actor_no_arg":"You pant lustily.",
+    "others_no_arg":"$n pants lustily.",
+    "actor_found_target":"You pant lustily at $M.",
+    "others_found":"$n looks at $N and pants lustily.",
+    "target_found":"$n looks at you and pants lustily...",
+    "actor_auto":"$",
+    "others_auto":"$n begins panting, flushed and seemingly hot and flustered."
+}

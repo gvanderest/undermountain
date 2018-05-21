@@ -1,0 +1,10 @@
+{
+    "name":"french",
+    "actor_no_arg":"You stick your tongue out, flicking in the air like some kind of pervert.",
+    "others_no_arg":"$n sticks $s tongue out and begins flicking it suggestively.",
+    "actor_found_target":"You give $N a long and passionate kiss, it seems to last forever...",
+    "others_found":"$n kisses $N passionately.",
+    "target_found":"$n gives you a long and passionate kiss, it seems to last forever...",
+    "actor_auto":"Your heart is filled with despair as that person is not here.",
+    "others_auto":"$n makes an attempt at kissing $mself."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"leer",
+    "actor_no_arg":"You peer around the room, leering like the pervert you are!",
+    "others_no_arg":"$n peers about, leering like a filthy pervert!",
+    "actor_found_target":"You leer at $N like the pervert you are.",
+    "others_found":"$n eyes $N up and down, leering like a filthy pervert!",
+    "target_found":"$n eyes you up and down, leering like a filthy pervert!",
+    "actor_auto":"You'll have to settle for memories -- that person isn't here.",
+    "others_auto":"$n leers at $mself shamelessly."
+}

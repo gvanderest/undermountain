@@ -1,0 +1,10 @@
+{
+    "name":"lightbulb",
+    "actor_no_arg":"*Ding!*  Inspiration!",
+    "others_no_arg":"A light bulb appears above $n's head!",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$n has just had a moment of self inspiration.  *clap clap*"
+}

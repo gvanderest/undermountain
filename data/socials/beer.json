@@ -1,0 +1,10 @@
+{
+    "name":"beer",
+    "actor_no_arg":"You pull out a six-pack.",
+    "others_no_arg":"$n starts to juggle a six-pack of beer.",
+    "actor_found_target":"You toss a bottle of beer at $N.",
+    "others_found":"$n tosses a bottle of beer at $N ... let's just hope $e'll catch it!",
+    "target_found":"$n tossed you a bottle of beer... I think $e wants something...",
+    "actor_auto":"The bottle crashes to the floor and shatters.",
+    "others_auto":"$n pops the top off a bottle of beer and downs it in one gulp."
+}

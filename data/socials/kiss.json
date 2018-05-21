@@ -1,0 +1,10 @@
+{
+    "name":"kiss",
+    "actor_no_arg":"Isn't there someone you want to kiss?",
+    "others_no_arg":"$n sticks out $s lips plaintively, hoping someone will plant a kiss on them.",
+    "actor_found_target":"You kiss $M.",
+    "others_found":"$n kisses $N.",
+    "target_found":"$n kisses you.",
+    "actor_auto":"Never around when required.",
+    "others_auto":"$n kisses $mself...apparently no one else wants to."
+}

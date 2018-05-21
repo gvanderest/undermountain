@@ -1,0 +1,10 @@
+{
+    "name":"yodel",
+    "actor_no_arg":"You think of Julie Andrews and start to yodel.",
+    "others_no_arg":"$n begins to yodel:  HEY!! CLERICS!! I COULD USE A HEAL!!!",
+    "actor_found_target":"$N covers $S ears as you begin to yodel.",
+    "others_found":"$n yodels to $N.",
+    "target_found":"$n yodels to you...you cringe and turn away.",
+    "actor_auto":"That person just escaped!",
+    "others_auto":"$n yodels to $mself.  What a sado-masochist."
+}

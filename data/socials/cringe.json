@@ -1,0 +1,10 @@
+{
+    "name":"cringe",
+    "actor_no_arg":"You cringe in terror.",
+    "others_no_arg":"$n cringes in terror!",
+    "actor_found_target":"You cringe away from $M.",
+    "others_found":"$n cringes away from $N in mortal terror.",
+    "target_found":"$n cringes away from you.",
+    "actor_auto":"I don't see anyone by that name here.. what are you afraid of?",
+    "others_auto":"$n cringes at what $e just did!"
+}

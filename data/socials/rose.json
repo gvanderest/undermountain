@@ -1,0 +1,10 @@
+{
+    "name":"rose",
+    "actor_no_arg":"You show everyone your {Y{y--{g'{y--{y,{y--{g{{{R@{x.",
+    "others_no_arg":"$n shows everyone $s {Y{y--{g'{y--{y,{y--{g{{{R@{x.",
+    "actor_found_target":"You give $M a pretty rose.",
+    "others_found":"$n hands $N a beautiful rose.",
+    "target_found":"$n hands you a beautiful {y--{g'{y--{y,{y--{g{{{R@{x",
+    "actor_auto":"They seem to have left.",
+    "others_auto":"$n gives $mself a rose, dont you feel sorry for $m?"
+}

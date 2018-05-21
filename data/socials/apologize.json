@@ -1,0 +1,10 @@
+{
+    "name":"apologize",
+    "actor_no_arg":"You apologize until you are blue in the face.",
+    "others_no_arg":"$n apologizes profusely.",
+    "actor_found_target":"You might as well apologize because $E sure as hell won't.",
+    "others_found":"$n apologizes to $N with a very sincere look on $s face.",
+    "target_found":"$n apologizes to you and begs for forgiveness.",
+    "actor_auto":"Who's that?",
+    "others_auto":"$"
+}

@@ -1,0 +1,10 @@
+{
+    "name":"silly",
+    "actor_no_arg":"You do the silly walk all around the room.",
+    "others_no_arg":"$n does the silly walk all around the room.  $e *is* silly.",
+    "actor_found_target":"You start acting silly at $N.",
+    "others_found":"$n starts acting silly to get the attention of $N.",
+    "target_found":"$n is being silly at you, though you're not sure whether to laugh or be annoyed.",
+    "actor_auto":"$",
+    "others_auto":"$n starts doing a silly dance right where $e stands!"
+}

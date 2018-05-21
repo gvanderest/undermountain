@@ -1,0 +1,10 @@
+{
+    "name":"wink",
+    "actor_no_arg":"Have you got something in your eye?",
+    "others_no_arg":"$n winks suggestively.",
+    "actor_found_target":"You wink suggestively at $N.",
+    "others_found":"$n winks at $N.",
+    "target_found":"$n winks suggestively at you.",
+    "actor_auto":"No one with that name is present.",
+    "others_auto":"$n winks at $mself - something strange is going on..."
+}

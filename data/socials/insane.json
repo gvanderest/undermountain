@@ -1,0 +1,10 @@
+{
+    "name":"insane",
+    "actor_no_arg":"You feel your sanity slipping away...",
+    "others_no_arg":"Before your eyes, $n's sanity is slipping away...",
+    "actor_found_target":"You give $N one crazy ass look!",
+    "others_found":"$",
+    "target_found":"$n stares at you with a look of insanity.",
+    "actor_auto":"$",
+    "others_auto":"$n looks at $s hands and cackles maniacally!"
+}

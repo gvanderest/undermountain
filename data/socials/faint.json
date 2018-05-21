@@ -1,0 +1,10 @@
+{
+    "name":"faint",
+    "actor_no_arg":"You faint.",
+    "others_no_arg":"$n faints.",
+    "actor_found_target":"You faint into $S arms.",
+    "others_found":"$n faints into $N's open arms.",
+    "target_found":"$n just fainted into YOUR arms.",
+    "actor_auto":"You fall on the floor and look stupid--really suave.",
+    "others_auto":"$n looks faint."
+}

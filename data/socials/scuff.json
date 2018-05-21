@@ -1,0 +1,10 @@
+{
+    "name":"scuff",
+    "actor_no_arg":"You scuff your foot sheepishly.",
+    "others_no_arg":"$n scuffs $s foot in the dirt, looking very sheepish.",
+    "actor_found_target":"You scuff your foot, avoiding $N's gaze.",
+    "others_found":"$n scuffs $s foot and shyly avoids $N's gaze.",
+    "target_found":"$n scuffs $s foot and shyly avoids your gaze.",
+    "actor_auto":"They aren't here.",
+    "others_auto":"$"
+}

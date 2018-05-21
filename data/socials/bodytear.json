@@ -1,0 +1,10 @@
+{
+    "name":"bodytear",
+    "actor_no_arg":"Who would you like to rip into two pieces?",
+    "others_no_arg":"$n head falls backwards, his eyes dull and drool flows from $s mouth, with this gurgling sound.",
+    "actor_found_target":"You grab $N by $S ears and with a yank, you rip $S body into two perfect pieces.",
+    "others_found":"$n grabs $N by the ears and tears their body into two pieces like a tissue.",
+    "target_found":"$n grabs you by the ears and you feel your body tear in half.",
+    "actor_auto":"That person isn't here to rip in two.",
+    "others_auto":"$n grabs $s own ears and rips his body in half."
+}

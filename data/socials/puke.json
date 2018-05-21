@@ -1,0 +1,10 @@
+{
+    "name":"puke",
+    "actor_no_arg":"You puke...chunks everywhere! YUCK!",
+    "others_no_arg":"$n pukes.",
+    "actor_found_target":"You puke on $M.",
+    "others_found":"$n pukes on $N.",
+    "target_found":"$n spews vomit and pukes all over your clothing!",
+    "actor_auto":"Once again?",
+    "others_auto":"$n pukes on $s clothes."
+}

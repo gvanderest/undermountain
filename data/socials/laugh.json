@@ -1,0 +1,10 @@
+{
+    "name":"laugh",
+    "actor_no_arg":"You fall down laughing.",
+    "others_no_arg":"$n falls down laughing.",
+    "actor_found_target":"You laugh at $N mercilessly.",
+    "others_found":"$n laughs at $N mercilessly.",
+    "target_found":"$n laughs at you mercilessly.  Hmmmmph.",
+    "actor_auto":"You can't find the butt of your joke.",
+    "others_auto":"$n laughs at $mself.  Let's all join in!!!"
+}

@@ -1,0 +1,10 @@
+{
+    "name":"sneeze",
+    "actor_no_arg":"Gesundheit !",
+    "others_no_arg":"$n sneezes.",
+    "actor_found_target":"You sneeze all over $N.  How disgusting!",
+    "others_found":"Without warning, $n sneezes all over $N. Yikes!",
+    "target_found":"$n suddenly sneezes on you!  Ewww!",
+    "actor_auto":"$",
+    "others_auto":"$n holds $s hand over $s nose and mouth and sneezes."
+}

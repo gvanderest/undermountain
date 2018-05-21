@@ -1,0 +1,10 @@
+{
+    "name":"propose",
+    "actor_no_arg":"You propose to everyone in the room.",
+    "others_no_arg":"$n proposes to everyone in the room.  Very odd.",
+    "actor_found_target":"You kneel and romantically propose to $N.",
+    "others_found":"$n gets on one knee and proposes to $N.",
+    "target_found":"$n gets down on one knee and romantically proposes to you.",
+    "actor_auto":"You must be lonely.  They aren't here.",
+    "others_auto":"$n proposes to $mself -- how narcissistic!"
+}

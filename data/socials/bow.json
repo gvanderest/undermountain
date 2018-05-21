@@ -1,0 +1,10 @@
+{
+    "name":"bow",
+    "actor_no_arg":"You bow deeply.",
+    "others_no_arg":"$n bows deeply.",
+    "actor_found_target":"You bow before $M.",
+    "others_found":"$n bows before $N.",
+    "target_found":"$n bows before you.",
+    "actor_auto":"Who's that?",
+    "others_auto":"$n folds up like a jacknife and kisses $s own toes."
+}

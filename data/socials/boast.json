@@ -1,0 +1,10 @@
+{
+    "name":"boast",
+    "actor_no_arg":"You boast loudly of all your amazing accomplishments.",
+    "others_no_arg":"$n boasts loudly in a pigheaded fashion.",
+    "actor_found_target":"You boast to $N of all your great deeds.",
+    "others_found":"$n boasts to $N.",
+    "target_found":"Once again, $n boasts to you, what a bloated ego!",
+    "actor_auto":"Your ego takes a blow.  They've already left.",
+    "others_auto":"$n boasts to $mself -- what an ego!"
+}

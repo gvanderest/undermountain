@@ -1,0 +1,10 @@
+{
+    "name":"sage",
+    "actor_no_arg":"You nod sagely.",
+    "others_no_arg":"$n nods sagely.",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

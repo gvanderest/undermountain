@@ -1,0 +1,10 @@
+{
+    "name":"roll",
+    "actor_no_arg":"You roll your eyes in disgust.",
+    "others_no_arg":"$n rolls $s eyes, disgusted.",
+    "actor_found_target":"You look at $N and roll your eyes in disgust.",
+    "others_found":"$n rolls $s eyes in disgust at $N.",
+    "target_found":"$n rolls $s eyes at you.",
+    "actor_auto":"You should be disgusted with yourself because you look so foolish.",
+    "others_auto":"$n rolls $s eyes at what $e just did."
+}
