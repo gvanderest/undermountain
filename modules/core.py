@@ -4,6 +4,7 @@ from mud.collection import Collection, Entity, FileStorage
 from mud.inject import inject
 from utils.ansi import pad_right, stop_color_bleed
 from utils.hash import get_random_hash
+from utils.tablefy import tablefy
 from mud.timer_manager import TimerManager
 
 import gevent
@@ -153,6 +154,12 @@ def open_command(self, args, Directions, **kwargs):
     exit.save()
 
     self.echo("You open the {}.".format(exit.get("name", "door")))
+
+
+def commands_command(self, **kw):
+    """List all commands."""
+    commands = sorted(self.game.commands.keys())
+    self.echo(tablefy(commands))
 
 
 @inject("Directions")
@@ -1513,6 +1520,7 @@ class CoreModule(Module):
         self.game.register_command("open", open_command)
         self.game.register_command("close", close_command)
         self.game.register_command("sockets", sockets_command)
+        self.game.register_command("commands", commands_command)
 
         self.game.register_manager(TickManager)
 
