@@ -5,6 +5,7 @@ from mud.inject import inject
 from utils.ansi import pad_right, stop_color_bleed
 from utils.hash import get_random_hash
 from mud.timer_manager import TimerManager
+from settings import STATS
 
 import gevent
 import settings
@@ -915,7 +916,14 @@ class ActorStat(object):
 
     @property
     def bonus(self):
-        return 0
+        """Calculate bonus from equipment, race, etc."""
+        total = 0
+
+        # Detect derived bonus function
+        func = STATS[self.id].get("func", None)
+        total += func(self.actor) if func else 0
+
+        return total
 
     @property
     def total(self):
