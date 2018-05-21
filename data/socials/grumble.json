@@ -1,0 +1,10 @@
+{
+    "name":"grumble",
+    "actor_no_arg":"You grumble distractedly to yourself",
+    "others_no_arg":"$n grumbles and growls. You wonder what's wrong...",
+    "actor_found_target":"You grumble at $N, disgusted with $S presence.",
+    "others_found":"$n seems to be a grumpy bear... $e is grumbling at poor $N.",
+    "target_found":"$n is grumbling at you... what'd you do?",
+    "actor_auto":"That person is presently AWOL.",
+    "others_auto":"$"
+}

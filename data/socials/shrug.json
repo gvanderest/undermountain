@@ -1,0 +1,10 @@
+{
+    "name":"shrug",
+    "actor_no_arg":"You shrug.",
+    "others_no_arg":"$n shrugs helplessly.",
+    "actor_found_target":"You shrug in response to $S question.",
+    "others_found":"$n shrugs in response to $N's question.",
+    "target_found":"$n shrugs in response to your question.",
+    "actor_auto":"You shrug to no one in particular.",
+    "others_auto":"$n shrugs to $mself.  What a strange person."
+}

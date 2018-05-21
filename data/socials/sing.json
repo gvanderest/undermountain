@@ -1,0 +1,10 @@
+{
+    "name":"sing",
+    "actor_no_arg":"You raise your clear (?) voice towards the sky.",
+    "others_no_arg":"HEY CLERICS! I COULD USE A HEAL!  $n has begun to sing.",
+    "actor_found_target":"You sing a ballad to $M.",
+    "others_found":"$n sings a ballad to $N.",
+    "target_found":"$n sings a ballad to you!  How sweet!",
+    "actor_auto":"You see no one to sing to.",
+    "others_auto":"$n sings a little ditty to $mself."
+}

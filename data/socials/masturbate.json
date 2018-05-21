@@ -1,0 +1,10 @@
+{
+    "name":"masturbate",
+    "actor_no_arg":"You reach into your pants and begin beating off wildly.",
+    "others_no_arg":"$n whips out $s cock and begins beating off.",
+    "actor_found_target":"You beat off all over $N.",
+    "others_found":"$n whips out $S cock and beats off all over $N.",
+    "target_found":"$n whips out $S cock and beats off all over you.",
+    "actor_auto":"What the fuck is wrong with you...sicko motherfucker",
+    "others_auto":"$n whips out $s cock and spews all over $s leg."
+}

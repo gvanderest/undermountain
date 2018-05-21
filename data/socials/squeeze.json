@@ -1,0 +1,10 @@
+{
+    "name":"squeeze",
+    "actor_no_arg":"You look for someone, or something, to squeeze.",
+    "others_no_arg":"$n looks around for someone to squeeze.",
+    "actor_found_target":"You squeeze $M fondly.",
+    "others_found":"$n squeezes $N fondly.",
+    "target_found":"$n squeezes you fondly.",
+    "actor_auto":"Where, what, how, WHO ???",
+    "others_auto":"$n squeezes $mself."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"rofl",
+    "actor_no_arg":"You roll on the floor, laughing hysterically.",
+    "others_no_arg":"$n falls to the ground and rolls around laughing hysterically.",
+    "actor_found_target":"You fall to the floor laughing at $N's remark.",
+    "others_found":"$n rolls on the floor laughing at $N's antics!",
+    "target_found":"$n rolls on the floor laughing at your antics!",
+    "actor_auto":"$",
+    "others_auto":"$n falls over laughing at $e own antics."
+}

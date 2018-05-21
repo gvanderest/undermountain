@@ -1,0 +1,10 @@
+{
+    "name":"puff",
+    "actor_no_arg":"You mimic Puff at her most annoying.",
+    "others_no_arg":"$n says, \"Did you know that I'm written in C?\"",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

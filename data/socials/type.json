@@ -1,0 +1,10 @@
+{
+    "name":"type",
+    "actor_no_arg":"You can't type for crap tonight!  You give up in frustration!",
+    "others_no_arg":"$n throws $s hands up in disgust at $s lousy typing skills!",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

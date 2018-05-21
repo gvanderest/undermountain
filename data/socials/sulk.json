@@ -1,0 +1,10 @@
+{
+    "name":"sulk",
+    "actor_no_arg":"You sulk.",
+    "others_no_arg":"$n sulks in the corner.",
+    "actor_found_target":"You sulk at what $N has done.",
+    "others_found":"$n sulks in the corner away from $N.",
+    "target_found":"$n sulks because of you...you jerk.",
+    "actor_auto":"Don't sulk at someone who isn't here.",
+    "others_auto":"$n sulks at $mself, can't $e get anything right?"
+}

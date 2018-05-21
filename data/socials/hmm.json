@@ -1,0 +1,10 @@
+{
+    "name":"hmm",
+    "actor_no_arg":"You hmm quietly.",
+    "others_no_arg":"$n hmms quietly.",
+    "actor_found_target":"You hmm at $N.",
+    "others_found":"$n hmms at $N.",
+    "target_found":"$n hmms at you.",
+    "actor_auto":"$",
+    "others_auto":"$n hmms at $mself, seeming puzzled."
+}

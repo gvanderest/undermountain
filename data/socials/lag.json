@@ -1,0 +1,10 @@
+{
+    "name":"lag",
+    "actor_no_arg":"Yes, yes.",
+    "others_no_arg":"$n is   m o v i n g      v  e    ry  sl  o w   l   y ...",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

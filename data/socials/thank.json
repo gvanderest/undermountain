@@ -1,0 +1,10 @@
+{
+    "name":"thank",
+    "actor_no_arg":"Thank you too.",
+    "others_no_arg":"$n thanks everyone.",
+    "actor_found_target":"You thank $N heartily.",
+    "others_found":"$n thanks $N heartily.",
+    "target_found":"$n thanks you heartily.",
+    "actor_auto":"No one answers to that name here.",
+    "others_auto":"$n thanks $mself since you won't."
+}

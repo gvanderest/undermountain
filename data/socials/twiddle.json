@@ -1,0 +1,10 @@
+{
+    "name":"twiddle",
+    "actor_no_arg":"You patiently twiddle your thumbs.",
+    "others_no_arg":"$n patiently twiddles $s thumbs.",
+    "actor_found_target":"You twiddle $S ears.",
+    "others_found":"$n twiddles $N's ears.",
+    "target_found":"$n twiddles your ears.",
+    "actor_auto":"You don't see the person here.",
+    "others_auto":"$n begins twiddling $s ears like an elephant."
+}

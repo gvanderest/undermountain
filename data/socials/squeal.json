@@ -1,0 +1,10 @@
+{
+    "name":"squeal",
+    "actor_no_arg":"You squeal with delight!",
+    "others_no_arg":"$n lets out a sudden squeal of delight!",
+    "actor_found_target":"You look at $N and squeal with delight!",
+    "others_found":"$n squeals with delight at $N.",
+    "target_found":"$n looks at you and squeals with delight!",
+    "actor_auto":"$",
+    "others_auto":"$n pretends $e is a pig and starts squealing and rooting around for truffles."
+}

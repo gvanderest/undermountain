@@ -1,0 +1,10 @@
+{
+    "name":"applaud",
+    "actor_no_arg":"Clap, clap, clap.",
+    "others_no_arg":"$n gives a round of applause.",
+    "actor_found_target":"You clap at $N's actions.",
+    "others_found":"$n claps at $N's actions.",
+    "target_found":"$n gives you a round of applause.  You MUST'VE done something good!",
+    "actor_auto":"You give your imaginary round of applause to your imaginary friend.",
+    "others_auto":"$n applauds at $mself.  Boy, are we conceited!"
+}

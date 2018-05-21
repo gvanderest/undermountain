@@ -1,0 +1,10 @@
+{
+    "name":"charge",
+    "actor_no_arg":"You charge into the fray!",
+    "others_no_arg":"$n charges into the fray!  All guts, no brains.",
+    "actor_found_target":"With surprising dexterity, you head-butt $N!",
+    "others_found":"$n ducks down low, charges forward, and head-butts $N!",
+    "target_found":"OOF!  $n rammed $s head into your stomach!  That HURT.",
+    "actor_auto":"Nobody 'round with that name, Mister!",
+    "others_auto":"$n bends down, points two fingers out from $s head, and begins running around in circles."
+}

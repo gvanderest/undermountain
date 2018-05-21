@@ -1,0 +1,10 @@
+{
+    "name":"giggle",
+    "actor_no_arg":"You giggle.",
+    "others_no_arg":"$n giggles.",
+    "actor_found_target":"You giggle in $S presence.",
+    "others_found":"$n giggles at $N's actions.",
+    "target_found":"$n giggles at you.  Hope it's not contagious!",
+    "actor_auto":"You giggle by yourself, since you can't find a partner to giggle with.",
+    "others_auto":"$n giggles at $mself, $e must be nervous or something."
+}

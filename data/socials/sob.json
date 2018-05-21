@@ -1,0 +1,10 @@
+{
+    "name":"sob",
+    "actor_no_arg":"You sob quietly to yourself.",
+    "others_no_arg":"$n sobs in misery.",
+    "actor_found_target":"You sob quietly to yourself because $N has hurt your feelings so badly.",
+    "others_found":"$n sobs quietly to $mself because $N was a jerk!",
+    "target_found":"You feel like a cad because you've made $n sob.",
+    "actor_auto":"$",
+    "others_auto":"$n starts to sob."
+}

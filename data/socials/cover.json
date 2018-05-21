@@ -1,0 +1,10 @@
+{
+    "name":"cover",
+    "actor_no_arg":"You cover your ears to protect them from the noise.",
+    "others_no_arg":"$n covers $s ears to protect $mself from all the noise.",
+    "actor_found_target":"You glare at $N and cover your ears.",
+    "others_found":"$n glares at $N and covers $s ears.",
+    "target_found":"$n covers $s ears because of you... you are TOO LOUD!",
+    "actor_auto":"They aren't here right now.",
+    "others_auto":"$n attempts to cover $mself.  You wonder why."
+}

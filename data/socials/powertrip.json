@@ -1,0 +1,10 @@
+{
+    "name":"powertrip",
+    "actor_no_arg":"You scream 'The PPppppPOOOOoooWWWwwwErrRRR!' and writhe.",
+    "others_no_arg":"$n writhes, screaming 'The PPppppPOOOOoooWWWwwwErrRRR!'",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

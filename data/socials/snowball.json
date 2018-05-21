@@ -1,0 +1,10 @@
+{
+    "name":"snowball",
+    "actor_no_arg":"You look around for snow to make a snowball with.",
+    "others_no_arg":"$n looks around for some snow to pack a snowball with.",
+    "actor_found_target":"You throw a snowball in $N's face.",
+    "others_found":"$n conjures a snowball from the thin air and throws it at $N.",
+    "target_found":"$n conjures a snowball from the thin air and throws it at you.",
+    "actor_auto":"You stand with the snowball in your hand because your victim is not here.",
+    "others_auto":"$n conjures a snowball out of the thin air and throws it at $mself."
+}

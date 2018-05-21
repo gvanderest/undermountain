@@ -1,0 +1,10 @@
+{
+    "name":"mischievous",
+    "actor_no_arg":"You give a mischievous smile at the trouble you have in mind.",
+    "others_no_arg":"$n grins mischievously at a nasty idea.",
+    "actor_found_target":"You grin mischievously at $M, thinking an evil thought.",
+    "others_found":"$n grins mischievously at $N.  $m must be thinking something evil.",
+    "target_found":"$n grins mischievously at you.  You inch toward the door.",
+    "actor_auto":"You must be delirious.",
+    "others_auto":"$n grins mischievously to $mself."
+}

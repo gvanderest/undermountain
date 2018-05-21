@@ -1,0 +1,10 @@
+{
+    "name":"flash",
+    "actor_no_arg":"You grin and strut as you open your coat and show what you've got!",
+    "others_no_arg":"$n rips $s clothes off and parades naked around the room!",
+    "actor_found_target":"Swiftly you jerk open your jacket, trying to get $M to notice you.",
+    "others_found":"Cover your eyes, $n is exposing $mself to $n!  EWWWW!",
+    "target_found":"You gasp!  $n has just revealed $s \"equipment\" to you!",
+    "actor_auto":"Exhibitionist, that person isn't here!",
+    "others_auto":"PERVERT PRESENT!  $n is trying to flash $mself"
+}

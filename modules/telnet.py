@@ -225,7 +225,7 @@ class TelnetClient(Client):
 
     def start_verify_name(self):
         self.write("""
-{{B+{{b------------------------{{B[ {{CWelcome to Waterdeep {{B]{{b\
+{{B+{{b------------------------{{B[ {{CWelcome to Bitterwoods {{B]{{b\
 -------------------------{{B+{{x
 
   We are a roleplaying -encouraged- mud, meaning roleplaying is not
@@ -303,8 +303,7 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
 
         output += """
 
-+-------------------------------------------------------------------------+
-Telnarius
+{B+-------------------------------------------------------------------------+
 Please choose a race, or HELP (Name of Race) for more info: """
         self.write(output)
 

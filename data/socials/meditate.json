@@ -1,0 +1,10 @@
+{
+    "name":"meditate",
+    "actor_no_arg":"You assume a very comfortable position and begin to meditate.",
+    "others_no_arg":"$n rests and begins to meditate... $e chants softly to $mself.",
+    "actor_found_target":"You meditate on the concept of $N.",
+    "others_found":"$n looks at $N and begins to meditate on the concept of $Nism.",
+    "target_found":"$n looks towards you and begins to meditate.  Scary...",
+    "actor_auto":"$",
+    "others_auto":"$n sits down and begins to meditate.  You are somewhat annoyed by $s continuous humming."
+}

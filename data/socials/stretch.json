@@ -1,0 +1,10 @@
+{
+    "name":"stretch",
+    "actor_no_arg":"You lean back and streeeeeettch your arms and legs.",
+    "others_no_arg":"$n stretches luxuriously.  Kinda makes you want to doesn't it?",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

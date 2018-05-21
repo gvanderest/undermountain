@@ -1,0 +1,10 @@
+{
+    "name":"lick",
+    "actor_no_arg":"You lick your mouth and smile.",
+    "others_no_arg":"$n licks $s mouth and smiles.",
+    "actor_found_target":"You lick $N's jawline delicately.",
+    "others_found":"$n licks $N's jawline delicately.",
+    "target_found":"$n licks your jawline delicately.",
+    "actor_auto":"Lick away, nobody's here with that name.",
+    "others_auto":"$n licks $s own eyebrows."
+}

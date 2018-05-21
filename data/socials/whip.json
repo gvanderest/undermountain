@@ -1,0 +1,10 @@
+{
+    "name":"whip",
+    "actor_no_arg":"You crack your bullwhip menacingly.",
+    "others_no_arg":"$n cracks a bullwhip menacingly.",
+    "actor_found_target":"You flick your whip across $M bare back.",
+    "others_found":"$n flicks $s whip across $N's bare back.",
+    "target_found":"$n flicks a whip across your back... the pain.. the pleasure..",
+    "actor_auto":"Sorry, friend, I can't see that person here.",
+    "others_auto":"$n whips $mself into a frenzy."
+}

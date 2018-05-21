@@ -1,0 +1,10 @@
+{
+    "name":"doh",
+    "actor_no_arg":"You realize your mistake and slap yourself in the head and yell {%D{!O{^H{$!{x",
+    "others_no_arg":"$n just realized their mistake and screams {%D{!O{^H{$!{x",
+    "actor_found_target":"You {%D{!O{^H{$!{x at $N for their stupid mistake.",
+    "others_found":"$n just gave $N a {%D{!O{^H{$!{x for their stupidity!",
+    "target_found":"$n screams '{%D{!O{^H{$!{x' at you.",
+    "actor_auto":"ah...nevermind",
+    "others_auto":"$n has yelled {%D{!O{^H{$!{x at themselves. Psycho Much?"
+}

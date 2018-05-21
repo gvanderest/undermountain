@@ -1,0 +1,10 @@
+{
+    "name":"cry",
+    "actor_no_arg":"Waaaaah..",
+    "others_no_arg":"$n bursts into tears.",
+    "actor_found_target":"You cry on $S shoulder.",
+    "others_found":"$n cries on $N's shoulder.",
+    "target_found":"$n cries on your shoulder.",
+    "actor_auto":"Who's that?",
+    "others_auto":"$n sobs quietly to $mself."
+}

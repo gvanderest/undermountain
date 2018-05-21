@@ -1,0 +1,10 @@
+{
+    "name":"bonk",
+    "actor_no_arg":"***BONK!!!***",
+    "others_no_arg":"$",
+    "actor_found_target":"You bonk $N on the head for being such a moron.",
+    "others_found":"$n bonks $N on the head for being such an UTTER moron.",
+    "target_found":"$n bonks you on the head for being so foolish.",
+    "actor_auto":"***BONK*** they left...",
+    "others_auto":"$n bonks $mself and grimaces in pain."
+}

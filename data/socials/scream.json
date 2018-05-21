@@ -1,0 +1,10 @@
+{
+    "name":"scream",
+    "actor_no_arg":"ARRRRRRRRRRGH!!!!!",
+    "others_no_arg":"$n screams loudly!",
+    "actor_found_target":"ARRRRRRRRRRGH!  Yes, it MUST have been $s fault!",
+    "others_found":"$n screams loudly at $N.  Better leave before $n blames you, too!",
+    "target_found":"$n screams at you!  That's not nice!  *sniff*",
+    "actor_auto":"Your lungs can't reach that far!",
+    "others_auto":"$n screams loudly at $mself!  Is there a full moon up?"
+}

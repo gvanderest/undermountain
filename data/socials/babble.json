@@ -1,0 +1,10 @@
+{
+    "name":"babble",
+    "actor_no_arg":"You babble endlessly.",
+    "others_no_arg":"$n babbles endlessly, won't $e EVER shut up?",
+    "actor_found_target":"You babble to $N for hours on end.",
+    "others_found":"$n babbles to $N for what seems an eternity, how can $N stand it?",
+    "target_found":"$n babbles at you. You nod mechanically, hoping $e will shut up soon.",
+    "actor_auto":"Whom do you wish to annoy with your babble?",
+    "others_auto":"$n babbles quietly to $mself."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"claw",
+    "actor_no_arg":"You tighten your hands into a fist.",
+    "others_no_arg":"$n clenches $s fists until blood drips from them...",
+    "actor_found_target":"You claw $S eyes out... GROSS!",
+    "others_found":"$n buries $s nails in $N's eyes ... OH GOD, THE BLOOD!",
+    "target_found":"$n buries $s nails in your eyes and you are blinded by your own blood!",
+    "actor_auto":"They aren't here to claw.",
+    "others_auto":"$n rips $mself to shreds with $s fingernails!"
+}

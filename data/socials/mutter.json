@@ -1,0 +1,10 @@
+{
+    "name":"mutter",
+    "actor_no_arg":"You mutter quietly to yourself.",
+    "others_no_arg":"$n mutters something quietly to $mself.",
+    "actor_found_target":"You mutter something to $N.",
+    "others_found":"$n looks at $N and mutters something nasty under $s breath.",
+    "target_found":"$n looks at you and mutters something nasty under $s breath.",
+    "actor_auto":"There's nothing left for you to say, they've left!",
+    "others_auto":"$n mutters something quietly to $mself."
+}

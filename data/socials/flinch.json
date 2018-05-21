@@ -1,0 +1,10 @@
+{
+    "name":"flinch",
+    "actor_no_arg":"EEEK... You flinch in obvious pain.",
+    "others_no_arg":"$n flinches in obvious pain... you wonder what $e did THIS time.",
+    "actor_found_target":"You flinch in response to $N's disdain.",
+    "others_found":"$n sneaks a glance at $N and flinches.",
+    "target_found":"$n flinches in response to your cold rebuke.",
+    "actor_auto":"Relax, $E is gone.",
+    "others_auto":"$n twitches violently, shocked at $s own behavior."
+}

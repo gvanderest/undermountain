@@ -1,0 +1,10 @@
+{
+    "name":"duck",
+    "actor_no_arg":"DUCK!!!!",
+    "others_no_arg":"$n ducks defensively.",
+    "actor_found_target":"You duck defensively, anticipating the oncoming swipe from $N.",
+    "others_found":"$n ducks, anticipating $N's reaction.",
+    "target_found":"$n ducks, please oh please don't hit $m!",
+    "actor_auto":"$",
+    "others_auto":"$n ducks suddenly!"
+}

@@ -1,0 +1,10 @@
+{
+    "name":"shudder",
+    "actor_no_arg":"You shudder at the horror and repress tears.",
+    "others_no_arg":"$n shudders at the horror and represses $s tears.",
+    "actor_found_target":"You shudder at the horror that is $N.",
+    "others_found":"$n shudders in fear at the sight of $N.",
+    "target_found":"$n shudders at the sight of you.  You have that effect on people.",
+    "actor_auto":"$",
+    "others_auto":"$n begins to shudder into convulsions.  Does $e need help?"
+}

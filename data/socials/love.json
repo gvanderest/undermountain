@@ -1,0 +1,10 @@
+{
+    "name":"love",
+    "actor_no_arg":"You love the whole world.",
+    "others_no_arg":"$n loves everybody in the world.",
+    "actor_found_target":"You tell your true feelings to $N.",
+    "others_found":"$n whispers softly to $N.",
+    "target_found":"$n whispers to you sweet words of love.",
+    "actor_auto":"Alas, your love is not present...",
+    "others_auto":"$n loves $mself, can you believe it ?"
+}

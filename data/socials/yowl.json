@@ -1,0 +1,10 @@
+{
+    "name":"yowl",
+    "actor_no_arg":"You yowl in frustration.",
+    "others_no_arg":"$n yowls in frustration!",
+    "actor_found_target":"You yowl in frustration at $N.",
+    "others_found":"$n yowls in frustration at $N.",
+    "target_found":"$n yowls in frustration at you.",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

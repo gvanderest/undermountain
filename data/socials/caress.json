@@ -1,0 +1,10 @@
+{
+    "name":"caress",
+    "actor_no_arg":"Who do you wish to caress?",
+    "others_no_arg":"$n looks for someone to caress.",
+    "actor_found_target":"You tenderly caress $M.",
+    "others_found":"$n tenderly caresses $N.",
+    "target_found":"$n tenderly caresses your body.",
+    "actor_auto":"You're S.O.L., buddy.",
+    "others_auto":"$n wraps $s arms around $M and begins caressing $mself."
+}

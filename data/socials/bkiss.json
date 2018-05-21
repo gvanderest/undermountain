@@ -1,0 +1,10 @@
+{
+    "name":"bkiss",
+    "actor_no_arg":"You blow kisses to the air.",
+    "others_no_arg":"$n blows kisses at no one in particular.",
+    "actor_found_target":"You blow a kiss at $N and wonder if $E will catch it.",
+    "others_found":"$n blows a kiss at $N ... isn't $e so CUTE?",
+    "target_found":"$n blows a kiss at you and hopes you'll blow one back at $m.",
+    "actor_auto":"You kiss falls to the ground with no one to go to.",
+    "others_auto":"$n blows a kiss to $mself, obviously very in love."
+}

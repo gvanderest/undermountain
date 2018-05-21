@@ -1,0 +1,10 @@
+{
+    "name":"fool",
+    "actor_no_arg":"Fools, fools everywhere!  Look at them all!",
+    "others_no_arg":"$n calls everyone a flaming fool!",
+    "actor_found_target":"You call $N a fool and everyone joins, chanting Fool! Fool!",
+    "others_found":"$n calls $N a fool and everyone joins, chanting Fool!  Fool!  Join in!",
+    "target_found":"$n calls you a fool and everyone is laughing & pointing & chanting Fool!  Fool!",
+    "actor_auto":"There is no such fool to be found.",
+    "others_auto":"$n calls themself a fool.  How sad yet accurate."
+}

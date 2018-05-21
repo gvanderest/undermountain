@@ -1,0 +1,10 @@
+{
+    "name":"dance",
+    "actor_no_arg":"Feels silly, doesn't it?",
+    "others_no_arg":"$n dances wildly before you!",
+    "actor_found_target":"You lead $M to the dancefloor.",
+    "others_found":"$n sends $N across the dancefloor.",
+    "target_found":"$n sends you across the dancefloor.",
+    "actor_auto":"Eh, WHO?",
+    "others_auto":"$n skips a light Fandango."
+}

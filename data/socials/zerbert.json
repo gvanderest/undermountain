@@ -1,0 +1,10 @@
+{
+    "name":"zerbert",
+    "actor_no_arg":"Gotta zerbert SOMEBODY.",
+    "others_no_arg":"$",
+    "actor_found_target":"You lift $N's shirt and blow loudly into $S navel!",
+    "others_found":"$n lifts $N's shirt and blows loudly into $S navel!",
+    "target_found":"Yeek!  $n lifts your shirt and blows loudly into your navel!",
+    "actor_auto":"You missed.",
+    "others_auto":"$n looks around furtively, and then bends over and blows loudly into $s own navel!"
+}

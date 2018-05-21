@@ -1,0 +1,10 @@
+{
+    "name":"discodance",
+    "actor_no_arg":"Groovy!",
+    "others_no_arg":"$n discos wildly!",
+    "actor_found_target":"You grab $N and disco wildly!  Groovy!",
+    "others_found":"$n grabs $N and does $m best Travolta!",
+    "target_found":"$n grabs you and does $m best Travolta!",
+    "actor_auto":"It's okay, you can disco solo too.",
+    "others_auto":"$n busts a move out on the dance floor with a disco rendition!"
+}

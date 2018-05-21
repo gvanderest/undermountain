@@ -1,0 +1,10 @@
+{
+    "name":"eyebrow",
+    "actor_no_arg":"You raise an eyebrow at the notion.",
+    "others_no_arg":"$n raises an eyebrow.",
+    "actor_found_target":"You raise your eyebrow at $N.",
+    "others_found":"$n raises an eyebrow at $N's weird actions.",
+    "target_found":"$n raises an eyebrow at you.",
+    "actor_auto":"Forget it.  They aren't here.",
+    "others_auto":"$n furls his eyebrows, seemingly dissatisfied."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"support",
+    "actor_no_arg":"You fully support the plan.",
+    "others_no_arg":"$n fully supports the plan.",
+    "actor_found_target":"You hug $M supportively and smile.",
+    "others_found":"$n hugs $N supportively and smiles.",
+    "target_found":"$n hugs you supportively and smiles.",
+    "actor_auto":"Sorry, friend, I can't see that person here.",
+    "others_auto":"$n hugs $mself sadly.  Perhaps you could help?"
+}

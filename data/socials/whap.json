@@ -1,0 +1,10 @@
+{
+    "name":"whap",
+    "actor_no_arg":"You look around for an idiot to whap.",
+    "others_no_arg":"$n lifts $s hand up, searching for someone to whap upside the head.",
+    "actor_found_target":"You whap $N upside the head!",
+    "others_found":"With a resounding WHAP!, $n reprimands $N.",
+    "target_found":"HEY!  $n whaps you upside the head!",
+    "actor_auto":"Whiff...",
+    "others_auto":"Biff!  $n whaps $mself upside the head!"
+}

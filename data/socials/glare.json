@@ -1,0 +1,10 @@
+{
+    "name":"glare",
+    "actor_no_arg":"You glare at nothing in particular.",
+    "others_no_arg":"$n glares around $m.",
+    "actor_found_target":"You glare {Cicily{x at $M.",
+    "others_found":"$n glares at $N.",
+    "target_found":"$n glares {Cicily{x at you, you feel cold to your bones.",
+    "actor_auto":"You try to glare at somebody who is not present.",
+    "others_auto":"$n glares at $s feet, what is bothering $m?"
+}

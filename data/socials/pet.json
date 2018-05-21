@@ -1,0 +1,10 @@
+{
+    "name":"pet",
+    "actor_no_arg":"You rub your hands through your own hair.",
+    "others_no_arg":"$n begins to run his fingers through his hair.",
+    "actor_found_target":"You begin to run your hands through $N's hair.",
+    "others_found":"$n begins to pet $N.",
+    "target_found":"$n begins to run there hands through your hair.",
+    "actor_auto":"You look for something to pet.",
+    "others_auto":"$n looks like he wants to pet some cheese."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"snicker",
+    "actor_no_arg":"You snicker softly.",
+    "others_no_arg":"$n snickers softly.",
+    "actor_found_target":"You snicker with $M about your shared secret.",
+    "others_found":"$n snickers with $N about their shared secret.",
+    "target_found":"$n snickers with you about your shared secret.",
+    "actor_auto":"Huh?",
+    "others_auto":"$n snickers at $s own evil thoughts."
+}

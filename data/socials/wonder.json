@@ -1,0 +1,10 @@
+{
+    "name":"wonder",
+    "actor_no_arg":"You wonder about how things could have been.",
+    "others_no_arg":"$n gets a blank stare on $s face.  What could $e be wondering about?",
+    "actor_found_target":"You look at $N and wonder what will happen.",
+    "others_found":"$n looks at $N and wonders....",
+    "target_found":"$n looks at you quizzically.",
+    "actor_auto":"You wonder what would have happened had they been here.",
+    "others_auto":"A blank stare crosses $n's face.  What could $e be wondering about?"
+}

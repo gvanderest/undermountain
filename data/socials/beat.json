@@ -1,0 +1,10 @@
+{
+    "name":"beat",
+    "actor_no_arg":"In a fit of rage, you begin savagely beating your head against the wall.",
+    "others_no_arg":"$n begins beating $s head against the wall, seeming a little angry.",
+    "actor_found_target":"Why is $N so stupid? You start beating your head against the wall hoping for an answer.",
+    "others_found":"$n begins beating $s head against the wall, hoping for unconsciousness to escape $N's stupidity.",
+    "target_found":"You seem to have confused $n, as $e starts beating $s head against the wall savagely.",
+    "actor_auto":"What, did they get to you so bad you're still beating your head when they're gone?",
+    "others_auto":"$n begins to beat $mself in the head brutally. You back away slowly."
+}

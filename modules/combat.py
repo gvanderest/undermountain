@@ -32,46 +32,46 @@ class Battle(object):
         if event.blocked:
             return
 
-        target = next(actor.targets)
+        for target in actor.targets:
 
-        for i in range(3):
-            self.attempt_hit(actor, target)
+            for i in range(3):
+                self.attempt_hit(actor, target)
 
-            if target.stats.hp.base > 0:
-                continue
+                if target.stats.hp.base > 0:
+                    continue
 
-            event = target.emit("before:death")
-            if event.blocked:
-                target.stats.hp.base = 0
-                continue
+                event = target.emit("before:death")
+                if event.blocked:
+                    target.stats.hp.base = 0
+                    continue
 
-            target.act("{{c{}{{c is {{CDEAD{{c!{{x".format(target.name))
-            target.echo("You have been {RKILLED{x!")
+                target.act("{{c{}{{c is {{CDEAD{{c!{{x".format(target.name))
+                target.echo("You have been {RKILLED{x!")
 
-            experience = randint(200, 300)
-            actor.gain_experience(experience)
+                experience = randint(200, 300)
+                actor.gain_experience(experience)
 
-            target.act("You hear {self.name}{x's death cry.")
-            actor.echo("Death gives you one silver coin for your sacrifice.")
-            target.echo()
+                target.act("You hear {self.name}{x's death cry.")
+                actor.echo("Death gives you one silver coin for your sacrifice.")
+                target.echo()
 
-            target.emit("after:death", unblockable=True)
+                target.emit("after:death", unblockable=True)
 
-            for target_target in target.targets:
-                if target.id in target_target.target_ids:
-                    target_target.target_ids.remove(target.id)
-                target_target.save()
+                for target_target in target.targets:
+                    if target.id in target_target.target_ids:
+                        target_target.target_ids.remove(target.id)
+                    target_target.save()
 
-            target.target_ids = []
+                target.target_ids = []
 
-            if not isinstance(target, Character):
-                target.delete()
-            else:
-                target.die()
-                target.save()
-                target.force("look")
+                if not isinstance(target, Character):
+                    target.delete()
+                else:
+                    target.die()
+                    target.save()
+                    target.force("look")
 
-            return
+                return
 
         actor.handle("after:combat_turn")
 
@@ -94,8 +94,7 @@ class Battle(object):
                     noun, amount_text, target.name, amount))
             actor.act(
                 "{{c{}'s {}{{c {}{{c {}{{c! {{B-{{R={{C{}{{R={{B-{{x".format(
-                    actor.name, noun, amount_text, target.name, amount),
-                exclude=target)
+                    actor.name, noun, amount_text, target.name, amount, exclude=target.name))
             target.echo(
                 "{{B{}'s {}{{B {}{{B you! {{B-{{R={{C{}{{R={{B-{{x".format(
                     actor.name, noun, amount_text, amount))

@@ -1,0 +1,10 @@
+{
+    "name":"conspire",
+    "actor_no_arg":"You wink conspiratorily, waiting for the countersign.",
+    "others_no_arg":"$n winks conspiratorily, waiting for the countersign.",
+    "actor_found_target":"You induct $S into your private conspiracy with a wink.",
+    "others_found":"$n winks conspiratorily at $N.  You wonder what this can mean.",
+    "target_found":"$n inducts you into $m private conspiracy with a wink.",
+    "actor_auto":"Even you conspire against yourself.",
+    "others_auto":"$n is paranoid enough to distrust even $mself."
+}

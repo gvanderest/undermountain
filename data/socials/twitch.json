@@ -1,0 +1,10 @@
+{
+    "name":"twitch",
+    "actor_no_arg":"You twitch nervously.",
+    "others_no_arg":"$n twitches nervously.",
+    "actor_found_target":"You twitch involuntarily at $N's presence.",
+    "others_found":"$N must really be getting to $n...",
+    "target_found":"$n notices you and twitches.",
+    "actor_auto":"Nervous? They aren't even here.",
+    "others_auto":"$n jerks $s head and begins to twitch uncontrollably."
+}

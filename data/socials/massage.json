@@ -1,0 +1,10 @@
+{
+    "name":"massage",
+    "actor_no_arg":"You offer everyone in the room a massage...Hope you're ready to pay up.",
+    "others_no_arg":"$n offers to massage anyone in the room.  yay!",
+    "actor_found_target":"You gently massage $N's shoulders.",
+    "others_found":"$n massages $N's shoulders.",
+    "target_found":"$n gently massages your shoulders - Ahhhhhhhhhh...",
+    "actor_auto":"You can only massage someone in the same room as you.",
+    "others_auto":"$n gives a show on yoga-positions, trying to massage $mself."
+}

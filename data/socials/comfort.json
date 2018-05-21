@@ -1,0 +1,10 @@
+{
+    "name":"comfort",
+    "actor_no_arg":"Do you feel uncomfortable?",
+    "others_no_arg":"$n looks around for someone to comfort.  Maybe you'll get lucky.",
+    "actor_found_target":"You comfort $M.",
+    "others_found":"$n comforts $N.",
+    "target_found":"$n comforts you.",
+    "actor_auto":"Comfort who?",
+    "others_auto":"$n has no one to comfort $m but $mself."
+}

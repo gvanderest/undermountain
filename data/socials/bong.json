@@ -1,0 +1,10 @@
+{
+    "name":"bong",
+    "actor_no_arg":"You grab your 50ft gravity bong and take a toke.",
+    "others_no_arg":"$n pulls out a 50ft gravity bong and lights up.",
+    "actor_found_target":"You offer $N the bong.",
+    "others_found":"$n offers $N the bong.",
+    "target_found":"$n offers you the bong.",
+    "actor_auto":"What do u need a bong 4..u dont have any weed...?",
+    "others_auto":"$n offers himself the bong...how greedy."
+}

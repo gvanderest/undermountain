@@ -1,0 +1,10 @@
+{
+    "name":"aargh",
+    "actor_no_arg":"AAAAAARRRRRRGGGGGGHHHHHH!!!!!!",
+    "others_no_arg":"$n throws back $s head and howls in profound frustration!",
+    "actor_found_target":"You scream your frustration and grab for $S throat with both hands!",
+    "others_found":"$n howls in frustration and leaps for $N, trying to throttle $M!",
+    "target_found":"$n grabs for your throat with two hands, howling in frustration!",
+    "actor_auto":"$n grabs for your throat with two hands, howling in frustration!",
+    "others_auto":"$n screams in frustration at $e's own stupidity."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"view",
+    "actor_no_arg":"You sit back and watch the world go by.",
+    "others_no_arg":"$n kicks back and enjoys the view.",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

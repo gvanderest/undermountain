@@ -1,0 +1,10 @@
+{
+    "name":"hiccup",
+    "actor_no_arg":"*HIC*",
+    "others_no_arg":"$n hiccups.",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

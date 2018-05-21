@@ -1,0 +1,10 @@
+{
+    "name":"speedload",
+    "actor_no_arg":"Rock 'n Roll!",
+    "others_no_arg":"$n speedloads a new clip into $s sidearm.",
+    "actor_found_target":"Just what are your intentions?",
+    "others_found":"$n eyes $N, loading a fresh clip into $s gun... what the hell is going on here?",
+    "target_found":"$n slowly loads new bullets into $s gun... you feel endangered somehow...",
+    "actor_auto":"$",
+    "others_auto":"$n reloads $s gun, glancing around like a paranoid lunatic..."
+}

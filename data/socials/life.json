@@ -1,0 +1,10 @@
+{
+    "name":"life",
+    "actor_no_arg":"You try to get a life, and fail.",
+    "others_no_arg":"$n tries to get a life, and fails.",
+    "actor_found_target":"$N needs to get a life!",
+    "others_found":"$N needs to get a life!",
+    "target_found":"You need to get a life!",
+    "actor_auto":"Who needs a life?",
+    "others_auto":"$n attempts to give $mself a life, but has none to spare."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"sigh",
+    "actor_no_arg":"You sigh.",
+    "others_no_arg":"$n sighs.",
+    "actor_found_target":"You sigh as you think of $M.",
+    "others_found":"$n sighs at the sight of $N.",
+    "target_found":"$n sighs as $e thinks of you.  Touching, isn't it?",
+    "actor_auto":"You really sigh, since you don't see your friend.",
+    "others_auto":"$n sighs at $mself.  What a sorry sight."
+}

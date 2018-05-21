@@ -1,0 +1,10 @@
+{
+    "name":"serenade",
+    "actor_no_arg":"You raise your voice in a loud serenade to your invisible love.",
+    "others_no_arg":"$n raises $s voice to serenade the world.",
+    "actor_found_target":"You raise your voice in a loving serenade to $N.",
+    "others_found":"$n raises $s voice in a loving serenade to $N.",
+    "target_found":"$n serenades you, you are swept away by $s voice.",
+    "actor_auto":"The one that you wish to serenade has left you to sing to yourself.",
+    "others_auto":"$n serenades $mself.  What an ego!"
+}

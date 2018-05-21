@@ -1,0 +1,10 @@
+{
+    "name":"pray",
+    "actor_no_arg":"You feel righteous, and maybe a little foolish.",
+    "others_no_arg":"$n begs and grovels to the powers that be.",
+    "actor_found_target":"You crawl in the dust before $M.",
+    "others_found":"$n falls down and grovels in the dirt before $N.",
+    "target_found":"$n kisses the dirt at your feet.",
+    "actor_auto":"No such person around; your prayers vanish into the endless voids.",
+    "others_auto":"$n performs some strange yoga-exercises and mumbles a prayer to $mself."
+}

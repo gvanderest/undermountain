@@ -1,0 +1,10 @@
+{
+    "name":"yawn",
+    "actor_no_arg":"You must be tired.",
+    "others_no_arg":"$n yawns.",
+    "actor_found_target":"You're not trying very hard to hide your boredom from $N.",
+    "others_found":"Bored to tears, $n yawns at $N.",
+    "target_found":"$n yawns in your direction, obviously very bored.",
+    "actor_auto":"$",
+    "others_auto":"$n holds $s hand up to $s mouth and yawns politely."
+}

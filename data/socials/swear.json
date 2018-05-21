@@ -1,0 +1,10 @@
+{
+    "name":"swear",
+    "actor_no_arg":"You swear loudly for a long time.",
+    "others_no_arg":"$n swears : #@*\"*&^*#%@*&! !!!!!",
+    "actor_found_target":"You swear at $M.",
+    "others_found":"$n swears at $N.",
+    "target_found":"$n swears at you!  Where are the manners?",
+    "actor_auto":"You can't find the victim of your frustrations.",
+    "others_auto":"$n starts swearing at $mself.  Why don't you help?"
+}

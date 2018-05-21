@@ -1,0 +1,10 @@
+{
+    "name":"ogg",
+    "actor_no_arg":"Ogg who?",
+    "others_no_arg":"$",
+    "actor_found_target":"Engage!",
+    "others_found":"$n oggs $N's head with photon torpedos!  $N reels.",
+    "target_found":"$n oggs your head with photon torpedos!  You are reeling.",
+    "actor_auto":"You can't find your target.",
+    "others_auto":"$n almost oggs $mself, but wisely reconsiders."
+}

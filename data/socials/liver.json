@@ -1,0 +1,10 @@
+{
+    "name":"liver",
+    "actor_no_arg":"You look angrily for someone to disembowel.",
+    "others_no_arg":"$n angrily for someone to disembowel.",
+    "actor_found_target":"You rip out $S liver and eat it.",
+    "others_found":"$n rips out $N's liver and eats it.",
+    "target_found":"$n rips out your liver and eats it.",
+    "actor_auto":"The object of your wrath is absent.",
+    "others_auto":"$n grips $s abdomen and bend over in pain, saying {M\"{moooh my liver{M\"{x"
+}

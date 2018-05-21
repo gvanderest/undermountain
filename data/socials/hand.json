@@ -1,0 +1,10 @@
+{
+    "name":"hand",
+    "actor_no_arg":"Kiss whose hand?",
+    "others_no_arg":"$",
+    "actor_found_target":"You kiss $S hand.",
+    "others_found":"$n kisses $N's hand.  How continental!",
+    "target_found":"$n kisses your hand.  How continental!",
+    "actor_auto":"You can't find a lady in THIS group.",
+    "others_auto":"$n kisses $s own hand."
+}

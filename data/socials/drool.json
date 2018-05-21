@@ -1,0 +1,10 @@
+{
+    "name":"drool",
+    "actor_no_arg":"A string of {Cdrool{x dangles from your chin.",
+    "others_no_arg":"$n {Cdrools {xall over $mself -- making a TERRIBLE mess!",
+    "actor_found_target":"You {Cdrool {xmessily on $N.",
+    "others_found":"$n {Cdrools {xupon $N!",
+    "target_found":"$n looks at you {Rlustily {xand {Cdrools{x all over you!",
+    "actor_auto":"Oh fine, make a pool of slobber -- they aren't even here!",
+    "others_auto":"$n {Cdrools {xall over $mself -- making a TERRIBLE mess!"
+}

@@ -1,0 +1,10 @@
+{
+    "name":"mull",
+    "actor_no_arg":"You mull over the idea at hand, asking for patience.",
+    "others_no_arg":"$n mulls over the idea at hand.  Please be patient.",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$n looks like $e is deep in thought."
+}

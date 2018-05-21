@@ -1,0 +1,10 @@
+{
+    "name":"knee",
+    "actor_no_arg":"You raise one knee, preparing to do justice...",
+    "others_no_arg":"$n cocks one knee threateningly.",
+    "actor_found_target":"You knee $M hard in the groin.",
+    "others_found":"$N doubles over in pain as $n knees $M in the groin!",
+    "target_found":"$n suddenly knees you in the groin!  You fall to your knees in agony.",
+    "actor_auto":"Whom do you wish to render impotent?",
+    "others_auto":"$n slams his head against his knee.  Ouch!"
+}

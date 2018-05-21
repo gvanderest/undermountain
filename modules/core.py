@@ -1467,6 +1467,9 @@ class Actor(Entity):
         # Iterate over actors and act_to them
         for collection in (Characters, Actors):
             for actor in collection.query({"room_id": self.room_id}):
+                if not exclude:
+                    continue
+
                 if actor in exclude:
                     continue
 

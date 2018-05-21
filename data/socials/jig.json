@@ -1,0 +1,10 @@
+{
+    "name":"jig",
+    "actor_no_arg":"You stand up and start doing a jig.",
+    "others_no_arg":"$n stands up and starts doing a little jig.",
+    "actor_found_target":"You dance a jig for $N.",
+    "others_found":"$n begins to dance a jig especially for $N.  How sweet!",
+    "target_found":"$n dances a jig for you.",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

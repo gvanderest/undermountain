@@ -1,0 +1,10 @@
+{
+    "name":"flutter",
+    "actor_no_arg":"You flutter your eyelashes seductively.",
+    "others_no_arg":"$n flutters $s eyelashes seductively.",
+    "actor_found_target":"You flutter your eyelashes at $N, trying to be seductive.",
+    "others_found":"$n flirts with $N, flutters $s eyelashes at $M.",
+    "target_found":"$n flutters $s eyelashes at you coyly.",
+    "actor_auto":"EH? Can't see them here.",
+    "others_auto":"$n grabs $s eye in pain.  Maybe $e got something in it."
+}

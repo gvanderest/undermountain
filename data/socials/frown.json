@@ -1,0 +1,10 @@
+{
+    "name":"frown",
+    "actor_no_arg":"You frown disapprovingly.",
+    "others_no_arg":"$n frowns.",
+    "actor_found_target":"You frown at what $E did.",
+    "others_found":"$n frowns at what $N did.",
+    "target_found":"$n frowns at what you did.",
+    "actor_auto":"You don't see any reason to frown.",
+    "others_auto":"$n frowns at $mself.  What a sad puppy...."
+}

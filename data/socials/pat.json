@@ -1,0 +1,10 @@
+{
+    "name":"pat",
+    "actor_no_arg":"Pat who?",
+    "others_no_arg":"$",
+    "actor_found_target":"You pat $N on $S head.",
+    "others_found":"$n pats $N on $S head.",
+    "target_found":"$n pats you on your head.",
+    "actor_auto":"Who, where, what?",
+    "others_auto":"$n pats $mself on the head."
+}

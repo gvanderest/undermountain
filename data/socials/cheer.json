@@ -1,0 +1,10 @@
+{
+    "name":"cheer",
+    "actor_no_arg":"You cheer and dance as the joy within you bursts forth!",
+    "others_no_arg":"$n cheers and sings... $e is just BURSTING with joy!",
+    "actor_found_target":"You cheer $N on and wish $M good luck!",
+    "others_found":"*Yay!*  Go $N!!!  $n cheers $M on.",
+    "target_found":"You are cheered on by $n... you feel so loved!",
+    "actor_auto":"Who? Huh? Where?  They're not here, that's for sure",
+    "others_auto":"$n resorts to cheering for $mself... how sad."
+}

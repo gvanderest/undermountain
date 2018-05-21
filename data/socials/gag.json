@@ -1,0 +1,10 @@
+{
+    "name":"gag",
+    "actor_no_arg":"Ewwwl, what kind of noice is that?",
+    "others_no_arg":"$n begins to make a really sick gagging noise.",
+    "actor_found_target":"You gag on $N.",
+    "others_found":"$n gags on $N.",
+    "target_found":"$n gags on you. Are you going to take that?",
+    "actor_auto":"$",
+    "others_auto":"Suddenly, $n begins to choke and gag!"
+}

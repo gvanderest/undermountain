@@ -1,0 +1,10 @@
+{
+    "name":"flirt",
+    "actor_no_arg":"You flirt outrageously.",
+    "others_no_arg":"$n is an outrageous flirt.",
+    "actor_found_target":"You flirt with $N trying to get $S attention.",
+    "others_found":"$n flirts with $N, hmmm wonder what $e wants? *wink*",
+    "target_found":"$n flirts with you.",
+    "actor_auto":"Sorry no one here to flirt with. :(",
+    "others_auto":"$n flirts with $mself, wonder what $e is trying to accomplish?"
+}

@@ -1,0 +1,10 @@
+{
+    "name":"buff",
+    "actor_no_arg":"You buff your nails on your cloak.",
+    "others_no_arg":"$n buffs $s nails on $s cloak.",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

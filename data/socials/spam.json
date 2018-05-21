@@ -1,0 +1,10 @@
+{
+    "name":"spam",
+    "actor_no_arg":"You mutter, 'spam' quietly to yourself again and again.",
+    "others_no_arg":"$n rests in a corner and mutters 'spam' quietly to $mself.",
+    "actor_found_target":"You SPAM $N mercilessly!",
+    "others_found":"$n spams $N!",
+    "target_found":"You've been SPAMMED by $n!",
+    "actor_auto":"Spam away -- they've left.",
+    "others_auto":"$n spams $mself."
+}

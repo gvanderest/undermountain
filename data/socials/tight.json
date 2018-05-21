@@ -1,0 +1,10 @@
+{
+    "name":"tight",
+    "actor_no_arg":"$",
+    "others_no_arg":"$",
+    "actor_found_target":"You hold $M tightly in your arms.",
+    "others_found":"$n holds $N tightly in $m arms.",
+    "target_found":"$n holds you in $m arms.",
+    "actor_auto":"Sorry, friend, I can't see that person here.",
+    "others_auto":"$n strips down to $s tights and begins showing of $s goods."
+}

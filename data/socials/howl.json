@@ -1,0 +1,10 @@
+{
+    "name":"howl",
+    "actor_no_arg":"You howl at the moon.",
+    "others_no_arg":"$n howls at the moon.",
+    "actor_found_target":"You howl soulfully at $N.",
+    "others_found":"$n howls at $N.",
+    "target_found":"$n howls soulfully at you.",
+    "actor_auto":"Who? What? Where?",
+    "others_auto":"$"
+}

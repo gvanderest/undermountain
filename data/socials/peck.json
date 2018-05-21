@@ -1,0 +1,10 @@
+{
+    "name":"peck",
+    "actor_no_arg":"You peck at the air, emulating a chicken.",
+    "others_no_arg":"$n begins pecking at the air like some kind of chicken.",
+    "actor_found_target":"Risking a slap to the face, you give $N a peck on the cheek.",
+    "others_found":"$n smiles and gives $N a chaste peck on the cheek.",
+    "target_found":"$n pecks you on the cheek, how sweet!",
+    "actor_auto":"I guess you scared them away...",
+    "others_auto":"$n tries in vain to wrap $s lips around $s cheeks."
+}

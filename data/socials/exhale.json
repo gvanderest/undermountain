@@ -1,0 +1,10 @@
+{
+    "name":"exhale",
+    "actor_no_arg":"You let out a big puff of smoke, and couch a little from your bong exhale.",
+    "others_no_arg":"$n exhales a puff of smoke and coughs, letting out his toke.",
+    "actor_found_target":"You blow your bong hit into $N face.",
+    "others_found":"$n blows a bong hit into $N face.",
+    "target_found":"$n blows a bong hit into your face...INHALE QUICKLY!!!",
+    "actor_auto":"You don't have a hit in your mouth.",
+    "others_auto":"$n blows a bong hit out, takes a step forward, and re-inhales it."
+}

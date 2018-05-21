@@ -1,0 +1,10 @@
+{
+    "name":"fondle",
+    "actor_no_arg":"Who needs to be fondled ?",
+    "others_no_arg":"$",
+    "actor_found_target":"You fondly fondle $M.",
+    "others_found":"$n fondly fondles $N.",
+    "target_found":"$n fondly fondles you.",
+    "actor_auto":"You fondly try to fondle someone not in the room, but who cares.",
+    "others_auto":"$n fondly fondles $mself - this is going too far!!"
+}

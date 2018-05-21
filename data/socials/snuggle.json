@@ -1,0 +1,10 @@
+{
+    "name":"snuggle",
+    "actor_no_arg":"Whom?",
+    "others_no_arg":"$n seems to be a snuggly kind of person.",
+    "actor_found_target":"You snuggle $M.",
+    "others_found":"$n snuggles up to $N.",
+    "target_found":"$n snuggles up to you.",
+    "actor_auto":"They aren't here.",
+    "others_auto":"$n snuggles up, getting ready to sleep."
+}

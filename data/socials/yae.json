@@ -1,0 +1,10 @@
+{
+    "name":"yae",
+    "actor_no_arg":"You sigh, burdened with Yet Another Eeediot.",
+    "others_no_arg":"$n sighs, burdened with Yet Another Eeediot.",
+    "actor_found_target":"There's Yet Another Eeediot in the room, and you're looking right at $M.",
+    "others_found":"$n clearly believes that $N is an Eeediot!",
+    "target_found":"$n glares at you, obviously not impressed with your intelligence.",
+    "actor_auto":"There are plenty of Eeediots, but that one doesn't seem to be present.",
+    "others_auto":"$n bonks $mself, HARD, and curses $mself for the Eeediot $e is!"
+}

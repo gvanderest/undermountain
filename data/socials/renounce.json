@@ -1,0 +1,10 @@
+{
+    "name":"renounce",
+    "actor_no_arg":"You fall to your knees and renounces all to your god.",
+    "others_no_arg":"$n falls to $s knees and renounces all to their god.",
+    "actor_found_target":"You yell at $N to renounce all to your god.",
+    "others_found":"$n yells at $N to renounce all to their god.",
+    "target_found":"$n yells at you to renounce all to their god.",
+    "actor_auto":"what r u renouncing.......",
+    "others_auto":"$n renounces all to $mself. What a asshole."
+}

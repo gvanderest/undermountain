@@ -1,0 +1,10 @@
+{
+    "name":"homework",
+    "actor_no_arg":"Your suddenly remember that you have to defend your thesis today...",
+    "others_no_arg":"$n looks stricken.  Could $e have blown off some important homework?",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

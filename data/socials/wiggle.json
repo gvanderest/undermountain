@@ -1,0 +1,10 @@
+{
+    "name":"wiggle",
+    "actor_no_arg":"Your wiggle your bottom.",
+    "others_no_arg":"$n wiggles $s bottom.",
+    "actor_found_target":"You wiggle your bottom toward $M.",
+    "others_found":"$n wiggles $s bottom toward $N.",
+    "target_found":"$n wiggles $s bottom toward you.",
+    "actor_auto":"You must be alone.",
+    "others_auto":"$n wiggles about like a fish."
+}

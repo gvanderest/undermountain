@@ -33,44 +33,54 @@ Adapt the file as necessary to your needs.
 sample_social.are provided as a sample file to import.
 """
 
+
 class Social:
-    def __init__(self, name, a, b, c, d, e, f, g):
-        self.name = name
-        self.actor_no_arg = a
-        self.others_no_arg = b
-        self.actor_found_target = c
-        self.others_found = d
-        self.target_found = e
-        self.actor_auto = f
-        self.others_auto = g
+    def __init__(self,
+                 social_name,
+                 actor_no_arg,
+                 others_no_arg,
+                 actor_found_target,
+                 others_found,
+                 target_found,
+                 actor_auto,
+                 others_auto):
+        self.name = social_name
+        self.actor_no_arg = actor_no_arg
+        self.others_no_arg = others_no_arg
+        self.actor_found_target = actor_found_target
+        self.others_found = others_found
+        self.target_found = target_found
+        self.actor_auto = actor_auto
+        self.others_auto = others_auto
+
 
 filename = sys.argv[-1]
 
 if filename:
-    with open(filename,'r') as f:
-        socs=f.readlines()
+    with open(filename, 'r') as f:
+        socs = f.readlines()
         count = 2
-        socList=[]
+        socList = []
 
     while count + 7 < len(socs):
         name = socs[count].rstrip()
-        count+=1
+        count += 1
         a = socs[count].rstrip()
-        count+=1
+        count += 1
         b = socs[count].rstrip()
-        count+=1
+        count += 1
         c = socs[count].rstrip()
-        count+=1
+        count += 1
         d = socs[count].rstrip()
-        count+=1
+        count += 1
         e = socs[count].rstrip()
-        count+=1
+        count += 1
         f = socs[count].rstrip()
-        count += 2 # skip over second to last line in block.
+        count += 2  # skip over second to last line in block.
         g = socs[count].rstrip()
         count += 1
         count += 1
-        soc=Social(name, a, b, c, d, e, f, g)
+        soc = Social(name, a, b, c, d, e, f, g)
         socList.append(soc)
 
     print("{} socials were found.".format(len(socList)))
@@ -78,7 +88,7 @@ if filename:
     for s in socList:
         fname = s.name + ".json"
         sf = open(fname, "w")
-        sf.write(json.dumps(s.__dict__, sort_keys=False, indent = 4, separators = (',', ':')))
+        sf.write(json.dumps(s.__dict__, sort_keys=False, indent=4, separators=(',', ':')))
         sf.close()
         print("{} file written.".format(fname))
 

@@ -1,0 +1,10 @@
+{
+    "name":"head",
+    "actor_no_arg":"You toss your head haughtily.",
+    "others_no_arg":"$n tosses $s head haughtily.",
+    "actor_found_target":"You toss your head haughtily at $N.",
+    "others_found":"$n tosses her head haughtily at $N... what an ATTITUDE!",
+    "target_found":"$n tossed $s head haughtily at you... :(",
+    "actor_auto":"That person is AWOL.",
+    "others_auto":"$"
+}

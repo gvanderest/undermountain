@@ -1,0 +1,10 @@
+{
+    "name":"cough",
+    "actor_no_arg":"Yuck, try to cover your mouth next time!",
+    "others_no_arg":"$n coughs loudly.",
+    "actor_found_target":"You cough at $N, trying to get their attention.",
+    "others_found":"$n coughs at $N.",
+    "target_found":"$n coughs at you in an attempt to get your attention.",
+    "actor_auto":"$",
+    "others_auto":"$n begins hacking and wheezing.  It sounds painful."
+}

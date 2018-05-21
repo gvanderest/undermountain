@@ -1,0 +1,10 @@
+{
+    "name":"moan",
+    "actor_no_arg":"You start to moan.",
+    "others_no_arg":"$n starts moaning.",
+    "actor_found_target":"You moan for the loss of $M.",
+    "others_found":"$n moans for the loss of $N.",
+    "target_found":"$n moans at the sight of you.  Hmmmm.",
+    "actor_auto":"You see no cause to moan.",
+    "others_auto":"$n makes $mself moan."
+}

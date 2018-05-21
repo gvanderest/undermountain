@@ -1,0 +1,10 @@
+{
+    "name":"pout",
+    "actor_no_arg":"Ah, don't take it so hard.",
+    "others_no_arg":"$n pouts.",
+    "actor_found_target":"You curl your bottom lip and pout at $N.",
+    "others_found":"$n begins to pout at $N.",
+    "target_found":"$n curls $s bottom lip and pouts at you.",
+    "actor_auto":"$",
+    "others_auto":"$n pouts quietly to $mself."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"passout",
+    "actor_no_arg":"You belch and pass out.",
+    "others_no_arg":"$n is OBVIOUSLY intoxicated... $e burps loudly and passes out!",
+    "actor_found_target":"You become tipsy and pass out on $N",
+    "others_found":"$n is a little tipsy.  They just passed out on $N!",
+    "target_found":"$n twirls about and passes out on top of you!",
+    "actor_auto":"$",
+    "others_auto":"$n passes out right where $e stands!"
+}

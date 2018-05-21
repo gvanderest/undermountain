@@ -1,0 +1,10 @@
+{
+    "name":"gasp",
+    "actor_no_arg":"You gasp in astonishment.",
+    "others_no_arg":"$n gasps in astonishment.",
+    "actor_found_target":"You gasp as you realize what $E did.",
+    "others_found":"$n gasps as $e realizes what $N did.",
+    "target_found":"$n gasps as $e realizes what you did.",
+    "actor_auto":"You need to panic.",
+    "others_auto":"$n takes one look at $mself and gasps in astonisment!"
+}

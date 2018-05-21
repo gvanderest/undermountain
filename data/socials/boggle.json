@@ -1,0 +1,10 @@
+{
+    "name":"boggle",
+    "actor_no_arg":"You boggle at the concept.",
+    "others_no_arg":"$n boggles at the concept.",
+    "actor_found_target":"You boggle at $N.",
+    "others_found":"$n boggles at $N.",
+    "target_found":"$n boggles at you.",
+    "actor_auto":"Boggle away.  They've left.",
+    "others_auto":"$n boggles quietly to $mself."
+}

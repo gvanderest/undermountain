@@ -1,0 +1,10 @@
+{
+    "name":"daydream",
+    "actor_no_arg":"You dream of better times.",
+    "others_no_arg":"$n looks absent-minded, his eyes staring into space.",
+    "actor_found_target":"You stare absent-mindedly towards $N.",
+    "others_found":"$n stares in the direction of $N, glazed eyed and absent-minded.",
+    "target_found":"$n stares towards you with a glazed look upon $s face.",
+    "actor_auto":"$",
+    "others_auto":"$n develops a glazed look upon his face as if daydreaming."
+}

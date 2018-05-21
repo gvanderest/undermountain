@@ -1,0 +1,10 @@
+{
+    "name":"snort",
+    "actor_no_arg":"You snort derisively.",
+    "others_no_arg":"$n snorts derisively.",
+    "actor_found_target":"You snort derisively at $N.",
+    "others_found":"$n snorts derisively at $N.",
+    "target_found":"$n snorts at you.",
+    "actor_auto":"Snort at whom?",
+    "others_auto":"$n snorts derisively at $sself."
+}

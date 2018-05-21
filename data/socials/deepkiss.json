@@ -1,0 +1,10 @@
+{
+    "name":"deepkiss",
+    "actor_no_arg":"You search about the room longingly for someone to kiss.",
+    "others_no_arg":"$n looks about the room longingly.",
+    "actor_found_target":"You slide your tongue between $N's wanton lips, taking $S breath away.",
+    "others_found":"$n passionately kisses $N.",
+    "target_found":"$n slips $s tongue between your lips in a slow, smooth kiss.",
+    "actor_auto":"who's gonna kiss u...?",
+    "others_auto":"$n suddenly gags violently, $S eye buldging out of the sockets.."
+}

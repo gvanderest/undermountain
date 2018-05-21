@@ -1,0 +1,10 @@
+{
+    "name":"bcatch",
+    "actor_no_arg":"You reach out and rescue the bottle from its flight.",
+    "others_no_arg":"$n reaches out and grabs the bottle of beer tossed to $m.",
+    "actor_found_target":"You reach out and rescue the bottle from its flight.",
+    "others_found":"$n reaches out and catches a bottle of beer in flight.",
+    "target_found":"$n reaches out and grabs the bottle of beer tossed $s way.",
+    "actor_auto":"$",
+    "others_auto":"$n looks all around, frantically searching for some beer!"
+}

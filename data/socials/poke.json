@@ -1,0 +1,10 @@
+{
+    "name":"poke",
+    "actor_no_arg":"You begin to make wierd poking motions in the air.",
+    "others_no_arg":"$n makes weird poking motions.  Is $e trying to tell you something?",
+    "actor_found_target":"You poke $M in the ribs.",
+    "others_found":"$n pokes $N in the ribs.",
+    "target_found":"$n pokes you in the ribs.",
+    "actor_auto":"You can't poke someone who's not here!.",
+    "others_auto":"$n pokes $mself in the ribs, looking very sheepish."
+}

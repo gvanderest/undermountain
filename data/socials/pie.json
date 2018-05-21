@@ -1,0 +1,10 @@
+{
+    "name":"pie",
+    "actor_no_arg":"You pick up a pie and toss it around for a bit.",
+    "others_no_arg":"$n picks up a pie and tosses it around for a bit.",
+    "actor_found_target":"You toss a pie at $N and hit $M right in the FACE!",
+    "others_found":"$n tosses a pie at $N and hits $m right in the FACE!",
+    "target_found":"$n tossed a pie in your face... and now you are all covered in GOO!",
+    "actor_auto":"That person isn't here...",
+    "others_auto":"$n buries $s face in the pie, licking the pan clean."
+}

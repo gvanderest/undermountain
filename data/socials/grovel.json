@@ -1,0 +1,10 @@
+{
+    "name":"grovel",
+    "actor_no_arg":"You grovel in the dirt.",
+    "others_no_arg":"$n grovels in the dirt.",
+    "actor_found_target":"You grovel before $M",
+    "others_found":"$n grovels in the dirt before $N.",
+    "target_found":"$n grovels in the dirt before you.",
+    "actor_auto":"Who?",
+    "others_auto":"$n grovels at $s own feet??"
+}

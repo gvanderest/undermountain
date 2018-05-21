@@ -1,0 +1,10 @@
+{
+    "name":"snore",
+    "actor_no_arg":"Zzzzzzzzzzzzzzzzz.",
+    "others_no_arg":"$n snores loudly.",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}

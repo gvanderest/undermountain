@@ -1,0 +1,10 @@
+{
+    "name":"soulgrab",
+    "actor_no_arg":"You look around for a fresh soul.",
+    "others_no_arg":"$n peers deep into all of your souls.",
+    "actor_found_target":"You ram your hand deep into $N body and kindly remove their immortal soul.",
+    "others_found":"$n rams $s hand into $N body and removes $S immortal soul.",
+    "target_found":"$n rams $s hand into your body and removes your immortal soul.",
+    "actor_auto":"You can't find that person to remove their soul.",
+    "others_auto":"$n for some reasons reaches into $s own body and removes their soul, and collapses to the ground."
+}

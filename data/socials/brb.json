@@ -1,0 +1,10 @@
+{
+    "name":"brb",
+    "actor_no_arg":"Hope to see you soon!",
+    "others_no_arg":"$n will be right back!",
+    "actor_found_target":"You secretly let $N know that you'll be right back.",
+    "others_found":"$",
+    "target_found":"$n secretly informs you that $e's going to be right back!",
+    "actor_auto":"$",
+    "others_auto":"$n lets $mself know that $e's coming right back."
+}

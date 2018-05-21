@@ -1,0 +1,10 @@
+{
+    "name":"blink",
+    "actor_no_arg":"You bat your eyelashes.",
+    "others_no_arg":"$n blinks innocently.",
+    "actor_found_target":"You blink innocently at $N.",
+    "others_found":"$n blinks innocently at $N.",
+    "target_found":"$n blinks innocently at you.",
+    "actor_auto":"Feign innocence for whom?",
+    "others_auto":"$n begins to blink profusely."
+}

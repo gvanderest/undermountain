@@ -1,0 +1,10 @@
+{
+    "name":"urinate",
+    "actor_no_arg":"You take a piss.",
+    "others_no_arg":"$n takes a piss.",
+    "actor_found_target":"You piss all over $N.",
+    "others_found":"$n pisses all over $N...that's fucking nasty...",
+    "target_found":"$n pisses all over you...what the FUCK...",
+    "actor_auto":"You don't have to piss...",
+    "others_auto":"$n pisses all down $S leg..."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"nod",
+    "actor_no_arg":"You nod.",
+    "others_no_arg":"$n nods.",
+    "actor_found_target":"You nod at $N.",
+    "others_found":"$n nods at $N.",
+    "target_found":"$n nods at you in agreement.",
+    "actor_auto":"Nod your head off -- they aren't here.",
+    "others_auto":"$n nods quietly to $mself.  What a wacko."
+}

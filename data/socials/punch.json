@@ -1,0 +1,10 @@
+{
+    "name":"punch",
+    "actor_no_arg":"You raise your dukes and challenge anyone to \"step up to this\".",
+    "others_no_arg":"$n raises $s fists, challenging everyone in the room to spar.",
+    "actor_found_target":"You punch $M playfully.",
+    "others_found":"$n punches $N playfully.",
+    "target_found":"$n punches you playfully.  OUCH!",
+    "actor_auto":"You can't find your boxing partner.",
+    "others_auto":"$n punches $mself.  Why don't you join in?"
+}

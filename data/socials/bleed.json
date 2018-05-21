@@ -1,0 +1,10 @@
+{
+    "name":"bleed",
+    "actor_no_arg":"You bleed profusely -- making a horrible mess!",
+    "others_no_arg":"$n weakly bleeds all over the floor.",
+    "actor_found_target":"You bleed on $N -- ewww!",
+    "others_found":"$n bleeds on $N.  Watch out, YOU might be next!",
+    "target_found":"$n bleeds on you -- ewww!  Get away!!",
+    "actor_auto":"Bleed on whom?",
+    "others_auto":"$n bleeds profusely all over $mself."
+}

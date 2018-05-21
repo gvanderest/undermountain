@@ -1,0 +1,10 @@
+{
+    "name":"noogie",
+    "actor_no_arg":"You make a head locking motion and shake your fist at it -- the universal sign of the noogie.",
+    "others_no_arg":"$n looks around for someone to noogie.",
+    "actor_found_target":"You grab $N, get $M in a head lock and NOOGIE $M!",
+    "others_found":"$n grabs $N in a head lock and NOOGIES $M... ARGH!!!",
+    "target_found":"Oh NO, $n grabs you, throws you in a head lock and NOOGIES you!",
+    "actor_auto":"That person has gone off to other lands...",
+    "others_auto":"$n rubs $s OWN head and creates a static charge... *ZAP*"
+}

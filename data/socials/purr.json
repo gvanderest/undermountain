@@ -1,0 +1,10 @@
+{
+    "name":"purr",
+    "actor_no_arg":"MMMMMMEEEEEEEEEOOOOOOOOOOOOOWWWWWWWWWWW!!!!!!!!!!!",
+    "others_no_arg":"$n purrs contentedly.",
+    "actor_found_target":"You rub up against $N and purr contentedly.",
+    "others_found":"$n rubs against $N and purrs contentedly.",
+    "target_found":"$n rubs up against you and purrs contentedly.",
+    "actor_auto":"You silly cat!  They aren't here.",
+    "others_auto":"$n purrs contentedly to $mself."
+}

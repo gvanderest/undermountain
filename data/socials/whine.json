@@ -1,0 +1,10 @@
+{
+    "name":"whine",
+    "actor_no_arg":"You whine to anyone who will listen to you.",
+    "others_no_arg":"$n whines pathetically to anyone who will listen.",
+    "actor_found_target":"You whine to $M, hoping desperately that at least $E will give a damn.",
+    "others_found":"$n whines pathetically to $N.",
+    "target_found":"$n whines pathetically to you.  What a loser!",
+    "actor_auto":"They really don't care.",
+    "others_auto":"$n whines to $mself.  At least $e isn't bitching to YOU."
+}

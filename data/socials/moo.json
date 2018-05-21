@@ -1,0 +1,10 @@
+{
+    "name":"moo",
+    "actor_no_arg":"You chew your cud and moo plaintively.  Muh-OOOOO!",
+    "others_no_arg":"$n turns cowlike eyes on you, chews $s cud, and moos plaintively.",
+    "actor_found_target":"You focus all your bovine Zen on $N, and speak your thoughts.  Muh-OOOOO!",
+    "others_found":"Slowly, $n looks at $N, chews $s cud, and muh-OOOOs!",
+    "target_found":"$n moos at you.  What could that possibly mean?",
+    "actor_auto":"You'd better find someone else to moo at.",
+    "others_auto":"$n is mooing at $mself again...  You look for an exit..."
+}

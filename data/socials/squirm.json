@@ -1,0 +1,10 @@
+{
+    "name":"squirm",
+    "actor_no_arg":"You squirm uncontrollably in your consternation.",
+    "others_no_arg":"$n squirms uncontrollably, suddenly looking very uncomfortable.",
+    "actor_found_target":"You look at $N and squirm with delight.",
+    "others_found":"$n looks at $N and squirms with delight.",
+    "target_found":"$n looks at you and squirms with delight.",
+    "actor_auto":"$",
+    "others_auto":"$n starts to squirm uncomfortably."
+}

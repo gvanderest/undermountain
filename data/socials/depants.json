@@ -1,0 +1,10 @@
+{
+    "name":"depants",
+    "actor_no_arg":"You sneak around, looking for trousers to drop.",
+    "others_no_arg":"$n is stepping around sneakily. Must be up to something.",
+    "actor_found_target":"You sneak up behind $N and yank $S pants down!",
+    "others_found":"$n sneaks up behind $N, pulling $S pants down. Point and laugh!",
+    "target_found":"You feel a sudden breeze. Someone has pulled your pants down!",
+    "actor_auto":"$",
+    "others_auto":"$n drops $s pants and dances with them around $s ankles!"
+}

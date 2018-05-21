@@ -1,0 +1,10 @@
+{
+    "name":"tie",
+    "actor_no_arg":"You pull out a length of rope, ready to tie someone down.",
+    "others_no_arg":"$n whips out a length of rope.",
+    "actor_found_target":"You grab $N and tie $M down.",
+    "others_found":"$n grabs $N and ties $M down!",
+    "target_found":"$n grabs you and ties you down!",
+    "actor_auto":"Sorry, friend, I can't see that person here.",
+    "others_auto":"$n begins to tie $mself up."
+}

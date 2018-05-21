@@ -1,0 +1,10 @@
+{
+    "name":"yeehaw",
+    "actor_no_arg":"You mount your pony(?) and shout YEEEEEEEHAAAAAAAW!",
+    "others_no_arg":"$n bounces up and down screaming *YEEEEEEHAAAAAAW!*",
+    "actor_found_target":"You grab a saddle and try to ride $N.  Hope you're ready for a whoopin' pardner.",
+    "others_found":"$n tries to jump on $N and go for a ride....umm",
+    "target_found":"$n whips out a saddle and attempts to put it on your back.  What the hell.",
+    "actor_auto":"$",
+    "others_auto":"$n grab $s imaginary stick pony and hops around the room yelling *YEEEEEEHAAAAAAW!*"
+}

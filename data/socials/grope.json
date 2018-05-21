@@ -1,0 +1,10 @@
+{
+    "name":"grope",
+    "actor_no_arg":"You lift your hands up and begin to make squeezing motions.",
+    "others_no_arg":"$n looks like $e wants to grope something.  Quick, push someone into $m!",
+    "actor_found_target":"Well, what sort of noise do you expect here?",
+    "others_found":"$n gropes $N.",
+    "target_found":"$n gropes you.",
+    "actor_auto":"Try someone who's here.",
+    "others_auto":"$n gropes $mself - YUCK."
+}

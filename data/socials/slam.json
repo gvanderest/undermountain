@@ -1,0 +1,10 @@
+{
+    "name":"slam",
+    "actor_no_arg":"You slam your head into the desk or the nearest wall.",
+    "others_no_arg":"$n slams their head against the wall.",
+    "actor_found_target":"You grab $N and slam their skull into the wall.",
+    "others_found":"$n grabs $N's skull and violently slams it against the wall.",
+    "target_found":"$n grabs you by the hair and forces your head to collide with a wall.",
+    "actor_auto":"Who are you going to slam?",
+    "others_auto":"$n makes a fist and begins to punch $mself in the face."
+}

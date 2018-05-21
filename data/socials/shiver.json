@@ -1,0 +1,10 @@
+{
+    "name":"shiver",
+    "actor_no_arg":"Brrrrrrrrr.",
+    "others_no_arg":"$n shivers uncomfortably.",
+    "actor_found_target":"You shiver at the thought of fighting $M.",
+    "others_found":"$n shivers at the thought of fighting $N.",
+    "target_found":"$n shivers at the suicidal thought of fighting you.",
+    "actor_auto":"You don't see any reason to shiver.",
+    "others_auto":"$n scares $mself to shivers."
+}

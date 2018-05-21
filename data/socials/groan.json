@@ -1,0 +1,10 @@
+{
+    "name":"groan",
+    "actor_no_arg":"You groan loudly.",
+    "others_no_arg":"$n groans loudly.",
+    "actor_found_target":"You groan at the sight of $M.",
+    "others_found":"$n groans at the sight of $N.",
+    "target_found":"$n groans at the sight of you.",
+    "actor_auto":"You see no reason to groan.",
+    "others_auto":"$n groans as $e realizes what $e has done."
+}

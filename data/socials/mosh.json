@@ -1,0 +1,10 @@
+{
+    "name":"mosh",
+    "actor_no_arg":"You mosh insanely around the room!",
+    "others_no_arg":"$n moshes insanely around the room!",
+    "actor_found_target":"You mosh sadistically against $N ... you WILL be punished.",
+    "others_found":"$n bounces off of $N in a vain attempt to mosh... what a LOSER.",
+    "target_found":"$n slams into you, moshing painfully against you.  That REALLY hurts!",
+    "actor_auto":"Hmmm...  your victim found a new dance partner.",
+    "others_auto":"$n throws $mself on the floor, grinding $mself into a bloody pulp"
+}

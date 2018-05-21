@@ -1,0 +1,10 @@
+{
+    "name":"spit",
+    "actor_no_arg":"You spit in utter disgust.",
+    "others_no_arg":"$n spits in utter disgust!",
+    "actor_found_target":"You spit on $N...you're gross!",
+    "others_found":"$n spits on $N.",
+    "target_found":"$n spits on you -- how gross!",
+    "actor_auto":"Your victim isn't here.",
+    "others_auto":"$n spits on $mself...what a sicko!"
+}

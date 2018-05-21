@@ -1,0 +1,10 @@
+{
+    "name":"goose",
+    "actor_no_arg":"You reach your hand out, waiting for someone to back up into it.",
+    "others_no_arg":"$n holds his hand out, searching for someone to goose.",
+    "actor_found_target":"You tenderly goose $N on the tush.",
+    "others_found":"$n reaches around $N's backside and gooses $M tenderly.",
+    "target_found":"$n gooses you tenderly!",
+    "actor_auto":"You should go hunting for another victim, they left.",
+    "others_auto":"$n pinches $mself on the rear."
+}

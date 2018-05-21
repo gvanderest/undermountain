@@ -1,0 +1,10 @@
+{
+    "name":"threaten",
+    "actor_no_arg":"You threaten everyone with your overwhelming presence.",
+    "others_no_arg":"You feel threatened in the presence of the great $n.",
+    "actor_found_target":"You stand tall as you threaten $N.",
+    "others_found":"$n threatens $N forcefully.",
+    "target_found":"$n threatens you...oooooooh scary *laugh*",
+    "actor_auto":"Whom do you wish to intimidate?",
+    "others_auto":"$n starts threatening $mself, for no apparent reason."
+}

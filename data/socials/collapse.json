@@ -1,0 +1,10 @@
+{
+    "name":"collapse",
+    "actor_no_arg":"You collapse on the floor from exhaustion.",
+    "others_no_arg":"$n dramatically collapses to the floor from exhaustion.",
+    "actor_found_target":"You collapse right into $N's arms.",
+    "others_found":"$n collapses right into $N's arms.",
+    "target_found":"Suddenly, $n collapses into your arms from exhaustion.",
+    "actor_auto":"They've already left, just collapse on the floor.",
+    "others_auto":"$n clenches $s chest and dramatically collapse to the ground!"
+}

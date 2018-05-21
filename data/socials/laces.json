@@ -1,0 +1,10 @@
+{
+    "name":"laces",
+    "actor_no_arg":"You search everyone's feet in the room, looking for someone with laces.",
+    "others_no_arg":"$n looks around the room, staring at everyone's feet.",
+    "actor_found_target":"With the greatest of stealth, you tie $S shoelaces together.",
+    "others_found":"$n sneaks up to $N and ties $S shoelaces together.",
+    "target_found":"You try to take a step, and you hit the world facedown!  Someone must have tied your shoelaces together!",
+    "actor_auto":"Whose laces?",
+    "others_auto":"$n cleverly ties $s own shoelaces together, tries to walk, and sprawls flat on the floor."
+}

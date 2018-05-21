@@ -1,0 +1,10 @@
+{
+    "name":"smirk",
+    "actor_no_arg":"You smirk.",
+    "others_no_arg":"$n smirks.",
+    "actor_found_target":"You smirk at $S saying.",
+    "others_found":"$n smirks at $N's saying.",
+    "target_found":"$n smirks at your saying.",
+    "actor_auto":"You want to smirk to whom?",
+    "others_auto":"$n smirks at $s own 'wisdom'."
+}

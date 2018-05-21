@@ -1,0 +1,10 @@
+{
+    "name":"growl",
+    "actor_no_arg":"Grrrrrrrrrr...",
+    "others_no_arg":"$n growls.",
+    "actor_found_target":"Grrrrrrrrrr....take that, $N!!!",
+    "others_found":"$n growls at $N.  Better leave the room before the fighting starts.",
+    "target_found":"$n growls at you.  Hey, two can play it that way!",
+    "actor_auto":"No one can see you growl that far.",
+    "others_auto":"$n growls at $mself.  This could get interesting..."
+}

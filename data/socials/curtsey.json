@@ -1,0 +1,10 @@
+{
+    "name":"curtsey",
+    "actor_no_arg":"You curtsey to your audience.",
+    "others_no_arg":"$n curtseys gracefully.",
+    "actor_found_target":"You curtsey to $M.",
+    "others_found":"$n curtseys gracefully to $N.",
+    "target_found":"$n curtseys gracefully for you.",
+    "actor_auto":"You curtsey to no one in particular.",
+    "others_auto":"$n curtseys to $mself, since no one is paying attention to $m."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"blush",
+    "actor_no_arg":"Your cheeks are burning.",
+    "others_no_arg":"$n blushes.",
+    "actor_found_target":"You get all flustered up seeing $M.",
+    "others_found":"$n blushes as $e sees $N here.",
+    "target_found":"$n blushes as $e sees you here.  Such an effect on people!",
+    "actor_auto":"You blush as you notice that person isn't here.",
+    "others_auto":"$n blushes as $e notices $s boo-boo."
+}

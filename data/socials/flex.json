@@ -1,0 +1,10 @@
+{
+    "name":"flex",
+    "actor_no_arg":"You flex your muscles proudly!",
+    "others_no_arg":"$n flexes $s muscles...what a stud!?!",
+    "actor_found_target":"You show off to $N, flexing your muscles proudly.",
+    "others_found":"$n flexes $s muscles, in a vain attempt to impress $N.",
+    "target_found":"$n flexes $s muscles in a vain attempt to show off to you.",
+    "actor_auto":"$",
+    "others_auto":"$n rolls up $s shirt sleeve, admiring $s bulging muscles."
+}

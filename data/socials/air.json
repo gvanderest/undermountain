@@ -1,0 +1,10 @@
+{
+    "name":"air",
+    "actor_no_arg":"You grab your air guitar and play for all you're worth.",
+    "others_no_arg":"$n air-guitars like a mad man ... EXCELLENT!!!",
+    "actor_found_target":"You hope $E appreciates your (total lack of) talent.",
+    "others_found":"$n is surrounded by air groupies.",
+    "target_found":"$n plays a most excellent tune for you on $s most excellent air guitar.",
+    "actor_auto":"Awww... you have no audience!",
+    "others_auto":"$n fans the air with $s fingers, seemingly making $s own music."
+}

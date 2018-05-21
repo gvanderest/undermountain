@@ -1,0 +1,10 @@
+{
+    "name":"sbitch",
+    "actor_no_arg":"You look for someone to bitch slap.",
+    "others_no_arg":"$n is looking for someone to bitch slap around.",
+    "actor_found_target":"You slap $N for being such a big BITCH!!",
+    "others_found":"$n slaps $N for being such a big BITCH!!",
+    "target_found":"$n has bitchslapped you. You gonna take that from that dike?",
+    "actor_auto":"There is no one to hit..",
+    "others_auto":"$n bitch slaps $mself. RUN FOR THE HILLS, IT'S A MADMAN!"
+}

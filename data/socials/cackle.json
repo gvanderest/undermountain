@@ -1,0 +1,10 @@
+{
+    "name":"cackle",
+    "actor_no_arg":"You cackle gleefully.",
+    "others_no_arg":"$n throws back $s head and cackles with insane glee!",
+    "actor_found_target":"You cackle gleefully at $N",
+    "others_found":"$n cackles gleefully at $N.",
+    "target_found":"$n cackles gleefully at you.  Better keep your distance from $m.",
+    "actor_auto":"You can't find a friend to cackle with.",
+    "others_auto":"$n is really crazy now, $e's cackling at $mself."
+}

@@ -1,0 +1,10 @@
+{
+    "name":"highfive",
+    "actor_no_arg":"You jump in the air and give a BIG high five to...umm...absolutely nothing.",
+    "others_no_arg":"$n wildly high fives the air, looking very foolish -- very foolish indeed.",
+    "actor_found_target":"You jump in the air and give a BIG high five to $N!",
+    "others_found":"$n enthusiastically high-five's $N!",
+    "target_found":"$n gives you a BIG high five!  Way to go!!",
+    "actor_auto":"Sorry, they have already left.",
+    "others_auto":"$n tries to high five $mself, but ends up looking foolish instead."
+}

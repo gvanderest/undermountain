@@ -1,0 +1,10 @@
+{
+    "name":"adjust",
+    "actor_no_arg":"You look around, make sure nobody is watching, and you adjust your \"Tool.\"",
+    "others_no_arg":"$n looks around slyly, smiles, then reaches down and \"adjusts\" $mself...",
+    "actor_found_target":"You nonchalantly reach over and attempt to \"adjust\" $N's crotch!  What in the world are you thinking??",
+    "others_found":"$n reaches over, attempting to \"adjust\" $N.  Something isn't right here...",
+    "target_found":"$n reaches over and tries to grab you by the crotch!  What the hell!?!",
+    "actor_auto":"$",
+    "others_auto":"$n \"adjusts\" $mself, but spends a little too much time doing it."
+}

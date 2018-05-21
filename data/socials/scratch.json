@@ -1,0 +1,10 @@
+{
+    "name":"scratch",
+    "actor_no_arg":"You scratch yourself contentedly.",
+    "others_no_arg":"$n reaches down and scratches $mself...  Now $e looks VERY happy.",
+    "actor_found_target":"$",
+    "others_found":"$",
+    "target_found":"$",
+    "actor_auto":"$",
+    "others_auto":"$"
+}
