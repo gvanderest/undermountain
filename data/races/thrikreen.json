@@ -1,0 +1,9 @@
+{
+    "id": "thrikreen",
+    "name": "Thri-Kreen",
+    "short_name": "Thri",
+    "colored_name": "{CT{chri-Kreen{x",
+    "colored_short_name": "{CT{chri{x",
+    "desc": "Detect Magic, Exo, Fourhand",
+    "bonuses": "-2S -2C -2D --- +4I -3c +2.0V"
+}
