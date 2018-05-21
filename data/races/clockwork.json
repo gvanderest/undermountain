@@ -1,0 +1,9 @@
+{
+    "id": "clockwork",
+    "name": "Clockwork",
+    "short_name": "Cloc",
+    "colored_name": "{CC{clockwork{x",
+    "colored_short_name": "{CC{cloc{x",
+    "desc": "HeavyMetal, Unstoppable, Abstain",
+    "bonuses": "+2S +2C -1D -5W +1I --- -2.0V"
+}

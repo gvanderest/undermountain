@@ -1,0 +1,9 @@
+{
+    "id": "dromite",
+    "name": "Dromite",
+    "short_name": "Drom",
+    "colored_name": "{CD{cromite{x",
+    "colored_short_name": "{CD{crom{x",
+    "desc": "Carapace, Drainwill, Sudden",
+    "bonuses": "+1S --- +2D --- +1I -2c +2.0V"
+}

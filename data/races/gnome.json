@@ -1,0 +1,9 @@
+{
+    "id": "gnome",
+    "name": "Gnome",
+    "short_name": "Gnom",
+    "colored_name": "{CG{cnome{x",
+    "colored_short_name": "{CG{cnom{x",
+    "desc": "Dirty Fighting, Logic, Tinker",
+    "bonuses": "-2S +1C --- -2W +3I --- -1.0V"
+}

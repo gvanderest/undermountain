@@ -1,0 +1,9 @@
+{
+    "id": "gnoll",
+    "name": "Gnoll",
+    "short_name": "Gnol",
+    "colored_name": "{CG{cnoll{x",
+    "colored_short_name": "{CG{cnol{x",
+    "desc": "Hyenaclaw, Cunning, CallHyena",
+    "bonuses": "+2S --- +1D --- -2I -1c +1.0V"
+}
