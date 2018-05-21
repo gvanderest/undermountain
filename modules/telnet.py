@@ -111,6 +111,11 @@ class TelnetClient(Client):
         self.write_from_random_template("banners")
         self.write("What is your name, adventurer? ")
 
+    def log(self, message):
+        identifier = self.actor.name if self.actor \
+            else self.connection.hostname
+        super(TelnetClient, self).log("{}: {}".format(identifier, message))
+
     def start_proxy_command(
             self, command, callback=None, context=None, prompt=None):
         self.proxy_commands.append(command)
@@ -199,6 +204,7 @@ class TelnetClient(Client):
     def start_login_password(self):
         self.write("Password: ")
         self.state = "login_password"
+        self.hide_next_input()
 
     def handle_login_password_input(self, message):
         actor_password = self.temporary_actor.password
@@ -282,6 +288,7 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
         self.write(
             """Please choose a password (max 8 characters) for {}: """.format(
                 self.temporary_actor.name))
+        self.hide_next_input()
 
     def handle_select_password_input(self, message):
         if len(message) < 3:
@@ -297,6 +304,7 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
     def start_confirm_password(self):
         self.state = "confirm_password"
         self.write("Please confirm your password: ")
+        self.hide_next_input()
 
     def handle_confirm_password_input(self, message):
         if self.temporary_actor.password != hash_password(message):
