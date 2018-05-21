@@ -21,11 +21,54 @@ PASSWORD_ROUNDS = 100000
 
 TICK_SECONDS = 5.0  # Defaults to one tick per minute
 
+STATS = {
+    "str": {"initial": 1, "max": 25},
+    "int": {"initial": 1, "max": 25},
+    "wis": {"initial": 1, "max": 25},
+    "dex": {"initial": 1, "max": 25},
+    "con": {"initial": 1, "max": 25},
+    "luck": {"initial": 1, "max": 25},
+
+    "age": {"initial": 1},
+    "saves": {"initial": 0},
+
+    "arena_wins": {"initial": 0},
+    "arena_losses": {"initial": 0},
+
+    "hp": {"initial": 100},
+    "mana": {"initial": 100},
+    "moves": {"initial": 100},
+    "experience": {"initial": 0},
+
+    "ac_pierce": {"initial": 0},
+    "ac_slash": {"initial": 0},
+    "ac_bash": {"initial": 0},
+    "ac_magic": {"initial": 0},
+
+    "wimpy": {"initial": 0},
+
+    "trains": {"initial": 25},
+    "practices": {"initial": 25},
+
+    "weight": {"func": lambda a: a.stats.str * 100},
+    "items": {"func": lambda a: a.stats.str * 15},
+    "hitroll": {"func": lambda a: a.stats.dex * 5},
+    "damroll": {"func": lambda a: a.stats.str * 5},
+    "spellhit": {"func": lambda a: a.stats.wis * 5},
+    "spelldam": {"func": lambda a: a.stats.int * 5},
+    "crit": {"func": lambda a: a.stats.luck * 5},
+}
+
+CURRENCIES = {
+    "silver": {"initial": 10},
+    "adventure_points": {"initial": 0},
+    "quest_points": {"initial": 0},
+}
+
 # Special keywords.
 SELF_NAMES = (
     "self",
 )
-
 
 # Modules to include
 MODULES = (
