@@ -732,9 +732,7 @@ def say_command(self, message, **kwargs):
         return
 
     self.echo("{{MYou say {{x'{{m{}{{x'".format(message))
-    self.act("{M{self.name} says {x'{m{message}{M{x'", {
-        "message": message,
-    })
+    self.act("{M{actor.name} says {x'{m{message}{M{x'", message=message)
 
     self.emit("after:say", say_data, unblockable=True)
 
@@ -960,7 +958,7 @@ class Actor(Entity):
         self.stats.current_hp.base = 1
 
     @inject("Rooms")
-    def recall(self, Rooms):
+    def recall(self, Rooms=None):
         room = Rooms.get({"vnum": settings.INITIAL_ROOM_VNUM})
         self.room = room
 
@@ -1095,26 +1093,118 @@ class Actor(Entity):
         else:
             self.client.writeln(str(message))
 
-    def act(self, template, data=None, exclude=None):
-        Actors, Characters = self.game.get_injectors("Actors", "Characters")
-        if data is None:
-            data = {}
+    def act_to(self, target, template: str, **data):
+        """Perform an acting emote towards a target.
+
+        :param target: Actor
+        :param template: a template string containing act tokens
+        :param **data: a dictionary of extra act data
+
+        See: self.act
+        """
+        message = template
+
+        # Attribute names and functions to run on self, it will provide the
+        # target as the parameter-- this can allow visibility checks, etc.
+        OBJECT_ATTRIBUTES = {
+            "name": "name_to",
+
+            "him": "objective_to",
+            "her": "objective_to",
+            "objective": "objective_to",
+
+            "he": "subjective_to",
+            "she": "subjective_to",
+            "subjective": "subjective_to",
+
+            "his": "possessive_to",
+            "possessive": "possessive_to",
+        }
 
         data["self"] = self
 
-        message = template
+        # Iterate over the data provided
+        for key, value in data.items():
 
+            # If string, do a simple token replace
+            if isinstance(value, str):
+                token = "{{{}}}".format(key)
+                if token in message:
+                    message = message.replace(token, value)
+
+            # If object, look up OBJECT_ATTRIBUTES to replace with function
+            # calls as needed.
+            elif isinstance(value, object):
+                for attr_name, attr_func in OBJECT_ATTRIBUTES.items():
+                    token = "{{{}.{}}}".format(key, attr_name)
+                    if token in message:
+                        func = getattr(self, attr_func)
+                        message = message.replace(token, func(target))
+
+            # Otherwise, it's invalid tata.
+            else:
+                raise Exception("Invalid data '{}'.".format(key))
+
+        # Support old replacement format
+        if "$" in message:
+            if "$n" in message:
+                message = message.replace("$n", self.name_to(target))
+
+        target.echo(message)
+
+    def act(self, template: str, **data):
+        """Perform an acting emote towards an entire room.
+
+        :param target: Actor
+        :param template: a template string containing act tokens
+        :param exclude: a list of people to exclude from the to-room act
+        :param **data: a dictionary of extra act data
+        """
+        Actors, Characters = self.game.get_injectors("Actors", "Characters")
+
+        if data is None:
+            data = {}
+
+        data["actor"] = self
+
+        # Exclude people from the display of this
+        exclude = data.pop("exclude", [self])
+        if exclude is None:
+            exclude = [self]
+
+        # Iterate over actors and act_to them
         for collection in (Characters, Actors):
             for actor in collection.query({"room_id": self.room_id}):
-                if actor == self or actor == exclude:
+                if actor in exclude:
                     continue
 
-                if "{message}" in message:
-                    message = message.replace("{message}", data["message"])
-                if "{self.name}" in message:
-                    message = message.replace("{self.name}", data["self"].name)
+                # TODO: Visibility?
 
-                actor.echo(message)
+                self.act_to(actor, template, **data)
+
+    def subjective_to(self, target):
+        if not target.can_see(self):
+            return "it"
+        return self.gender.subjective
+
+    def possessive_to(self, target):
+        if not target.can_see(self):
+            return "its"
+        return self.gender.possessive
+
+    def objective_to(self, target):
+        if not target.can_see(self):
+            return "it"
+        return self.gender.objective
+
+    def name_to(self, target):
+        """Format an Actor's name towards a target.
+
+        Takes visibility into account.
+
+        :param target: the target to format for
+        """
+        return self.name
 
     @property
     def stats(self):
