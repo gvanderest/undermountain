@@ -5,6 +5,7 @@ future list of features we're aiming for.. hopefully from top to bottom.
 
 ## Short Term
 
+- List of commands
 - Skills and spellgroups
     - Gain skills and spells after creation
     - Improvement of skills and practicing from usage
@@ -99,6 +100,15 @@ future list of features we're aiming for.. hopefully from top to bottom.
     - Tracking
     - Seeing some echos/hearing from a distance
     - Scanning the area around you to see nearby rooms of people
+- Support for MUD extension
+    - MSP - http://tintin.sourceforge.net/msdp/
+    - MXP - https://www.zuggsoft.com/zmud/mxp.htm
+    - UMP - Undermountain JSON Protocol
+- Hot Reboot
+- "Set" command for changing values
+- "Load" command for instancing entities
+- Room Creation
+- Mob creation
 
 ## Longer Term
 
