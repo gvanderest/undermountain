@@ -87,115 +87,19 @@ If a filename matching both a direct path and `backups` folder are found, the
 direct path will win.
 
 
-# Engine Documentation
+# Engine Concepts
 
-## Subroutines
+### Modules
 
-In the Undermountain game engine, most things fire Events which can be hooked
-into by Entities (Actors, Rooms, Objects, etc.) to react with scripts.  These
-scripts are written in Python3, but some support for OLC Mobprogs may exist
-for a period of time until the game is fully ported over from ROT.
+### Injectors
 
-Most events will come in pairs, typically with a pre-event that is blockable
-by the script, and a post-event that is not blockable.
+#### Collections
 
-### Example Subroutine
+### Managers
 
-Just as an early example of a subroutine, we might attach the following
-"entered" script to a goblin standing in the room.
+### Clients
 
-    if random_number(0, 10) > 5:  # 50% chance of ..
-
-        self.say("I kill you!", language="goblin")  # .. saying this message
-        self.attack(target)  # .. and attacking
-
-### Creating Subroutines
-
-TBD
-
-### Attaching Subroutines to Entities
-
-TBD
-
-### Event Types
-
-This area will detail the types of events that can fire, when to expect them,
-ability to be blocked, and example data that should be available with them.
-Events that are blockable will be noted.
-
-
-#### before:act -> after:act
-#### before:attack -> after:attack
-#### before:cast -> after:cast
-> param {Actor} target - The target that is casting.
-
-> param {Ability} ability - The skill or spell being used.
-
-#### before:despawn
-
-When an Entity is going to be removed from the Game.
-
-Note: Unblockable.
-
-#### before:drink -> after:drink
-#### before:death -> after:death
-> param {Actor} target - The target that is dying.
-
-When an Actor's health is reduced to zero, or they are outright killed by
-some other means, the *dying* event will fire in the Room where the
-death is occurring.
-
-If an Actor is not saved from *dying*, they will fire a *died* event in the
-Room that they respawn in (often their recall).
-
-Note: If *dying* is blocked, the Actor's "current_hp" stat must be changed
-to a positive value in order for it to truly be blocked.  This may be
-automatically enforced in the future.
-
-#### before:eat -> after:eat
-#### before:enter -> after:enter
-#### before:input -> after:input
-
-Handle raw input of a player.  Allows interception of inputs to perform custom
-commands handled by scripts within the game.
-
-#### before:attack -> after:attack
-
-TBD
-
-#### before:leave -> after:leave
-#### before:message -> after:message
-
-Channel messages.
-
-#### before:respawn -> after:respawn
-
-This is what happens when an area/entity resets or regenerates from inactivity.
-
-#### before:skill -> after:skill
-
-See: casting -> cast
-
-#### after:spawn
-
-When Entity is created
-
-#### before:walk -> after:walk
-> param {Actor} target - The target that is walking or walked.
-
-> param {Direction} direction - The direction that the target walked or
-> entered from.
-
-When an Actor is trying to walk out of a Room, this will fire in the Room that
-the *walking* was initiated in.
-
-When an Actor arrives in the Room, this will will fire in the Room that the
-*walked* arrives in.
-
-
-### Methods Available
-
-In addition to the basic functionality that Python provides, there are various
-helper functions that are made available to you in subroutines.
-
-#### random_number
+* Settings File
+* Clients
+* Modules
+    * Events
