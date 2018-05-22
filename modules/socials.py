@@ -68,7 +68,7 @@ def handle_social(self, name, args, Socials, **kwargs):
 
         else:  # untargeted social
             self.act_to(self, social.actor_no_arg)
-            self.act(social.others_no_arg, exclude=self)
+            self.act(social.others_no_arg)
 
     else:
         self.echo("You couldn't find your target.")
