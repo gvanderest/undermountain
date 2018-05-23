@@ -1207,7 +1207,7 @@ class Actor(Entity):
                 for attr_name, attr_func in OBJECT_ATTRIBUTES.items():  # cycle through OBJECT_ATTRIBUTES
                     token = "{{{}.{}}}".format(key, attr_name)  # Ex. {actor.name} or {target.she}
                     if token in message:  # {name.name} was found ... shouldn't it be "name.actor" or just "actor"?
-                        func = getattr(self, attr_func)  # func = Actor.name_to()
+                        func = getattr(value, attr_func)  # func = Actor.name_to()
                         message = message.replace(token, func(recipient))  # msg = msg.replace({name.name}, name attribute of the Actor object 'Krogenar'
 
             # Otherwise, it's invalid data.
@@ -1233,9 +1233,6 @@ class Actor(Entity):
 
         if data is None:
             data = {}
-
-        data["actor"] = self
-        data["self"] = self
 
         # Exclude people from the display of this
         exclude = data.pop("exclude", [self])

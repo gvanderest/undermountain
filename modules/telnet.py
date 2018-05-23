@@ -547,12 +547,12 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         actor.save()
 
         self.state = "playing"
-        actor.act("{self.name} slowly fades into existence.")
+        actor.act("{actor.name} slowly fades into existence.")
         self.handle_playing_input("look")
 
     def quit(self):
         self.connection.close()
-        self.actor.act("{self.name} slowly fades out of existence.")
+        self.actor.act("{actor.name} slowly fades out of existence.")
 
     def write(self, message=""):
         if self.state == "playing" and not self.write_ended_with_newline:
