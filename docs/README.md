@@ -8,7 +8,7 @@ Undermountain is a Python3 MUD engine.  It is inspired by by existing MUDs, but 
     * Events
     * Collections
 * Modules
-    * [commands](Commands)
+    * [Commands](commands)
     * Managers
     * Injectors
 
