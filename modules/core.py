@@ -1159,12 +1159,12 @@ class Actor(Entity):
         else:
             self.client.writeln(str(message))
 
-    def act_to(self, target, template: str, **data):
-        """Perform an acting emote towards a target.
+    def act_to(self, recipient, template: str, **data):
+        """Perform an acting emote towards a recipient.
 
-        :param target: Actor
+        :param recipient: recipient of the echo.
         :param template: a template string containing act tokens
-        :param **data: a dictionary of extra act data
+        :param data: a dictionary of extra act data
 
         See: self.act
         """
@@ -1187,26 +1187,28 @@ class Actor(Entity):
             "possessive": "possessive_to",
         }
 
+        data["actor"] = self
         data["self"] = self
 
         # Iterate over the data provided
-        
+        # Krogenar - incoming key/val could be: "$n": "Krogenar" (value is string) - replace '$n' with 'Krogenar'
+        #          - incoming key/val could be: "name": actor instance for Krogenar -- in future, any Entity object
         for key, value in data.items():
 
-            # If string, do a simple token replace
+            # If string, do a simple token replace Ex. "weapon_name": "StormBringer"
             if isinstance(value, str):
-                token = "{{{}}}".format(key)
+                token = "{{{}}}".format(key)  # token becomes {weapon_name} in above example.
                 if token in message:
-                    message = message.replace(token, value)  # {$N} -->
+                    message = message.replace(token, value)  # {weapon_name} --> 'StormBringer'
 
             # If object, look up OBJECT_ATTRIBUTES to replace with function
             # calls as needed.
-            elif isinstance(value, object):
-                for attr_name, attr_func in OBJECT_ATTRIBUTES.items():
-                    token = "{{{}.{}}}".format(key, attr_name)
-                    if token in message:
-                        func = getattr(self, attr_func)
-                        message = message.replace(token, func(target))
+            elif isinstance(value, object):  # key, value = "name": Actor object for Krogenar
+                for attr_name, attr_func in OBJECT_ATTRIBUTES.items():  # cycle through OBJECT_ATTRIBUTES
+                    token = "{{{}.{}}}".format(key, attr_name)  # Ex. {actor.name} or {target.she}
+                    if token in message:  # {name.name} was found ... shouldn't it be "name.actor" or just "actor"?
+                        func = getattr(self, attr_func)  # func = Actor.name_to()
+                        message = message.replace(token, func(recipient))  # msg = msg.replace({name.name}, name attribute of the Actor object 'Krogenar'
 
             # Otherwise, it's invalid data.
             else:
@@ -1214,14 +1216,14 @@ class Actor(Entity):
 
         # Support old replacement format
         if "$" in message:
-            if "$n" in message:
-                message = message.replace("$n", self.name_to(target))
+            if "{$n}" in message:
+                message = message.replace("{$n}", self.name_to(recipient))
 
-        target.echo(message)
+        recipient.echo(message)
 
     def act(self, template: str, **data):
         """Perform an acting emote towards an entire room.
-
+        Default behavior is that the Actor does NOT receive emote echo.
         :param target: Actor
         :param template: a template string containing act tokens
         :param exclude: a list of people to exclude from the to-room act
@@ -1233,6 +1235,7 @@ class Actor(Entity):
             data = {}
 
         data["actor"] = self
+        data["self"] = self
 
         # Exclude people from the display of this
         exclude = data.pop("exclude", [self])
@@ -1247,7 +1250,7 @@ class Actor(Entity):
 
                 # TODO: Visibility?
 
-                self.act_to(actor, template, **data)
+                self.act_to(actor, template, **data)  # data could contain subject-related tokens like {subject.his}
 
     def subjective_to(self, target):
         if not target.can_see(self):

@@ -36,15 +36,22 @@ class SocialsModule(Module):
 
 @inject("Socials")
 def handle_social(self, name, args, Socials, **kwargs):
+    """
+    generic social handling logic
+    :param self:
+    :param name: the name of the social itself
+    :param args:
+    :param Socials: collection
+    :param kwargs:
+    :return:
+    """
 
     bad_target = False  # In the event that a bad target is supplied 'hug zkjhkfjh' the social itself fails.
 
     if args:
-        #self.echo("name is: {} and args are: {} with type {}".format(name, args, type(args)))  # troubleshooting
         prop_target = args.pop(0).lower()
-        targets = list(self.find_targets())
-        #self.echo("targets returns are: {}".format(targets))  # troubleshooting
-        target = self.find_target(prop_target)
+        self.echo("proposed_target is: '{}'".format(prop_target))
+        target = self.find_target(prop_target)  # This could return None.
     else:
         prop_target = None
         target = None
@@ -57,14 +64,19 @@ def handle_social(self, name, args, Socials, **kwargs):
         social = Socials.get({"name": name})
 
         if target:
+            self.echo("Target object was found: target.name= '{}'".format(target.name))
             if target == self:
                 self.act_to(self, social.actor_auto)
                 self.act(social.others_auto)
                 return
 
-            self.act_to(target, social.target_found)
-            self.act_to(self, social.actor_found_target)
-            self.act(social.others_found, exclude=[self, target])
+            self.echo("Target exists and is not self.")
+            self.echo("act_to -> recipient='{}', echo='{}', target.name='{}'".format(target.name, social.target_found, target.name))
+            self.act_to(target, social.target_found, target=target)
+            self.echo("act_to -> recipient='{}', echo='{}', target.name='{}'".format(self.name, social.actor_found_target, target.name))
+            self.act_to(self, social.actor_found_target, target=target)
+            self.echo("act -> echo='{}', target.name='{}'".format(social.others_found, target.name))
+            self.act(social.others_found, exclude=[self, target], target=target)
 
         else:  # untargeted social
             self.act_to(self, social.actor_no_arg)
