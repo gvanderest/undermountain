@@ -43,6 +43,7 @@ class Social:
                  others_found,
                  target_found,
                  actor_auto,
+                 actor_self,
                  others_auto):
         self.name = social_name
         self.actor_no_arg = actor_no_arg
@@ -51,6 +52,7 @@ class Social:
         self.others_found = others_found
         self.target_found = target_found
         self.actor_auto = actor_auto
+        self.actor_self = actor_self
         self.others_auto = others_auto
 
 
@@ -76,11 +78,12 @@ if filename:
         e = socs[count].rstrip()
         count += 1
         f = socs[count].rstrip()
-        count += 2  # skip over second to last line in block.
+        count += 1  # skip over second to last line in block.
         g = socs[count].rstrip()
         count += 1
+        h = socs[count].rstrip()
         count += 1
-        soc = Social(name, a, b, c, d, e, f, g)
+        soc = Social(name, a, b, c, d, e, f, g, h)
         socList.append(soc)
 
     print("{} socials were found.".format(len(socList)))

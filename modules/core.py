@@ -730,7 +730,7 @@ def say_command(self, message, **kwargs):
     self.emit("after:say", say_data, unblockable=True)
 
 
-@inject("Directions", "Rooms")
+@inject("Directions", "Rooms", "Overmap")
 def direction_command(self, name, Directions, Rooms, **kwargs):
     room = self.room
 
@@ -762,6 +762,9 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
     if walk.blocked:
         return
 
+    if len(self.overmap) > 0:
+        Overmap.handle_walk(self, direction)
+        return
     new_room = Rooms.get({"vnum": exit["room_vnum"]})
 
     if not new_room:
@@ -1119,6 +1122,16 @@ def title_command(self, message, **kwargs):
         self.echo("Title cleared.")
 
 
+@inject("Overmap", "Areas")
+def overmap_recall(self, Overmap, Areas, **kwargs):
+    self.overmap_x = 0
+    self.overmap_y = 0
+    self.overmap = "Bitterwoods"
+    for area in Areas.query():
+        if area.name == self.overmap:
+            Overmap.overmap_recall(self, area)
+
+
 class ActorStat(object):
     def __init__(self, id, value, actor):
         self.id = id
@@ -1194,7 +1207,8 @@ class Actor(Entity):
         :return:
         """
 
-        if prop_target.lower() in ("self", "myself"):
+        self.echo("{{BYou try to target '{{W{}'!{{x".format(prop_target))
+        if "self" == prop_target.strip().lower() or "myself" == prop_target.lower:
             target = self
             return target
         else:
@@ -1890,6 +1904,7 @@ class CoreModule(Module):
         self.game.register_command("open", open_command)
         self.game.register_command("close", close_command)
         self.game.register_command("sockets", sockets_command)
+        self.game.register_command("recall", overmap_recall)
 
         self.game.register_manager(TickManager)
 

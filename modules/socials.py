@@ -57,7 +57,7 @@ def handle_social(self, name, args, Socials, **kwargs):
         social = Socials.get({"name": name})
 
         if target:
-            if target == self:
+            if target == self or target == "self":
                 self.act_to(self, social.actor_auto)
                 self.act(social.others_auto)
                 return

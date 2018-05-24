@@ -1,7 +1,7 @@
 {
     "vnum":"Bitterwoods",
     "name":"Bitterwoods",
-    "description":"The Main Overworld map for Bitterwoods",
+    "description":"The Main overmap map for Bitterwoods",
     "min_level":"0",
     "max_level":"101",
     "visibility":"10",

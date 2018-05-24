@@ -4,16 +4,16 @@ import random
 from collections import Counter
 
 """
-This script can be used to import an file of an overworld map into Undermountain.
+This script can be used to import an file of an overmap map into Undermountain.
 No warranty is provided, YMMV. It was created by penguin of Waterdeep.
 The general shape of the socials.are file for purposes of this importer is:
 
-############Undermountain Overworld Map Format############
+############Undermountain overmap Map Format############
 name Bitterwoods
 minlevel 0
 maxlevel 101
 visibility 10
-description The Main Overworld map for Bitterwoods
+description The Main overmap map for Bitterwoods
 ##########################################################
 <ascii map here>
 """
@@ -38,7 +38,7 @@ def create_color_maping(area_map):
     return color_mapping
 
 
-class Overworld:
+class overmap:
     def __init__(self,
                  name,
                  min_level,
@@ -68,39 +68,39 @@ filename = sys.argv[-1]
 area_map = []
 if filename:
     with open(filename, 'r') as f:
-        overworld = f.readlines()
+        overmap = f.readlines()
         count = 0
 
-    while count < len(overworld):
-        if overworld[count].startswith("name"):
-            name = overworld[count].rstrip().split(" ", 1)[1]
+    while count < len(overmap):
+        if overmap[count].startswith("name"):
+            name = overmap[count].rstrip().split(" ", 1)[1]
             count += 1
             continue
-        if overworld[count].startswith("minlevel"):
-            min_level = overworld[count].rstrip().split(" ")[1]
+        if overmap[count].startswith("minlevel"):
+            min_level = overmap[count].rstrip().split(" ")[1]
             count += 1
             continue
-        if overworld[count].startswith("desc"):
+        if overmap[count].startswith("desc"):
             # grab everything after the first word of the lne
-            description = overworld[count].rstrip().split(' ', 1)[1]
+            description = overmap[count].rstrip().split(' ', 1)[1]
             count += 1
             continue
-        if overworld[count].startswith("maxlevel"):
-            max_level = overworld[count].rstrip().split(" ")[1]
+        if overmap[count].startswith("maxlevel"):
+            max_level = overmap[count].rstrip().split(" ")[1]
             count += 1
             continue
-        if overworld[count].startswith("visibility"):
-            visibility = overworld[count].rstrip().split(" ")[1]
+        if overmap[count].startswith("visibility"):
+            visibility = overmap[count].rstrip().split(" ")[1]
             count += 1
             continue
-        if overworld[count].startswith("#") or overworld[count].rstrip() == "":
+        if overmap[count].startswith("#") or overmap[count].rstrip() == "":
             count += 1
             continue
 
-        area_map.append(overworld[count].rstrip())
+        area_map.append(overmap[count].rstrip())
         count += 1
 
-    area = Overworld(name, min_level, max_level, visibility, description, area_map)
+    area = overmap(name, min_level, max_level, visibility, description, area_map)
 
     fname = area.name + ".json"
     sf = open(fname, "w")

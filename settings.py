@@ -34,6 +34,7 @@ MODULES = (
     "modules.combat.CombatModule",
     "modules.build.BuildModule",
     "modules.socials.SocialsModule",
+    "modules.overmap.OvermapModule",
 )
 
 DIRECTIONS = {
