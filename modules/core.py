@@ -997,7 +997,7 @@ class Actor(Entity):
 
             return target
 
-    def replace_tokens(self, msg=None, target=None):
+    def replace_tokens(self, msg, target=None):
         """
         This will replace interactive tokens like <subject>, <object>, $n, $m with "his" "her", etc.
         :param msg: The starting msg string to be altered.
@@ -1014,16 +1014,15 @@ class Actor(Entity):
         $E = actor.gender.subject
         """
         if msg:
-            #self.echo("replace tokens: name:{} gender:{} object:{}".format(self.name, self.gender, self.gender.object))
             msg = msg.replace('$n', self.name)
             msg = msg.replace('$s', self.gender.possessive)
-            msg = msg.replace('$m', self.gender.object)
-            msg = msg.replace('$e', self.gender.subject)
+            msg = msg.replace('$m', self.gender.objective)
+            msg = msg.replace('$e', self.gender.subjective)
             if target:  # Do this later.
                 msg = msg.replace('$N', target.name)
                 msg = msg.replace('$S', target.gender.possessive)
-                msg = msg.replace('$M', target.gender.object)
-                msg = msg.replace('$E', target.gender.subject)
+                msg = msg.replace('$M', target.gender.objective)
+                msg = msg.replace('$E', target.gender.subjective)
             return msg
         else:
             return
@@ -1208,7 +1207,11 @@ class Actor(Entity):
                     token = "{{{}.{}}}".format(key, attr_name)  # Ex. {actor.name} or {target.she}
                     if token in message:  # {name.name} was found ... shouldn't it be "name.actor" or just "actor"?
                         func = getattr(value, attr_func)  # func = Actor.name_to()
-                        message = message.replace(token, func(recipient))  # msg = msg.replace({name.name}, name attribute of the Actor object 'Krogenar'
+                        if func:
+                            message = message.replace(token, func(recipient))  # msg = msg.replace('{actor.name}', name_to(actor))
+                        else:
+                            self.echo("Function not found.")
+                            raise Exception("Function not found.")
 
             # Otherwise, it's invalid data.
             else:
@@ -1216,8 +1219,8 @@ class Actor(Entity):
 
         # Support old replacement format
         if "$" in message:
-            if "{$n}" in message:
-                message = message.replace("{$n}", self.name_to(recipient))
+            target = data.get("target", None)
+            message = self.replace_tokens(message, target=target)
 
         recipient.echo(message)
 
@@ -1249,29 +1252,35 @@ class Actor(Entity):
 
                 self.act_to(actor, template, **data)  # data could contain subject-related tokens like {subject.his}
 
-    def subjective_to(self, target):
-        if not target.can_see(self):
+    def subjective_to(self, viewer):
+        if not viewer.can_see(self):
             return "it"
         return self.gender.subjective
 
-    def possessive_to(self, target):
-        if not target.can_see(self):
+    def possessive_to(self, viewer):
+        if not viewer.can_see(self):
             return "its"
         return self.gender.possessive
 
-    def objective_to(self, target):
-        if not target.can_see(self):
+    def objective_to(self, viewer):
+        if not viewer.can_see(self):
             return "it"
         return self.gender.objective
 
-    def name_to(self, target):
-        """Format an Actor's name towards a target.
-
+    def name_to(self, viewer):
+        """Format an Actor's name towards a viewer.
         Takes visibility into account.
-
-        :param target: the target to format for
         """
+        if not viewer.can_see(self):
+            return "Someone"
         return self.name
+
+    def can_see(self, viewer):
+        """
+        Until fully implemented, always return True.
+        :return:
+        """
+        return True
 
     @property
     def stats(self):

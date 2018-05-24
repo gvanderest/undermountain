@@ -64,9 +64,10 @@ def handle_social(self, name, args, Socials, **kwargs):
         social = Socials.get({"name": name})
 
         if target:
-            self.echo("Target object was found: target.name= '{}'".format(target.name))
+            self.echo("Target actor was found: target.name= '{}'".format(target.name))
             if target == self:
-                self.act_to(self, social.actor_auto)
+                self.echo("Target of social is self.".format(target.name))
+                self.act_to(self, social.actor_auto, target=target)
                 self.act(social.others_auto)
                 return
 
@@ -79,6 +80,7 @@ def handle_social(self, name, args, Socials, **kwargs):
             self.act(social.others_found, exclude=[self, target], target=target)
 
         else:  # untargeted social
+            self.echo("Untargeted social triggered.")
             self.act_to(self, social.actor_no_arg)
             self.act(social.others_no_arg)
 
