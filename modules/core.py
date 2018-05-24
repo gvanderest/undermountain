@@ -1005,8 +1005,8 @@ class Actor(Entity):
         :return:
         $n = actor.name
         $s = actor.gender.possessive -- his, her, its
-        $m = actor.gender.object -- him, her, it
-        $e = actor.gender.subject -- he, she, it
+        $m = actor.gender.objective -- him, her, it
+        $e = actor.gender.subjective -- he, she, it
 
         $N = target.name
         $S = target.gender.possessive
