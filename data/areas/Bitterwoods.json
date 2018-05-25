@@ -1,11 +1,6 @@
 {
-    "vnum":"Bitterwoods",
-    "name":"Bitterwoods",
-    "description":"The Main overmap map for Bitterwoods",
-    "min_level":"0",
-    "max_level":"101",
-    "visibility":"10",
-    "area_map":[
+    "actors": [],
+    "area_map": [
         "MMMMMMMMMMMMMNMMMMMNNNNMMMMMMMMMDNNNNNNNDOO8NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNMMMMMNNNNNNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNNNNNNNNNNNNNNNNNNNDMNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
         "MI . .=~.... . ...  . . ...=... .       .:~:~~~~:,~,::,,:,.         . ......~~,,.....  ...,,:,,~~:::,:,:.. .    ...         .   .      ...~,~~.             .  ....,~~,..                        . ..         ..............,~...  ............. . ....=OOOOOOOZDMMDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
         "M.  ..:=:,......    .   ..~:..   .      .. .,,:::,:,,,,::,,.        ....,~::~,....     ..~~,::::,:,:,,,:=,...... ..                  ....,=,,~: ..         .. . ..~:::,...                                    .............,=....... ........,~. .  ...,$ZOOOOOO~MM8MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
@@ -190,31 +185,42 @@
         "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
         "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
     ],
-    "height":183,
-    "width":340,
-    "color_mapping":{
-        "8":"{0",
-        "$":"{1",
-        "=":"{2",
-        " ":"{3",
-        "M":"{4",
-        "N":"{5",
-        "D":"{6",
-        "~":"{7",
-        "Z":"{8",
-        ":":"{9",
-        "I":"{0",
-        "+":"{1",
-        "7":"{2",
-        ",":"{3",
-        ".":"{4",
-        "?":"{5",
-        "O":"{6"
+    "color_mapping": {
+        " ": "{3",
+        "$": "{1",
+        "+": "{1",
+        ",": "{3",
+        ".": "{4",
+        "7": "{2",
+        "8": "{0",
+        ":": "{B",
+        "=": "{2",
+        "?": "{B",
+        "D": "{6",
+        "I": "{0",
+        "M": "{G",
+        "N": "{5",
+        "O": "{g",
+        "Z": "{8",
+        "~": "{7"
     },
-    "actors":[],
-    "flags":[],
-    "id":"4b9163eb250c5f9820ebbe68b1495a295e26fbad",
-    "scripts":[],
-    "rooms":[],
-    "objects":[]
+    "description": "The Main overmap map for Bitterwoods",
+    "flags": {},
+    "height": 183,
+    "id": "4b9163eb250c5f9820ebbe68b1495a295e26fbad",
+    "max_level": "101",
+    "min_level": "0",
+    "name": "Bitterwoods",
+    "objects": [],
+    "overmap_actors": {
+        "Recall": [
+            96,
+            99
+        ]
+    },
+    "rooms": [],
+    "scripts": [],
+    "visibility": 20,
+    "vnum": "Bitterwoods",
+    "width": 340
 }

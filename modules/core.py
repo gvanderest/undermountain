@@ -6,6 +6,8 @@ from utils.ansi import pad_right, stop_color_bleed
 from utils.hash import get_random_hash
 from mud.timer_manager import TimerManager
 from random import randint, choice
+from modules.overmap import overmap_recall as om_recall
+from modules.overmap import overmap_walk as om_handle_walk
 
 import gevent
 import settings
@@ -743,13 +745,6 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
         self.echo("You can't go that way.")
         return
 
-    if exit.has_flag(EXIT_DOOR) and exit.has_flag(EXIT_CLOSED):
-        if exit.has_flag(EXIT_SECRET):
-            self.echo("You can't go that way.")
-        else:
-            self.echo("The door is closed.")
-        return
-
     if self.target_ids:
         self.echo("You are in combat!")
         return
@@ -763,8 +758,16 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
         return
 
     if len(self.overmap) > 0:
-        Overmap.handle_walk(self, direction)
+        om_handle_walk(self, direction)
         return
+
+    if exit.has_flag(EXIT_DOOR) and exit.has_flag(EXIT_CLOSED):
+        if exit.has_flag(EXIT_SECRET):
+            self.echo("You can't go that way.")
+        else:
+            self.echo("The door is closed.")
+        return
+
     new_room = Rooms.get({"vnum": exit["room_vnum"]})
 
     if not new_room:
@@ -1122,14 +1125,14 @@ def title_command(self, message, **kwargs):
         self.echo("Title cleared.")
 
 
-@inject("Overmap", "Areas")
-def overmap_recall(self, Overmap, Areas, **kwargs):
+@inject("Areas")
+def overmap_recall(self, Areas, **kwargs):
     self.overmap_x = 0
     self.overmap_y = 0
     self.overmap = "Bitterwoods"
     for area in Areas.query():
         if area.name == self.overmap:
-            Overmap.overmap_recall(self, area)
+            om_recall(self)
 
 
 class ActorStat(object):
@@ -1184,7 +1187,7 @@ class Actor(Entity):
 
     def die(self):
         self.recall()
-        self.stats.hp.base = 1
+        self.stats.hp.current = 1
 
     @inject("Rooms")
     def recall(self, Rooms=None):
