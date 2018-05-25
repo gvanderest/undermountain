@@ -68,6 +68,26 @@ DIRECTIONS = {
         "colored_name": "{ydown{x",
         "opposite_id": "up",
     },
+    "se": {
+        "id": "se",
+        "colored_name": "{gsoutheast{x",
+        "opposite_id": "nw",
+    },
+    "sw": {
+        "id": "sw",
+        "colored_name": "{Gsouthwest{x",
+        "opposite_id": "ne",
+    },
+    "ne": {
+        "id": "ne",
+        "colored_name": "{cnortheast{x",
+        "opposite_id": "sw",
+    },
+    "nw": {
+        "id": "nw",
+        "colored_name": "{Cnorthwest{x",
+        "opposite_id": "se",
+    },
 }
 
 

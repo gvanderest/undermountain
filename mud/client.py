@@ -24,9 +24,22 @@ class Client(object):
         self.last_input = ""
         self.spam_count = 0
 
+        self.next_input_hidden = False
+
     @property
     def game(self):
         return self.connection.game
+
+    def hide_next_input(self):
+        """Send ANSI for hiding input and prevent logging of next input."""
+        self.next_input_hidden = True
+        self.connection.socket.sendall(b"\xFF\xFB\x01")
+
+    def show_next_input(self):
+        self.next_input_hidden = False
+
+        self.write("\n")
+        self.connection.socket.sendall(b"\xFF\xFC\x01")
 
     def write_from_random_template(self, folder):
         """Read a random file from a data folder and output it."""
@@ -53,6 +66,12 @@ class Client(object):
         for input in inputs:
             logging.info("INPUT {}".format(input))
 
+            if self.next_input_hidden:
+                self.show_next_input()
+                input = "**************** (Hidden)"
+
+            self.log("Input: {}".format(input))
+
     def start_parse_thread(self):
         while self.inputs:
             message = self.inputs.pop(0)
@@ -76,3 +95,6 @@ class Client(object):
 
     def writeln(self, message=""):
         self.write(message + "\n")
+
+    def log(self, message):
+        logging.info(message)

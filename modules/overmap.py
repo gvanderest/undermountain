@@ -124,7 +124,10 @@ def draw_map(self, area):
     for line in map_slice:
         map_line = f"[{{w{start_y + ycount - self.overmap_y:>3}]"
         for room in line:
-            map_line += f"{draw_room(self, xcount + start_x, ycount + start_y, area)}"
+            if self.overmap_x == xcount + start_x and self.overmap_y == ycount + start_y:
+                map_line += "{R@"
+            else:
+                map_line += f"{draw_room(self, xcount + start_x, ycount + start_y, area)}"
             xcount += 1
         self.echo(map_line)
         xcount = 0
@@ -141,24 +144,52 @@ def overmap_walk(self, direction, Areas):
             if direction.id == "north":
                 if self.overmap_y > 0:
                     set_actor_location(self, area, self.overmap_x, self.overmap_y - 1)
+                    draw_map(self, area)
                 else:
                     self.echo(f"You are at the northern boarder of {area.name}")
             if direction.id == "south":
                 if self.overmap_y < area.height - 1:
                     set_actor_location(self, area, self.overmap_x, self.overmap_y + 1)
+                    draw_map(self, area)
                 else:
                     self.echo(f"You are at the southern boarder of {area.name}")
             if direction.id == "east":
                 if self.overmap_x < area.width -1:
                     set_actor_location(self, area, self.overmap_x + 1, self.overmap_y)
+                    draw_map(self, area)
                 else:
                     self.echo(f"You are at the eastern boarder of {area.name}")
             if direction.id == "west":
                 if self.overmap_x > 0:
                     set_actor_location(self, area, self.overmap_x - 1, self.overmap_y)
+                    draw_map(self, area)
                 else:
                     self.echo(f"You are at the western boarder of {area.name}")
-            draw_map(self, area)
+            if direction.id == "se":
+                if self.overmap_x < area.width -1 and self.overmap_y < area.height - 1:
+                    set_actor_location(self, area, self.overmap_x + 1, self.overmap_y + 1)
+                    draw_map(self, area)
+                else:
+                    self.echo(f"You are at the boarder of {area.name}")
+            if direction.id == "sw":
+                if self.overmap_x > 0 and self.overmap_y < area.height - 1:
+                    set_actor_location(self, area, self.overmap_x - 1, self.overmap_y + 1)
+                    draw_map(self, area)
+                else:
+                    self.echo(f"You are at the boarder of {area.name}")
+            if direction.id == "ne":
+                if self.overmap_x < area.width -1 and self.overmap_y > 0:
+                    set_actor_location(self, area, self.overmap_x + 1, self.overmap_y - 1)
+                    draw_map(self, area)
+                else:
+                    self.echo(f"You are at the boarder of {area.name}")
+            if direction.id == "nw":
+                if self.overmap_x > 0 and self.overmap_y > 0:
+                    set_actor_location(self, area, self.overmap_x - 1, self.overmap_y - 1)
+                    draw_map(self, area)
+                else:
+                    self.echo(f"You are at the boarder of {area.name}")
+
     # if direction == "up":
     # if direction == "down":
 
