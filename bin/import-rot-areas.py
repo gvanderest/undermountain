@@ -16,86 +16,86 @@ exits = {}
 
 
 ROOM_FLAG_MAP = {
-    "dark": 2**0,
-    "bank": 2**1,
-    "no_mob": 2**2,
-    "indoors": 2**3,
-    "bounty_office": 2**4,
-    "no_quit": 2**5,
-    "no_potion": 2**6,
-    "no_fly": 2**7,
-    "no_improved_invis": 2**8,
-    "private": 2**9,
-    "safe": 2**10,
-    "solitary": 2**11,
-    "pet_shop": 2**12,
-    "no_recall": 2**13,
-    "admin_only": 2**14,
-    "immortal_only": 2**15,
-    "hero_only": 2**16,
-    "newbie_only": 2**17,
-    "law": 2**18,
-    "no_where": 2**19,
-    "clan_entrance": 2**20,
-    "locked": 2**21,
-    "arena_wait": 2**22,
-    "arena": 2**23,
-    "no_gate": 2**24,
-    "no_magic": 2**25,
-    "free_pk": 2**26,
-    "mount_shop": 2**27,
-    "no_transport": 2**28
+    "dark": 2 ** 0,
+    "bank": 2 ** 1,
+    "no_mob": 2 ** 2,
+    "indoors": 2 ** 3,
+    "bounty_office": 2 ** 4,
+    "no_quit": 2 ** 5,
+    "no_potion": 2 ** 6,
+    "no_fly": 2 ** 7,
+    "no_improved_invis": 2 ** 8,
+    "private": 2 ** 9,
+    "safe": 2 ** 10,
+    "solitary": 2 ** 11,
+    "pet_shop": 2 ** 12,
+    "no_recall": 2 ** 13,
+    "admin_only": 2 ** 14,
+    "immortal_only": 2 ** 15,
+    "hero_only": 2 ** 16,
+    "newbie_only": 2 ** 17,
+    "law": 2 ** 18,
+    "no_where": 2 ** 19,
+    "clan_entrance": 2 ** 20,
+    "locked": 2 ** 21,
+    "arena_wait": 2 ** 22,
+    "arena": 2 ** 23,
+    "no_gate": 2 ** 24,
+    "no_magic": 2 ** 25,
+    "free_pk": 2 ** 26,
+    "mount_shop": 2 ** 27,
+    "no_transport": 2 ** 28,
 }
 
 ROOM_FLAG2_MAP = {
-    "fuel_shop": 2**0,
-    "engine_shop": 2**1,
-    "weapon_shop": 2**2,
-    "hull_shop": 2**3,
-    "repair_shop": (2**4, 2**17),
-    "armor_shop": 2**5,
-    "hangar": 2**6,
-    "special_hull_shop": 2**7,
-    "airship_only": 2**8,
-    "no_pk": 2**9,
-    "no_public": 2**10,
-    "airship_safe": 2**11,
-    "special_weapon_shop": 2**12,
-    "no_hunger": 2**13,
-    "speical_engine_shop": 2**14,
-    "locksmith": 2**15,
-    "air_arena": 2**16,
-    "nytek_hull_shop": 2**18,
-    "nytek_weapon_shop": 2**19,
-    "nytek_engine_shop": 2**20,
-    "air_pk_not_safe": 2**21,
-    "for_rent": 2**22,
-    "rpt_room": 2**23,
-    "no_rot_death": 2**24,
-    "home": 2**25,
-    "work_office": 2**26,
-    "bathroom": 2**27,
-    "loading_docks": 2**28,
-    "for_sale": 2**29,
-    "public_room": 2**30,
-    "courier": 2**31
+    "fuel_shop": 2 ** 0,
+    "engine_shop": 2 ** 1,
+    "weapon_shop": 2 ** 2,
+    "hull_shop": 2 ** 3,
+    "repair_shop": (2 ** 4, 2 ** 17),
+    "armor_shop": 2 ** 5,
+    "hangar": 2 ** 6,
+    "special_hull_shop": 2 ** 7,
+    "airship_only": 2 ** 8,
+    "no_pk": 2 ** 9,
+    "no_public": 2 ** 10,
+    "airship_safe": 2 ** 11,
+    "special_weapon_shop": 2 ** 12,
+    "no_hunger": 2 ** 13,
+    "speical_engine_shop": 2 ** 14,
+    "locksmith": 2 ** 15,
+    "air_arena": 2 ** 16,
+    "nytek_hull_shop": 2 ** 18,
+    "nytek_weapon_shop": 2 ** 19,
+    "nytek_engine_shop": 2 ** 20,
+    "air_pk_not_safe": 2 ** 21,
+    "for_rent": 2 ** 22,
+    "rpt_room": 2 ** 23,
+    "no_rot_death": 2 ** 24,
+    "home": 2 ** 25,
+    "work_office": 2 ** 26,
+    "bathroom": 2 ** 27,
+    "loading_docks": 2 ** 28,
+    "for_sale": 2 ** 29,
+    "public_room": 2 ** 30,
+    "courier": 2 ** 31,
 }
 
 EXIT_FLAGS_MAP = {
-    "door": 2**0,
-    "closed": 2**1,
-    "locked": 2**2,
-    "pick_proof": 2**3,
-    "no_pass_door": 2**4,
-    "pick_easy": 2**5,
-    "pick_hard": 2**6,
-    "pick_infuriating": 2**7,
-    "no_close": 2**8,
-    "no_lock": 2**9,
-    "secret": 2**10,
-    "no_bump": 2**11,
-    "original_door": 2**12,
-    "area_border": 2**13
+    "door": 2 ** 0,
+    "closed": 2 ** 1,
+    "locked": 2 ** 2,
+    "pick_proof": 2 ** 3,
+    "no_pass_door": 2 ** 4,
+    "pick_easy": 2 ** 5,
+    "pick_hard": 2 ** 6,
+    "pick_infuriating": 2 ** 7,
+    "no_close": 2 ** 8,
+    "no_lock": 2 ** 9,
+    "secret": 2 ** 10,
+    "no_bump": 2 ** 11,
+    "original_door": 2 ** 12,
+    "area_border": 2 ** 13,
 }
 
 ROOM_SECTORS_MAP = {
@@ -131,9 +131,7 @@ ROOM_SECTORS_MAP = {
     "underwater": 33,
 }
 
-FLAGS_INFERRED_FROM_SECTORS_MAP = {
-    "noswim": 7
-}
+FLAGS_INFERRED_FROM_SECTORS_MAP = {"noswim": 7}
 
 
 def generate_hash():
@@ -155,8 +153,9 @@ def parse_mobile(filename, lines):
         if state == "vnum" and line != "#MOBILES":
             if not line:
                 continue
-            assert line.startswith("#"), "Line doesn't start with hash: {}" \
-                                         .format(line)
+            assert line.startswith(
+                "#"
+            ), "Line doesn't start with hash: {}".format(line)
             mobile["vnum"] = int(line[1:])
             state = "keywords"
 
@@ -223,10 +222,7 @@ def parse_mobile(filename, lines):
 
 
 def parse_area(filename, lines):
-    area = {
-        "id": generate_hash(),
-        "vnum": filename
-    }
+    area = {"id": generate_hash(), "vnum": filename}
     for line in lines:
         if not line:
             continue
@@ -247,8 +243,9 @@ def parse_area(filename, lines):
         elif parts[0] == "Recall":
             area["recall_vnum"] = int(parts[1])
         elif parts[0] == "Faction":
-            area["faction_id"] = "" if parts[1] == "~" else \
-                parts[1].rstrip("~")
+            area["faction_id"] = (
+                "" if parts[1] == "~" else parts[1].rstrip("~")
+            )
         elif parts[0] == "AQpoints":
             area["area_quest_points"] = int(parts[1])
         elif parts[0] == "Realm":
@@ -274,7 +271,7 @@ def parse_room(filename, lines):
         "area_vnum": filename,
         "description": [],
         "extra_descriptions": {},
-        "exits": {}
+        "exits": {},
     }
 
     DIRECTION_MAPPINGS = ["north", "east", "south", "west", "up", "down"]
@@ -343,16 +340,13 @@ def parse_room(filename, lines):
                     room_exit = {
                         "name": "",
                         "direction_id": direction_id,
-                        "description": []
+                        "description": [],
                     }
 
                 # Extra Description
                 elif line.startswith("E"):
                     state = "extra_desc_name"
-                    extra_desc = {
-                        "keywords": "",
-                        "description": []
-                    }
+                    extra_desc = {"keywords": "", "description": []}
 
                 # Mana and HP Healing
                 elif line.startswith("M"):
@@ -450,8 +444,11 @@ def parse_room(filename, lines):
                 raise Exception("Unhandled room line")
 
         except Exception as e:
-            print("Exception state:{} file:{} index:{} line:{}".format(
-                state, filename, index, line))
+            print(
+                "Exception state:{} file:{} index:{} line:{}".format(
+                    state, filename, index, line
+                )
+            )
             raise
 
     rooms[room["vnum"]] = room
@@ -488,34 +485,34 @@ functions = {
 
 # Some symbols that improperly trigger bad parsing
 ignore_lines_starting_with = [
-    '#rhg',
-    '#rh',
-    '#newthalos',
-    '#goddesstatuemoonshae',
-    '#questurias',
-    '#dernallforestblocker',
-    '#invulnerabledruid',
-    '#combaturias',
-    '#sos',
-    '#som',
-    '#sea',
-    '#norland',
-    '#candlekeep',
-    '#alaron',
-    '#snowdown',
-    '#gwynneth',
-    '#moray',
-    '#norheim',
-    '#define',
-    '#6~',
-    '#oman',
-    '#archipelago',
-    '#flamsterd',
-    '#isles',
-    '#gardengirl',
-    '#passageopener',
-    '#passageopener,',
-    '#moonshaequest',
+    "#rhg",
+    "#rh",
+    "#newthalos",
+    "#goddesstatuemoonshae",
+    "#questurias",
+    "#dernallforestblocker",
+    "#invulnerabledruid",
+    "#combaturias",
+    "#sos",
+    "#som",
+    "#sea",
+    "#norland",
+    "#candlekeep",
+    "#alaron",
+    "#snowdown",
+    "#gwynneth",
+    "#moray",
+    "#norheim",
+    "#define",
+    "#6~",
+    "#oman",
+    "#archipelago",
+    "#flamsterd",
+    "#isles",
+    "#gardengirl",
+    "#passageopener",
+    "#passageopener,",
+    "#moonshaequest",
 ]
 
 for path in glob(ROT_DATA_PATH + "/area/*.are"):
@@ -526,9 +523,8 @@ for path in glob(ROT_DATA_PATH + "/area/*.are"):
 
     for line in open(path, "r"):
         line = line.rstrip("\r\n")
-        parts = line.lower().split(' ')
-        if line.startswith("#") and parts[0] not in \
-                ignore_lines_starting_with:
+        parts = line.lower().split(" ")
+        if line.startswith("#") and parts[0] not in ignore_lines_starting_with:
 
             # Some room descriptions contain hash symbols
             if line.startswith("##") or line.startswith("#@"):
@@ -542,8 +538,7 @@ for path in glob(ROT_DATA_PATH + "/area/*.are"):
                     function = functions[section]
                     result = function(filename, content)
                 except Exception as e:
-                    print("EXCEPTION {} SECTION {}".format(
-                        filename, section))
+                    print("EXCEPTION {} SECTION {}".format(filename, section))
                     for index, line in enumerate(content):
                         print("{}: {}".format(index, line))
 
@@ -586,9 +581,7 @@ for room in rooms.values():
 
 for area in areas.values():
     area["rooms"] = [
-        room
-        for room in rooms.values()
-        if room["area_vnum"] == area["vnum"]
+        room for room in rooms.values() if room["area_vnum"] == area["vnum"]
     ]
 
     output_path = "{}/{}/{}.json".format(DATA_PATH, "areas", area["vnum"])

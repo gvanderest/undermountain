@@ -18,6 +18,7 @@ EXIT_SECRET = "secret"
 
 
 class Map(object):
+
     @classmethod
     def from_actor(cls, actor, width=45, height=23, border=False):
         # Note: All coordinates are (row, col) to make things easier later.
@@ -41,15 +42,11 @@ class Map(object):
         NON_LINEAR_LINK_COLOR = "{r"
         EMPTY_SYMBOL = " "
 
-        grid = [
-            [EMPTY_SYMBOL for _ in range(width)] for _ in range(height)
-        ]
+        grid = [[EMPTY_SYMBOL for _ in range(width)] for _ in range(height)]
 
         start_room = actor.room
         used_room_vnums = set([start_room.vnum])
-        stack = [
-            (height // 2, width // 2, start_room)
-        ]
+        stack = [(height // 2, width // 2, start_room)]
 
         def coords_are_valid(y, x):
             return y > 0 and y < height and x > 0 and x < width
@@ -63,15 +60,19 @@ class Map(object):
 
             # Origin room.
             if grid[base_y][base_x] == EMPTY_SYMBOL:
-                grid[base_y][base_x] = (ORIGIN_COLOR + "@") \
-                    if room == start_room else (ROOM_COLOR + "#")
+                grid[base_y][base_x] = (
+                    (ORIGIN_COLOR + "@")
+                    if room == start_room
+                    else (ROOM_COLOR + "#")
+                )
 
             for direction_id, entry in room.exits.items():
                 if direction_id not in VALID_DIRECTIONS:
                     continue
 
-                symbols, symbol_y_start, symbol_x_start, y_mod, x_mod = \
-                    DIRECTIONS[direction_id]
+                symbols, symbol_y_start, symbol_x_start, y_mod, x_mod = DIRECTIONS[
+                    direction_id
+                ]
 
                 # Linkages.
                 for symbol_y, symbol_row in enumerate(symbols):
@@ -83,8 +84,11 @@ class Map(object):
                             if not coords_are_valid(y, x):
                                 continue
 
-                            link_color = LINEAR_LINK_COLOR if linear \
+                            link_color = (
+                                LINEAR_LINK_COLOR
+                                if linear
                                 else NON_LINEAR_LINK_COLOR
+                            )
                             grid[y][x] = link_color + symbol
 
                 next_y = base_y + y_mod
@@ -203,15 +207,17 @@ def sockets_command(self, **kwargs):
         client = conn.client
         actor = conn.actor
 
-        self.echo("[{} {}  {} {}] {} {}:{}".format(
-            str(conn.id).rjust(3),
-            client.state.center(15),
-            conn.created_date.strftime("%H:%M"),
-            "   ",
-            (actor.name if actor else "(None)").ljust(11),
-            conn.hostname,
-            conn.port,
-        ))
+        self.echo(
+            "[{} {}  {} {}] {} {}:{}".format(
+                str(conn.id).rjust(3),
+                client.state.center(15),
+                conn.created_date.strftime("%H:%M"),
+                "   ",
+                (actor.name if actor else "(None)").ljust(11),
+                conn.hostname,
+                conn.port,
+            )
+        )
 
     self.echo()
     self.echo("{} users".format(count))
@@ -294,17 +300,18 @@ def inventory_command(self, **kwargs):
 def group_command(self, **kwargs):
     self.echo("{}'s group:".format(self.name))
 
-    self.echo("[{} {}] {} {}/{} hp {}/{} mana {} xp".format(
-        self.stats.level.base,
-        self.classes[0].short_name,
-
-        self.name.ljust(20),
-
-        0, 0,
-        0, 0,
-
-        self.experience,
-    ))
+    self.echo(
+        "[{} {}] {} {}/{} hp {}/{} mana {} xp".format(
+            self.stats.level.base,
+            self.classes[0].short_name,
+            self.name.ljust(20),
+            0,
+            0,
+            0,
+            0,
+            self.experience,
+        )
+    )
 
 
 @inject("Areas")
@@ -339,8 +346,7 @@ def scripts_command(self, args, Scripts, **kwargs):
     area = self.room.area
     self.echo("Scripts in {}".format(area.vnum))
     for script in Scripts.query({"area_vnum": area.vnum}):
-        self.echo("* {} - {} - {}".format(
-            script.id, script.vnum, script.name))
+        self.echo("* {} - {} - {}".format(script.id, script.vnum, script.name))
 
 
 @inject("Characters")
@@ -375,8 +381,9 @@ def map_command(self, **kwargs):
     """Display a Map to the Character."""
     map = Map.from_actor(self)
 
-    self.echo("{}'s Map of {}".format(
-        self.name, self.room.area.name).center(79))
+    self.echo(
+        "{}'s Map of {}".format(self.name, self.room.area.name).center(79)
+    )
     self.echo("\n".join(map.to_lines()))
 
 
@@ -391,7 +398,8 @@ def time_command(self, **kwargs):
     current_time = now.strftime(date_format)
     reboot_time = self.game.start_date.strftime(date_format)
 
-    self.echo("""\
+    self.echo(
+        """\
 {{B+{{b---------------------------------------------------------{{B+{{x
   Great Realms Standard Time: {}
 {{B+{{b---------------------------------------------------------{{B+{{x
@@ -399,10 +407,9 @@ def time_command(self, **kwargs):
   Waterdeep Last Rebooted:    {}
 {{B+{{b---------------------------------------------------------{{B+{{x\
 """.format(
-        current_time,
-        current_time,
-        reboot_time,
-    ))
+            current_time, current_time, reboot_time
+        )
+    )
 
     pass
 
@@ -515,8 +522,11 @@ def unlink_command(self, args, Directions, Rooms, **kwargs):
     room.save()
     room.area.save()
 
-    self.echo("The link to the {} to room {} has been removed.".format(
-        direction.colored_name, other_room.vnum))
+    self.echo(
+        "The link to the {} to room {} has been removed.".format(
+            direction.colored_name, other_room.vnum
+        )
+    )
 
 
 @inject("Directions", "Rooms")
@@ -548,7 +558,8 @@ def link_command(self, args, Directions, Rooms, **kwargs):
 
     if other_room.exits.get(direction.opposite_id, None):
         self.echo(
-            "The other room already has an exit in the opposite direction.")
+            "The other room already has an exit in the opposite direction."
+        )
         return
 
     room.exits[direction.id] = {"room_vnum": other_room.vnum}
@@ -559,8 +570,11 @@ def link_command(self, args, Directions, Rooms, **kwargs):
     other_room.save()
     other_room.area.save()
 
-    self.echo("A link to the {} has been created to room {}".format(
-        direction.colored_name, other_room.vnum))
+    self.echo(
+        "A link to the {} has been created to room {}".format(
+            direction.colored_name, other_room.vnum
+        )
+    )
 
 
 @inject("Areas", "Rooms", "Directions")
@@ -596,14 +610,16 @@ def dig_command(self, args, Areas, Rooms, Directions, **kwargs):
 
     # Create the new Room
     else:
-        new_room = Rooms.save({
-            "area_id": area.id,
-            "area_vnum": area.vnum,
-            "vnum": get_random_hash()[:6],
-            "name": "Unnamed Room",
-            "description": [],
-            "exits": {},
-        })
+        new_room = Rooms.save(
+            {
+                "area_id": area.id,
+                "area_vnum": area.vnum,
+                "vnum": get_random_hash()[:6],
+                "name": "Unnamed Room",
+                "description": [],
+                "exits": {},
+            }
+        )
 
     # Link the Rooms
     new_room.exits[direction.opposite_id] = {"room_vnum": room.vnum}
@@ -614,8 +630,11 @@ def dig_command(self, args, Areas, Rooms, Directions, **kwargs):
     # Save the area.
     area.save()
 
-    self.echo("Room {} to the {} has been created.".format(
-        new_room.vnum, direction.colored_name))
+    self.echo(
+        "Room {} to the {} has been created.".format(
+            new_room.vnum, direction.colored_name
+        )
+    )
 
     self.echo()
 
@@ -628,9 +647,13 @@ def look_command(self, args, Actors, Characters, Objects, Directions, **k):
 
     lines = []
     lines.append(
-        "{{B{} {{x[{{WLAW{{x] {{R[{{WSAFE{{R]{{x".format(room["name"]))
-    lines.append("(ID: {}) (VNUM: {}) (Area: {})".format(
-        room["id"], room["vnum"], room["area_vnum"]))
+        "{{B{} {{x[{{WLAW{{x] {{R[{{WSAFE{{R]{{x".format(room["name"])
+    )
+    lines.append(
+        "(ID: {}) (VNUM: {}) (Area: {})".format(
+            room["id"], room["vnum"], room["area_vnum"]
+        )
+    )
 
     for index, line in enumerate(room.description):
         if index == 0:
@@ -654,15 +677,18 @@ def look_command(self, args, Actors, Characters, Objects, Directions, **k):
             else:
                 exit_names.append(direction.colored_name)
 
-    exits_line = "{{x[{{GExits{{g:{{x {}{{x]   " \
+    exits_line = (
+        "{{x[{{GExits{{g:{{x {}{{x]   "
         "{{x[{{GDoors{{g:{{x {}{{x]   ".format(
             " ".join(exit_names) if exit_names else "none",
             " ".join(door_names) if door_names else "none",
         )
+    )
 
     # if self.has_flag("immortal"):
     exits_line += "{{x[{{GSecrets{{g:{{x {}{{x]".format(
-        " ".join(secret_names) if secret_names else "none")
+        " ".join(secret_names) if secret_names else "none"
+    )
     lines.append(exits_line)
 
     for actor in Characters.query({"room_id": room["id"], "online": True}):
@@ -687,8 +713,11 @@ def look_command(self, args, Actors, Characters, Objects, Directions, **k):
 
     if MINIMAP_ENABLED:
         minimap = Map.from_actor(
-            self, width=MINIMAP_WIDTH, height=MINIMAP_HEIGHT,
-            border=MINIMAP_BORDER)
+            self,
+            width=MINIMAP_WIDTH,
+            height=MINIMAP_HEIGHT,
+            border=MINIMAP_BORDER,
+        )
         map_lines = minimap.to_lines()
 
         map_line_count = len(map_lines)
@@ -697,10 +726,12 @@ def look_command(self, args, Actors, Characters, Objects, Directions, **k):
         outputs = []
 
         for index in range(max(map_line_count, line_count)):
-            map_line = map_lines[index] if index < map_line_count else \
-                " " * MINIMAP_WIDTH
-            line = lines[index] if index < line_count else \
-                ""
+            map_line = (
+                map_lines[index]
+                if index < map_line_count
+                else " " * MINIMAP_WIDTH
+            )
+            line = lines[index] if index < line_count else ""
 
             outputs.append(map_line + MINIMAP_JOIN_SYMBOLS + line)
 
@@ -715,7 +746,8 @@ def quit_command(self, **kwargs):
     self.echo("{GYou have rejoined Reality!")
     self.echo()
     self.echo(
-        "{WFor {RNews{W, {CRoleplaying{W and {MInfo{W, Visit our website!")
+        "{WFor {RNews{W, {CRoleplaying{W and {MInfo{W, Visit our website!"
+    )
     self.echo("{Ch{cttp://{Cw{cww.{Cw{caterdeep.{Co{crg{x")
 
     self.quit()
@@ -808,23 +840,22 @@ def who_command(self, Characters, **kwargs):
     for actor in Characters.query({"online": True}):
         count += 1
 
-        self.echo("{{x{} {} {} {} {{x[.{{BN{{x......] {} {}".format(
-            str(actor.stats.level.base).rjust(3),
-            pad_right(actor.gender.colored_short_name, 1),
-            pad_right(actor.races[0].colored_name, 5),
-            pad_right(actor.classes[0].colored_short_name, 3),
-            actor.name,
-            actor.title if actor.title else "",
-        ))
+        self.echo(
+            "{{x{} {} {} {} {{x[.{{BN{{x......] {} {}".format(
+                str(actor.stats.level.base).rjust(3),
+                pad_right(actor.gender.colored_short_name, 1),
+                pad_right(actor.races[0].colored_name, 5),
+                pad_right(actor.classes[0].colored_short_name, 3),
+                actor.name,
+                actor.title if actor.title else "",
+            )
+        )
     self.echo()
     self.echo(
         "{{GPlayers found: {{x{}   "
         "{{GTotal online: {{x{}   "
-        "{{GMost on today: {{x{}".format(
-            count,
-            count,
-            count,
-        ))
+        "{{GMost on today: {{x{}".format(count, count, count)
+    )
 
 
 @inject("Characters")
@@ -890,7 +921,7 @@ def finger_command(self, args, Characters, **kwargs):
         "\n".join(actor.description or []),
         actor.name,
         "ONLINE",
-        ""
+        "",
     )
     self.echo(output)
 
@@ -905,6 +936,7 @@ def title_command(self, message, **kwargs):
 
 
 class ActorStat(object):
+
     def __init__(self, id, value, actor):
         self.id = id
         self.value = value
@@ -928,6 +960,7 @@ class ActorStat(object):
 
 
 class ActorStats(object):
+
     def __init__(self, stats, actor):
         self.stats = stats
         self.actor = actor
@@ -968,11 +1001,16 @@ class Actor(Entity):
         self.echo("{{BYou gain {{W{} {{Bexperience points!{{x".format(amount))
         self.experience += amount
 
-        while self.stats.level.base < settings.LEVEL_MAXIMUM and \
-                self.experience >= self.experience_per_level:
+        while (
+            self.stats.level.base < settings.LEVEL_MAXIMUM
+            and self.experience >= self.experience_per_level
+        ):
             self.stats.level.base += 1
-            self.echo("You gained a level! You are now level {}".format(
-                self.stats.level.base))
+            self.echo(
+                "You gained a level! You are now level {}".format(
+                    self.stats.level.base
+                )
+            )
             self.experience -= self.experience_per_level
 
             if self.stats.level.base >= settings.LEVEL_MAXIMUM:
@@ -1108,15 +1146,12 @@ class Actor(Entity):
         # target as the parameter-- this can allow visibility checks, etc.
         OBJECT_ATTRIBUTES = {
             "name": "name_to",
-
             "him": "objective_to",
             "her": "objective_to",
             "objective": "objective_to",
-
             "he": "subjective_to",
             "she": "subjective_to",
             "subjective": "subjective_to",
-
             "his": "possessive_to",
             "possessive": "possessive_to",
         }
@@ -1236,9 +1271,7 @@ class Character(Actor):
 
 
 class Area(Entity):
-    DEFAULT_DATA = {
-        "name": "Unnamed",
-    }
+    DEFAULT_DATA = {"name": "Unnamed"}
 
     @property
     @inject("Rooms")
@@ -1301,6 +1334,7 @@ class Areas(Collection):
 
 
 class RoomExit(Entity):
+
     def __init__(self, data, room):
         super(RoomExit, self).__init__(data)
         super(Entity, self).__setattr__("from_room", room)
@@ -1404,10 +1438,10 @@ class Rooms(Collection):
 
 
 class Script(Entity):
+
     def execute(self, entity, event):
         try:
-            compiled = \
-                compile(self.code, "script:{}".format(self.id), "exec")
+            compiled = compile(self.code, "script:{}".format(self.id), "exec")
 
             def wait(duration):
                 gevent.sleep(duration)
@@ -1452,20 +1486,21 @@ class Script(Entity):
                 entity.act(message)
 
             context = dict(event.data)
-            context.update({
-                "target": event.source,
-                "actor": event.source,
-                "self": entity,
-
-                "kill": kill,
-                "act": act,
-                "say": say,
-                "echo": echo,
-                "event": event,
-                "wait": wait,
-                "call": call,
-                "spawn": spawn,
-            })
+            context.update(
+                {
+                    "target": event.source,
+                    "actor": event.source,
+                    "self": entity,
+                    "kill": kill,
+                    "act": act,
+                    "say": say,
+                    "echo": echo,
+                    "event": event,
+                    "wait": wait,
+                    "call": call,
+                    "spawn": spawn,
+                }
+            )
 
             exec(compiled, context, context)
         except Exception as e:
@@ -1477,6 +1512,7 @@ class Scripts(Collection):
 
 
 class Behavior(Entity):
+
     @property
     @inject("Scripts")
     def script(self):
@@ -1614,9 +1650,9 @@ class CoreModule(Module):
 
         self.game.register_manager(TickManager)
 
-        directions, characters, rooms, areas = \
-            self.game.get_injectors(
-                "Directions", "Characters", "Rooms", "Areas")
+        directions, characters, rooms, areas = self.game.get_injectors(
+            "Directions", "Characters", "Rooms", "Areas"
+        )
 
         directions.data = settings.DIRECTIONS
 
@@ -1625,19 +1661,15 @@ class CoreModule(Module):
             actor.connection_id = None
             characters.save(actor)
 
-        areas.save({
-            "id": "void",
-            "vnum": "void",
-            "name": "The Void",
-        })
+        areas.save({"id": "void", "vnum": "void", "name": "The Void"})
 
-        rooms.save({
-            "id": "void",
-            "vnum": "void",
-            "area_vnum": "void",
-            "name": "The Void",
-            "description": [
-                "You are floating in nothingness.",
-            ],
-            "exits": {},
-        })
+        rooms.save(
+            {
+                "id": "void",
+                "vnum": "void",
+                "area_vnum": "void",
+                "name": "The Void",
+                "description": ["You are floating in nothingness."],
+                "exits": {},
+            }
+        )

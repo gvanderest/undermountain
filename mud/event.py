@@ -3,6 +3,7 @@ class Unblockable(Exception):
 
 
 class Event(object):
+
     def __init__(self, source, type_name, data=None, unblockable=False):
         if data is None:
             data = {}
@@ -15,7 +16,8 @@ class Event(object):
 
     def block(self):
         if self.unblockable:
-            raise Unblockable("Event of type '{}' is unblockable.".format(
-                self.type))
+            raise Unblockable(
+                "Event of type '{}' is unblockable.".format(self.type)
+            )
         self.blocked = True
         return self

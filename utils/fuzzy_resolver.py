@@ -1,4 +1,5 @@
 class FuzzyResolver(object):
+
     def __init__(self, mapping=None):
         self.commands = {}
         if not mapping:

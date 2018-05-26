@@ -13,6 +13,7 @@ import settings
 
 
 class CollectionStorage(object):
+
     def __init__(self, collection):
         self.collection = collection
 
@@ -28,6 +29,7 @@ class MemoryStorage(CollectionStorage):
 
 
 class FileStorage(CollectionStorage):
+
     def __init__(self, *args, **kwargs):
         super(FileStorage, self).__init__(*args, **kwargs)
         name = self.collection.__class__.__name__.lower()
@@ -43,8 +45,11 @@ class FileStorage(CollectionStorage):
                     data = json.loads(fh.read())
                     record = self.collection.save(data, skip_storage=True)
                     self.collection.hydrate(data)
-                    logging.debug("Stored {}: {}".format(
-                        self.collection.__class__.__name__, record.vnum))
+                    logging.debug(
+                        "Stored {}: {}".format(
+                            self.collection.__class__.__name__, record.vnum
+                        )
+                    )
 
                 except Exception as e:
                     self.collection.game.handle_exception(e)
@@ -60,10 +65,7 @@ class FileStorage(CollectionStorage):
                 suffix = format_name
             suffix = "." + suffix
 
-        return "{}/{}{}".format(
-            self.folder,
-            filename,
-            suffix)
+        return "{}/{}{}".format(self.folder, filename, suffix)
 
     def post_save(self, record):
         path = self.get_record_path(record)
@@ -85,9 +87,7 @@ class FileStorage(CollectionStorage):
 
 
 class Entity(object):
-    DEFAULT_DATA = {
-        "flags": [],
-    }
+    DEFAULT_DATA = {"flags": []}
 
     @property
     def children(self):
@@ -182,12 +182,11 @@ class Entity(object):
         # TODO HAVE COLLECTION CREATE DEEPCOPIES OF EVERYTHING
         triggers = list(self.triggers or [])
 
-        for behavior_vnum in (self.behaviors or []):
+        for behavior_vnum in self.behaviors or []:
             behavior = Behaviors.get({"vnum": behavior_vnum})
-            triggers.append({
-                "type": behavior.type,
-                "script_vnum": behavior.script_vnum,
-            })
+            triggers.append(
+                {"type": behavior.type, "script_vnum": behavior.script_vnum}
+            )
 
         if triggers:
             for entry in triggers:
@@ -317,6 +316,7 @@ class Collection(Injector):
         self.game.data[name] = data
 
     def query(self, spec=None, as_dict=False):
+
         def _filter_function(record):
             if spec is None:
                 return True
@@ -348,8 +348,11 @@ class Collection(Injector):
                 return record
 
     def save(self, record, skip_storage=False):
-        logging.debug("Saving {} record {}".format(
-            self.__class__.__name__, record.get("vnum", None)))
+        logging.debug(
+            "Saving {} record {}".format(
+                self.__class__.__name__, record.get("vnum", None)
+            )
+        )
 
         record = self.unwrap_record(record)
 

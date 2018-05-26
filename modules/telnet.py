@@ -14,7 +14,10 @@ import socket as raw_socket
 
 monkey.patch_all()
 
-badusernames = "about access account accounts activate add address adm admin administration administrator adult advertising affiliate affiliates ajax analytics android anon anonymous api app apple apps arabic archive archives atom auth authentication avatar awadhi azerbaijani backup banner banners bengali better bhojpuri billing bin blog blogs board bot bots burmese business cache cadastro calendar campaign cancel careers cart cgi changelog chat checkout chinese client cliente code codereview comercial compare compras config configuration connect contact contest create css cvs dashboard data delete demo design designer dev devel dir direct direct_messages directory doc docs documentation domain download downloads dutch ecommerce edit editor edits email employment english enterprise exchange facebook faq farsi favorite favorites feed feedback feeds file files fleet fleets flog follow followers following forum forums free french friend friends ftp gadget gadgets games gan german gist git github google group groups guest gujarati hakka hausa help hindi home homepage host hosting hostmaster hostname hpg html http httpd https idea ideas image images imap img index indice info information intranet invitations invite ipad iphone irc italian japanese java javanese javascript jinyu job jobs json kannada knowledgebase korean language languages list lists local localhost log login logout logs mail mail1 mail2 mail3 mail4 mail5 mailer mailing maithili malayalam manager mandarin map maps marathi marketing master media message messenger microblog microblogs min-nan mine mis mob mobile mobilemail movie movies mp3 msg msn music musicas mysql name named net network new news newsletter nick nickname notes noticias null none ns1 ns2 ns3 ns4 oauth oauth_clients offers old online openid operator order orders organizations oriya page pager pages panel panjabi password pda perl photo photoalbum photos php pic pics plans plugin plugins polish pop pop3 popular portuguese post postfix postmaster posts privacy profile project projects promo pub public put python random recruitment register registration remove replies repo romanian root rss ruby russian sale sales sample samples save script scripts search secure security send serbo-croatian service sessions setting settings setup sftp shop signin signup sindhi site sitemap sites smtp soporte spanish sql ssh ssl ssladmin ssladministrator sslwebmaster stage staging start stat static stats status store stores stories styleguide subdomain subscribe subscriptions sunda suporte support svn sysadmin sysadministrator system tablet tablets talk tamil task tasks tech telnet telugu terms test test1 test2 test3 teste tests thai theme themes tmp todo tools tour translations trends turkish twitter twittr ukrainian unfollow unsubscribe update upload urdu url usage user username usuario vendas video videos vietnamese visitor weather web webmail webmaster website websites webstats widget widgets wiki win workshop wws www www1 www2 www3 www4 www5 www6 www7 wwws wwww xfn xiang xml xmpp xmppSuggest xpg xxx yaml yml yoruba you yourdomain yourname yoursite yourusername"
+badusernames = (
+    "about access account accounts activate add address adm admin administration administrator adult advertising affiliate affiliates ajax analytics android anon anonymous api app apple apps arabic archive archives atom auth authentication avatar awadhi azerbaijani backup banner banners bengali better bhojpuri billing bin blog blogs board bot bots burmese business cache cadastro calendar campaign cancel careers cart cgi changelog chat checkout chinese client cliente code codereview comercial compare compras config configuration connect contact contest create css cvs dashboard data delete demo design designer dev devel dir direct direct_messages directory doc docs documentation domain download downloads dutch ecommerce edit editor edits email employment english enterprise exchange facebook faq farsi favorite favorites feed feedback feeds file files fleet fleets flog follow followers following forum forums free french friend friends ftp gadget gadgets games gan german gist git github google group groups guest gujarati hakka hausa help hindi home homepage host hosting hostmaster hostname hpg html http httpd https idea ideas image images imap img index indice info information intranet invitations invite ipad iphone irc italian japanese java javanese javascript jinyu job jobs json kannada knowledgebase korean language languages list lists local localhost log login logout logs mail mail1 mail2 mail3 mail4 mail5 mailer mailing maithili malayalam manager mandarin map maps marathi marketing master media message messenger microblog microblogs min-nan mine mis mob mobile mobilemail movie movies mp3 msg msn music musicas mysql name named net network new news newsletter nick nickname notes noticias null none ns1 ns2 ns3 ns4 oauth oauth_clients offers old online openid operator order orders organizations oriya page pager pages panel panjabi password pda perl photo photoalbum photos php pic pics plans plugin plugins polish pop pop3 popular portuguese post postfix postmaster posts privacy profile project projects promo pub public put python random recruitment register registration remove replies repo romanian root rss ruby russian sale sales sample samples save script scripts search secure security send serbo-croatian service sessions setting settings setup sftp shop signin signup sindhi site sitemap sites smtp soporte spanish sql ssh ssl ssladmin ssladministrator sslwebmaster stage staging start stat static stats status store stores stories styleguide subdomain subscribe subscriptions sunda suporte support svn sysadmin sysadministrator system tablet tablets talk tamil task tasks tech telnet telugu terms test test1 test2 test3 teste tests thai theme themes tmp todo tools tour translations trends turkish twitter twittr ukrainian unfollow unsubscribe update upload urdu url usage user username usuario vendas video videos vietnamese visitor weather web webmail webmaster website websites webstats widget widgets wiki win workshop wws www www1 www2 www3 www4 www5 www6 www7 wwws wwww xfn xiang xml xmpp xmppSuggest xpg xxx yaml yml yoruba you yourdomain yourname yoursite yourusername"
+)
+
 
 def in_edit_mode_prompt(self):
     return "> "
@@ -38,7 +41,8 @@ def in_edit_mode(self, message, args, context, **kwargs):
         self.client.end_edit_mode()
         return True
     elif message == ".h":
-        self.echo("""\
+        self.echo(
+            """\
 String edit help (commands on blank line):
 NO .r 'old' 'new'   - replace a substring
                    (requires '', "")
@@ -53,7 +57,8 @@ NO .x ##            - smart word wrap
 .d ##            - delete line
                    ## = line number, default is last line
 @ or ~           - end string
-""")
+"""
+        )
         return True
 
     elif command == ".c":
@@ -112,12 +117,14 @@ class TelnetClient(Client):
         self.write("What is your name, adventurer? ")
 
     def log(self, message):
-        identifier = self.actor.name if self.actor \
-            else self.connection.hostname
+        identifier = (
+            self.actor.name if self.actor else self.connection.hostname
+        )
         super(TelnetClient, self).log("{}: {}".format(identifier, message))
 
     def start_proxy_command(
-            self, command, callback=None, context=None, prompt=None):
+        self, command, callback=None, context=None, prompt=None
+    ):
         self.proxy_commands.append(command)
         self.proxy_callbacks.append(callback)
         self.proxy_contexts.append(context)
@@ -140,12 +147,14 @@ class TelnetClient(Client):
         return context
 
     def start_edit_mode(self, callback, context=None):
-        self.writeln("""\
+        self.writeln(
+            """\
 -=======- Entering APPEND Mode -========-
     Type .h on a new line for help
  Terminate with a ~ or @ on a blank line.
 -=======================================-
-""")
+"""
+        )
         if not context:
             context = {}
 
@@ -183,18 +192,20 @@ class TelnetClient(Client):
         found = Characters.get({"name": name})
 
         if not found:
-            self.temporary_actor = Characters.ENTITY_CLASS({
-                "name": name,
-                "tier": 0,
-                "connection_id": self.connection.id,
-                "stats": {
-                    "level": 1,
-                    "current_hp": 100,
-                    "hp": 100,
-                    "current_mana": 100,
-                    "mana": 100,
-                },
-            })
+            self.temporary_actor = Characters.ENTITY_CLASS(
+                {
+                    "name": name,
+                    "tier": 0,
+                    "connection_id": self.connection.id,
+                    "stats": {
+                        "level": 1,
+                        "current_hp": 100,
+                        "hp": 100,
+                        "current_mana": 100,
+                        "mana": 100,
+                    },
+                }
+            )
             self.start_verify_name()
             return
         else:
@@ -217,8 +228,7 @@ class TelnetClient(Client):
         found = self.temporary_actor
 
         if found.connection:
-            found.echo(
-                "You have been kicked off due to another logging in.")
+            found.echo("You have been kicked off due to another logging in.")
             found.connection.close()
 
         found.online = False
@@ -232,17 +242,22 @@ class TelnetClient(Client):
 
     def start_verify_name(self):
         if len(self.temporary_actor.name) < 3:
-            self.writeln("You name does not meet the length requirement. (Minimum 4).")
+            self.writeln(
+                "You name does not meet the length requirement. (Minimum 4)."
+            )
             self.writeln("What is your true name, adventurer? ")
             self.temporary_actor.name = None
             self.start_verify_name()
         elif badusernames.find(self.temporary_actor.name.lower()) >= 0:
-            self.writeln("You name was less than appropriate. (Reserved word).")
+            self.writeln(
+                "You name was less than appropriate. (Reserved word)."
+            )
             self.writeln("What is your true name, adventurer? ")
             self.temporary_actor.name = None
             self.start_verify_name()
         else:
-            self.write("""
+            self.write(
+                """
 {{B+{{b------------------------{{B[ {{CWelcome to Waterdeep {{B]{{b\
 -------------------------{{B+{{x
 
@@ -268,7 +283,10 @@ class TelnetClient(Client):
 {{B+{{b--------------{{B[ {{RThis MUD is rated R for Mature Audiences {{B]{{b\
 ---------------{{B+{{x
 
-Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
+Did I get that right, {} (Y/N)? """.format(
+                    self.temporary_actor.name
+                )
+            )
         self.state = "verify_name"
 
     @inject("Characters")
@@ -280,19 +298,24 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
         elif message.lower().startswith("n"):
             self.restart_login_username()
         else:
-            self.write("Is your name {} (Y/N)? ".format(
-                self.temporary_actor.name))
+            self.write(
+                "Is your name {} (Y/N)? ".format(self.temporary_actor.name)
+            )
 
     def start_select_password(self):
         self.state = "select_password"
         self.write(
             """Please choose a password (max 8 characters) for {}: """.format(
-                self.temporary_actor.name))
+                self.temporary_actor.name
+            )
+        )
         self.hide_next_input()
 
     def handle_select_password_input(self, message):
         if len(message) < 3:
-            self.writeln("You password does not meet the length requirement. (Minimum 4)")
+            self.writeln(
+                "You password does not meet the length requirement. (Minimum 4)"
+            )
             self.start_select_password()
         elif self.temporary_actor.name.lower() == message.lower():
             self.writeln("Your password should not match your name.")
@@ -309,7 +332,8 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
     def handle_confirm_password_input(self, message):
         if self.temporary_actor.password != hash_password(message):
             self.writeln(
-                "You did not type the same password, please try again.")
+                "You did not type the same password, please try again."
+            )
             self.start_select_password()
         else:
             self.start_select_race()
@@ -415,14 +439,17 @@ Select a class or type HELP (Class) for details: """
             self.save_temporary_actor()
             self.start_motd()
         else:
-            self.write("""
+            self.write(
+                """
 That's not a valid class.
-Try again: """)
+Try again: """
+            )
 
     def start_select_alignment(self):
         self.state = "select_alignment"
         self.temporary_actor.alignment = 0
-        self.write("""
+        self.write(
+            """
 +------------------------[ Pick your Alignment ]-------------------------+
 
   Your alignment will effect how much experience you get from certain
@@ -436,14 +463,16 @@ Try again: """)
 
 +-------------------------------------------------------------------------+
 
-Choose your alignment: """)
+Choose your alignment: """
+        )
 
     def handle_select_alignment_input(self, message):
         self.start_confirm_customize()
 
     def start_confirm_customize(self):
         self.state = "confirm_customize"
-        self.write("""
+        self.write(
+            """
 +----------------------[ Character Customization ]-----------------------+
 
   Your character is given a basic set of skills and or spells depending
@@ -452,14 +481,16 @@ Choose your alignment: """)
 
 +-------------------------------------------------------------------------+
 
-Do you wish to customize? (Yes or No): """)
+Do you wish to customize? (Yes or No): """
+        )
 
     def handle_confirm_customize_input(self, message):
         self.start_customize()
 
     def start_customize(self):
         self.state = "customize"
-        self.write("""
+        self.write(
+            """
 +----------------------[ Character Customization ]-----------------------+
 
   The following groups and skills are available to your character:
@@ -504,14 +535,16 @@ Do you wish to customize? (Yes or No): """)
 +-------------------------------------------------------------------------+
 
 
-Choice (add, drop, list, help)? """)
+Choice (add, drop, list, help)? """
+        )
 
     def handle_customize_input(self, message):
         self.start_select_weapon()
 
     def start_select_weapon(self):
         self.state = "select_weapon"
-        self.write("""
+        self.write(
+            """
 +-------------------------[ Pick your Weapon ]---------------------------+
 
   Please pick a weapon to learn from the following choices:
@@ -519,7 +552,8 @@ Choice (add, drop, list, help)? """)
   dagger
 +-------------------------------------------------------------------------+
 
-Your choice? """)
+Your choice? """
+        )
 
     def handle_select_weapon_input(self, message):
         self.save_temporary_actor()
@@ -535,9 +569,11 @@ Your choice? """)
         self.write_from_random_template("motds")
 
     def handle_motd_input(self, message):
-        self.writeln("""
+        self.writeln(
+            """
 Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
-""")
+"""
+        )
         self.start_playing()
 
     def start_playing(self):
@@ -583,8 +619,9 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         room = actor.room
 
         level = actor.stats.level.base
-        total_xp = ((level - 1) * actor.experience_per_level) + \
-            actor.experience
+        total_xp = (
+            (level - 1) * actor.experience_per_level
+        ) + actor.experience
         xp_tnl = actor.experience_per_level - actor.experience
 
         hp_color = "{G"
@@ -652,14 +689,18 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
                 percent = (current_hp / total_hp) if total_hp else 0
                 display_percent = "%0.1f" % (percent * 100)
 
-                self.write("{{R{} {}. {{x[{{R{}%{{x]".format(
-                    target.name, health_text, display_percent))
+                self.write(
+                    "{{R{} {}. {{x[{{R{}%{{x]".format(
+                        target.name, health_text, display_percent
+                    )
+                )
 
             self.writeln()
 
             template = (
                 "{8[{R%h{8/{r%H{8h {B%m{8/{b%M{8m {M%v{8v {W%N{8({Y%X{8) "
-                "{W%r{8({w%q{8/{w%t{8) {W%a{8]{x")
+                "{W%r{8({w%q{8/{w%t{8) {W%a{8]{x"
+            )
 
         self.write(self.format_prompt_template(template))
 
@@ -670,15 +711,13 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
 
         parts = message.split(" ") if message else []
 
-        proxy_command = \
+        proxy_command = (
             self.proxy_commands[-1] if self.proxy_commands else None
+        )
         if proxy_command:
             context = self.proxy_contexts[-1]
             result = proxy_command(
-                self=actor,
-                message=message,
-                args=list(parts),
-                context=context,
+                self=actor, message=message, args=list(parts), context=context
             )
             if result is not False:
                 return result
@@ -705,8 +744,10 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         if command:
             try:
                 self.game.wiznet(
-                    "log", "{}: {}".format(actor.name, message),
-                    exclude=[actor])
+                    "log",
+                    "{}: {}".format(actor.name, message),
+                    exclude=[actor],
+                )
 
                 delay = command(actor, **kwargs)
 
@@ -723,6 +764,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
 
 
 class TelnetConnection(Connection):
+
     def __init__(self, server, socket, address):
         super(TelnetConnection, self).__init__(server)
         self.read_buffer = ""
@@ -811,6 +853,7 @@ class TelnetConnection(Connection):
 
 
 class TelnetServer(Server):
+
     def __init__(self, game):
         super(TelnetServer, self).__init__(game)
         self.ports = []
@@ -819,13 +862,10 @@ class TelnetServer(Server):
         """Instantiate the ports to listen on."""
         for host, port in settings.TELNET_PORTS:
             socket = raw_socket.socket(
-                raw_socket.AF_INET,
-                raw_socket.SOCK_STREAM,
+                raw_socket.AF_INET, raw_socket.SOCK_STREAM
             )
             socket.setsockopt(
-                raw_socket.SOL_SOCKET,
-                raw_socket.SO_REUSEADDR,
-                1,
+                raw_socket.SOL_SOCKET, raw_socket.SO_REUSEADDR, 1
             )
             socket.bind((host, port))
             self.ports.append(socket)

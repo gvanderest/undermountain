@@ -22,9 +22,7 @@ PASSWORD_ROUNDS = 100000
 TICK_SECONDS = 5.0  # Defaults to one tick per minute
 
 # Special keywords.
-SELF_NAMES = (
-    "self",
-)
+SELF_NAMES = ("self",)
 
 
 # Modules to include
@@ -41,31 +39,15 @@ DIRECTIONS = {
         "colored_name": "{Rnorth{x",
         "opposite_id": "south",
     },
-    "east": {
-        "id": "east",
-        "colored_name": "{Meast{x",
-        "opposite_id": "west",
-    },
+    "east": {"id": "east", "colored_name": "{Meast{x", "opposite_id": "west"},
     "south": {
         "id": "south",
         "colored_name": "{rsouth{x",
         "opposite_id": "north",
     },
-    "west": {
-        "id": "west",
-        "colored_name": "{mwest{x",
-        "opposite_id": "east",
-    },
-    "up": {
-        "id": "up",
-        "colored_name": "{Yup{x",
-        "opposite_id": "down",
-    },
-    "down": {
-        "id": "down",
-        "colored_name": "{ydown{x",
-        "opposite_id": "up",
-    },
+    "west": {"id": "west", "colored_name": "{mwest{x", "opposite_id": "east"},
+    "up": {"id": "up", "colored_name": "{Yup{x", "opposite_id": "down"},
+    "down": {"id": "down", "colored_name": "{ydown{x", "opposite_id": "up"},
 }
 
 
@@ -74,15 +56,9 @@ DIRECTIONS = {
 #
 
 # Which ports do we want to allow/open up?
-TELNET_PORTS = (
-    ("0.0.0.0", 4200),
-    ("0.0.0.0", 4201),
-)
+TELNET_PORTS = (("0.0.0.0", 4200), ("0.0.0.0", 4201))
 
-WEBSOCKET_PORTS = (
-    ("0.0.0.0", 14200),
-    ("0.0.0.0", 14201),
-)
+WEBSOCKET_PORTS = (("0.0.0.0", 14200), ("0.0.0.0", 14201))
 
 INITIAL_ROOM_VNUM = "market_square"
 
@@ -102,18 +78,14 @@ again.""",
         "to_others": "{name} TRASHes '{message}'",
         "to_self": "You TRASH '{message}'",
     },
-    "immtalk": {
-        "to_others": "{x{name}: {W{message}{x",
-    },
+    "immtalk": {"to_others": "{x{name}: {W{message}{x"},
     "auction": {
         "to_self": "You {R<{G-{Y={MA/B{Y={G-{R> {CAuction {x'{G{message}{x'",
-        "to_others":
-            "{name} {R<{G-{Y={MA/B{Y={G-{R> {CAuctions {x'{G{message}{x'",
+        "to_others": "{name} {R<{G-{Y={MA/B{Y={G-{R> {CAuctions {x'{G{message}{x'",
     },
     "bid": {
         "to_self": "You {R<{G-{Y={MA/B{Y={G-{R> {CBid {x'{G{message}{x'",
-        "to_others":
-            "{name} {R<{G-{Y={MA/B{Y={G-{R> {CBids {x'{G{message}{x'",
+        "to_others": "{name} {R<{G-{Y={MA/B{Y={G-{R> {CBids {x'{G{message}{x'",
     },
     "cgossip": {
         "to_self": "You cgossip '{R{message}{x'",

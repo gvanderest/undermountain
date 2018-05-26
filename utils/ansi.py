@@ -9,8 +9,8 @@ import random
 
 
 ESCAPE = chr(27)
-CSI = ESCAPE + '['
-REAL_BRACKET_SYMBOL = '((bracket))'
+CSI = ESCAPE + "["
+REAL_BRACKET_SYMBOL = "((bracket))"
 
 REMAPS = {
     "{r": CSI + "0;31m",  # Red
@@ -43,11 +43,10 @@ REMAPS = {
     "{&": CSI + "1;37m",  # Bright White
     "{8": CSI + "1;30m",  # Grey
     "{*": CSI + "1;30m",  # Grey
-    '{D': CSI + '1;30m',  # Grey
+    "{D": CSI + "1;30m",  # Grey
     "{0": CSI + "0m",  # Reset
     "{x": CSI + "0m",  # Reset
-    '{.': CSI + '0m',  # Reset
-
+    "{.": CSI + "0m",  # Reset
     # Extended Color Reference:
     # http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html
     "{o": CSI + "38;5;130m",  # Dark Orange
@@ -71,7 +70,7 @@ def colorize(in_string, strip_colors=False):
     out_string = in_string
 
     # Replace "brackets" with a placeholder
-    out_string = out_string.replace('{{', REAL_BRACKET_SYMBOL)
+    out_string = out_string.replace("{{", REAL_BRACKET_SYMBOL)
 
     # Replace out bracket colors with ANSI
     for key in REMAPS:
@@ -81,7 +80,7 @@ def colorize(in_string, strip_colors=False):
         if not strip_colors:
             out_string = out_string.replace(key, ansi)
         else:
-            out_string = out_string.replace(key, '')
+            out_string = out_string.replace(key, "")
 
     # Replace random color codes with random ANSI colors
     if not strip_colors:
@@ -103,7 +102,7 @@ def colorize(in_string, strip_colors=False):
             out_string = out_string.replace("{-", ansi, 1)
     else:
         # Remove all random colors
-        out_string = out_string.replace("{-", '')
+        out_string = out_string.replace("{-", "")
 
     # Replace the previous placeholders with the brackets
     out_string = out_string.replace(REAL_BRACKET_SYMBOL, "{")
@@ -151,6 +150,6 @@ def stop_color_bleed(message):
         # Find the last color of the line, store it for the next line
         for index, char in enumerate(line):
             if char == "{":
-                whole_color = line[index:index+2]
+                whole_color = line[index : index + 2]
                 if whole_color != "{{":
                     last_color = whole_color

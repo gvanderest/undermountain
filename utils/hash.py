@@ -16,7 +16,8 @@ def hash_password(password):
         PASSWORD_ALGORITHM,
         password.encode("utf-8"),
         PASSWORD_SALT.encode("utf-8"),
-        PASSWORD_ROUNDS)
+        PASSWORD_ROUNDS,
+    )
     return binascii.hexlify(dk).decode("utf-8")
 
 

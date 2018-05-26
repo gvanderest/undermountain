@@ -1,5 +1,7 @@
 # Undermountain Python MUD Engine
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+
 A modular MUD platform for flexibly creating worlds, written in Python.
 
 ## Features

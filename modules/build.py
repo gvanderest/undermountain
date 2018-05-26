@@ -39,7 +39,8 @@ def in_room_edit(self, Rooms, context=None, args=None, **kwargs):
         existing = Rooms.get({"area_vnum": room.area_vnum, "vnum": vnum})
         if existing:
             self.echo(
-                "That vnum is already being used by a room in this area.")
+                "That vnum is already being used by a room in this area."
+            )
             return
 
         room.vnum = vnum
@@ -48,14 +49,16 @@ def in_room_edit(self, Rooms, context=None, args=None, **kwargs):
 
     # Require they type at least "desc"
     elif command.startswith("desc") and "description".startswith(command):
+
         def description_edit_callback(context):
             room.description = context["lines"]
             room.save()
             display_redit_summary()
 
-        self.client.start_edit_mode(description_edit_callback, context={
-            "lines": room.description or [],
-        })
+        self.client.start_edit_mode(
+            description_edit_callback,
+            context={"lines": room.description or []},
+        )
 
     elif "done" == command:
         self.echo("Exited room edit mode.")
@@ -86,8 +89,7 @@ def area_command(self, args, Areas, Rooms, **kwargs):
 
     if "list" == command:
         for area in Areas.query():
-            self.echo("{} - {} - {}".format(
-                area.id, area.vnum, area.name))
+            self.echo("{} - {} - {}".format(area.id, area.vnum, area.name))
         return
 
     if "search" == command:
@@ -105,10 +107,7 @@ def area_command(self, args, Areas, Rooms, **kwargs):
         if results:
             self.echo("Search results:")
             for area in results:
-                self.echo("{} - {}".format(
-                    area.vnum,
-                    area.name,
-                ))
+                self.echo("{} - {}".format(area.vnum, area.name))
         else:
             self.echo("No areas found for keyword: {}".format(keyword))
 
@@ -131,8 +130,11 @@ def area_command(self, args, Areas, Rooms, **kwargs):
         self.echo("Area '{}' created.".format(area.vnum))
 
         room = Rooms.save({"area_id": area.id, "area_vnum": vnum})
-        self.echo("Room vnum '{}:{}' with id {} created.".format(
-            vnum, room.vnum, room.id))
+        self.echo(
+            "Room vnum '{}:{}' with id {} created.".format(
+                vnum, room.vnum, room.id
+            )
+        )
         # TODO Load area editor
 
         return

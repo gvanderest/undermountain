@@ -10,8 +10,10 @@ import traceback
 
 
 logger = logging.getLogger()
-FORMAT = "%(asctime)-15s [%(levelname)s] " + \
-    "%(filename)s.%(funcName)s:%(lineno)s %(message)s"
+FORMAT = (
+    "%(asctime)-15s [%(levelname)s] "
+    + "%(filename)s.%(funcName)s:%(lineno)s %(message)s"
+)
 formatter = logging.Formatter(FORMAT)
 
 logging.basicConfig(format=FORMAT)
@@ -27,6 +29,7 @@ class InvalidInjector(Exception):
 
 
 class Game(object):
+
     def __init__(self):
         self.data = {}
         self.injectors = {}
@@ -96,21 +99,24 @@ class Game(object):
     def register_manager(self, manager):
         instance = manager(self)
         self.managers.append(instance)
-        logging.info("Registered manager {}".format(
-            instance.__class__.__name__))
+        logging.info(
+            "Registered manager {}".format(instance.__class__.__name__)
+        )
         return instance
 
     def register_injector(self, injector):
         instance = injector(self)
         self.injectors[injector.__name__] = instance
-        logging.info("Registered injector {}".format(
-            instance.__class__.__name__))
+        logging.info(
+            "Registered injector {}".format(instance.__class__.__name__)
+        )
         return instance
 
     def get_injector(self, name):
         if name not in self.injectors:
             raise InvalidInjector(
-                "{} is not a valid injector name".format(name))
+                "{} is not a valid injector name".format(name)
+            )
         return self.injectors[name]
 
     def get_injectors(self, *names):

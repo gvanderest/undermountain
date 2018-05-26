@@ -9,6 +9,7 @@ from random import randint, choice
 
 
 class Battles(Collection):
+
     def initiate(self, actor, target):
         actor.target_ids = (actor.target_ids or []) + [target.id]
         target.target_ids = (target.target_ids or []) + [actor.id]
@@ -21,6 +22,7 @@ class Battles(Collection):
 
 
 class Battle(object):
+
     def __init__(self, actor):
         self.actor = actor
 
@@ -91,14 +93,20 @@ class Battle(object):
             amount_text = self.get_damage_amount_text(amount)
             actor.echo(
                 "{{BYour {}{{B {}{{B {}{{B! {{B-{{R={{C{}{{R={{B-{{x".format(
-                    noun, amount_text, target.name, amount))
+                    noun, amount_text, target.name, amount
+                )
+            )
             actor.act(
                 "{{c{}'s {}{{c {}{{c {}{{c! {{B-{{R={{C{}{{R={{B-{{x".format(
-                    actor.name, noun, amount_text, target.name, amount),
-                exclude=target)
+                    actor.name, noun, amount_text, target.name, amount
+                ),
+                exclude=target,
+            )
             target.echo(
                 "{{B{}'s {}{{B {}{{B you! {{B-{{R={{C{}{{R={{B-{{x".format(
-                    actor.name, noun, amount_text, amount))
+                    actor.name, noun, amount_text, amount
+                )
+            )
 
         target.stats.current_hp.base -= amount
 

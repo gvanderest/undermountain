@@ -2,6 +2,7 @@ from mud.game_component import GameComponent
 
 
 class Server(GameComponent):
+
     def __init__(self, game):
         super(Server, self).__init__(game)
         self.connections = {}

@@ -11,7 +11,7 @@ import settings
 
 def get_python_version():
     major, minor, micro, _, _ = sys.version_info
-    return '.'.join(map(str, [major, minor, micro]))
+    return ".".join(map(str, [major, minor, micro]))
 
 
 def display_banner():
@@ -20,14 +20,21 @@ def display_banner():
     except Exception:
         VERSION = None
 
-    banner_lines = ("""\
+    banner_lines = (
+        (
+            """\
       __ _______
-     /  /       \ """ + (64 * "-") + """
+     /  /       \ """
+            + (64 * "-")
+            + """
     /  /  /  /  /    Undermountain Python MUD Server v{} - Python v{}
-    \____/__/__/ """ + (65 * "-") + "\n").format(
-        VERSION,
-        get_python_version(),
-    ).split("\n")
+    \____/__/__/ """
+            + (65 * "-")
+            + "\n"
+        )
+        .format(VERSION, get_python_version())
+        .split("\n")
+    )
 
     for line in banner_lines:
         print(line)
@@ -47,14 +54,16 @@ def start_game():
 
 
 def display_help():
-    print("""\
+    print(
+        """\
 Commands:
 ./um start - Start the game
 ./um backup [id] - Backup data with identifier
 ./um restore <id|path> - Restore data with identifier or file path
 
 For backups, see the 'backups' folder
-""")
+"""
+    )
 
 
 def backup_data(backup_id):
