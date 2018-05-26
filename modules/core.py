@@ -3,9 +3,12 @@ from mud.module import Module
 from mud.collection import Collection, Entity, FileStorage
 from mud.inject import inject
 from utils.ansi import pad_right, stop_color_bleed
+from utils.tablefy import tablefy
 from utils.hash import get_random_hash
 from mud.timer_manager import TimerManager
 from random import randint, choice
+from modules.overmap import overmap_recall as om_recall
+from modules.overmap import overmap_walk as om_handle_walk
 
 import gevent
 import settings
@@ -25,13 +28,17 @@ class Map(object):
         VERTICAL_SYMBOL = "|"
         HORIZONTAL_SYMBOL = "--"
 
-        VALID_DIRECTIONS = set(["north", "east", "south", "west"])
+        VALID_DIRECTIONS = set(["north", "east", "south", "west", "nw", "sw", "ne", "se"])
 
         DIRECTIONS = {
             "north": (((VERTICAL_SYMBOL,),), -1, 0, -2, 0),
             "east": (((HORIZONTAL_SYMBOL,),), 0, 1, 0, 3),
             "south": (((VERTICAL_SYMBOL,),), 1, 0, 2, 0),
             "west": (((HORIZONTAL_SYMBOL,),), 0, -2, 0, -3),
+            "nw": (((HORIZONTAL_SYMBOL,),), 0, -2, 0, -3),
+            "sw": (((HORIZONTAL_SYMBOL,),), 0, -2, 0, -3),
+            "ne": (((HORIZONTAL_SYMBOL,),), 0, -2, 0, -3),
+            "se": (((HORIZONTAL_SYMBOL,),), 0, -2, 0, -3),
         }
 
         ORIGIN_COLOR = "{R"
@@ -153,6 +160,12 @@ def open_command(self, args, Directions, **kwargs):
     exit.save()
 
     self.echo("You open the {}.".format(exit.get("name", "door")))
+
+
+def commands_command(self, **kw):
+    """List all commands."""
+    commands = sorted(self.game.commands.keys())
+    self.echo(tablefy(commands))
 
 
 @inject("Directions")
@@ -449,6 +462,7 @@ def goto_command(self, args, Rooms, **kwargs):
     self.act("{self.name} disappears suddenly.")
     self.room_id = room.id
     self.room_vnum = room.vnum
+    self.overmap = None
     self.save()
     self.act("{self.name} appears suddenly.")
     self.force("look")
@@ -730,7 +744,7 @@ def say_command(self, message, **kwargs):
     self.emit("after:say", say_data, unblockable=True)
 
 
-@inject("Directions", "Rooms")
+@inject("Directions", "Rooms", "Overmap")
 def direction_command(self, name, Directions, Rooms, **kwargs):
     room = self.room
 
@@ -739,15 +753,8 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
         return
 
     exit = room.exits.get(name, None)
-    if not exit:
+    if not exit and not self.overmap:
         self.echo("You can't go that way.")
-        return
-
-    if exit.has_flag(EXIT_DOOR) and exit.has_flag(EXIT_CLOSED):
-        if exit.has_flag(EXIT_SECRET):
-            self.echo("You can't go that way.")
-        else:
-            self.echo("The door is closed.")
         return
 
     if self.target_ids:
@@ -760,6 +767,17 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
     walk = self.trigger("before:walk", walk_data)
 
     if walk.blocked:
+        return
+
+    if bool(self.overmap):
+        om_handle_walk(self, direction)
+        return
+
+    if exit.has_flag(EXIT_DOOR) and exit.has_flag(EXIT_CLOSED):
+        if exit.has_flag(EXIT_SECRET):
+            self.echo("You can't go that way.")
+        else:
+            self.echo("The door is closed.")
         return
 
     new_room = Rooms.get({"vnum": exit["room_vnum"]})
@@ -1119,6 +1137,16 @@ def title_command(self, message, **kwargs):
         self.echo("Title cleared.")
 
 
+@inject("Areas")
+def overmap_recall(self, Areas, **kwargs):
+    self.overmap_x = 0
+    self.overmap_y = 0
+    self.overmap = "Bitterwoods"
+    for area in Areas.query():
+        if area.name == self.overmap:
+            om_recall(self)
+
+
 class ActorStat(object):
     def __init__(self, id, value, actor):
         self.id = id
@@ -1171,7 +1199,7 @@ class Actor(Entity):
 
     def die(self):
         self.recall()
-        self.stats.hp.base = 1
+        self.stats.hp.current = 1
 
     @inject("Rooms")
     def recall(self, Rooms=None):
@@ -1194,7 +1222,8 @@ class Actor(Entity):
         :return:
         """
 
-        if prop_target.lower() in ("self", "myself"):
+        self.echo("{{BYou try to target '{{W{}'!{{x".format(prop_target))
+        if "self" == prop_target.strip().lower() or "myself" == prop_target.lower:
             target = self
             return target
         else:
@@ -1890,6 +1919,8 @@ class CoreModule(Module):
         self.game.register_command("open", open_command)
         self.game.register_command("close", close_command)
         self.game.register_command("sockets", sockets_command)
+        self.game.register_command("recall", overmap_recall)
+        self.game.register_command("commands", commands_command)
 
         self.game.register_manager(TickManager)
 

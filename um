@@ -62,7 +62,9 @@ def backup_data(backup_id):
     import tarfile
     import os
     import os.path
+    from hashlib import sha256
 
+    sha256(data).hexdigest()
     backup_path = "{}/{}.tar.gz".format(settings.BACKUPS_FOLDER, backup_id)
 
     if os.path.exists(backup_path):
