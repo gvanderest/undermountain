@@ -12,16 +12,16 @@ def overmaps_command(self, Areas, *args, **kwargs):
     # TO_DO Table-fy this.
     count = 0
     self.echo("Available Overmaps.")
-    self.echo("{R+-------------------------------------------")
-    self.echo("{w|Level   | Vis |  Name           |  Description")
-    self.echo("{R+-------------------------------------------{w")
+    self.echo("{R+------------------------------------------------------------------------------+")
+    self.echo("{R|{wLevel   | Vis |       Name          |              Description")
+    self.echo("{R+------------------------------------------------------------------------------+{w")
     for area in Areas.query():
         if not area.area_map:
             continue
         else:
-            self.echo(f"{{R|{{w{area.min_level} - {area.max_level} |  {area.visibility} | {area.name:>15} |{area.description}")
+            self.echo(f"{{R|{{w{area.min_level} - {area.max_level} |  {area.visibility} | {area.name:>15}     |   {area.description}")
             count += 1
-    self.echo("{R+-------------------------------------------{x")
+    self.echo("{R+------------------------------------------------------------------------------+{x")
     self.echo(f"({count}) Overmap(s) found")
 
 @inject("Areas")
