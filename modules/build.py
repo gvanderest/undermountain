@@ -8,7 +8,7 @@ def format_field_value(name, value):
 
 
 @inject("Rooms")
-def in_room_edit(self, Rooms, context=None, args=None, **kwargs):
+def in_room_edit(self, Rooms=None, context=None, args=None, **kwargs):
     room = Rooms.get(context["room_id"]) if context else self.room
 
     def display_redit_summary():
@@ -73,6 +73,82 @@ def room_edit_command(self, *args, **kwargs):
     in_room_edit(self)
 
 
+@inject("Areas")
+def area_list_command(self, Areas=None):
+    for area in Areas.query():
+        self.echo("{} - {} - {}".format(area.id, area.vnum, area.name))
+
+
+@inject("Areas")
+def area_search_command(self, args, Areas=None):
+    if not args:
+        self.echo("Keywords required.")
+        self.echo("area search <keyword>")
+
+    keyword = args.pop(0)
+
+    results = []
+    for area in Areas.query():
+        if keyword in area.name.lower() or keyword in area.vnum.lower():
+            results.append(area)
+
+    if results:
+        self.echo("Search results:")
+        for area in results:
+            self.echo("{} - {}".format(area.vnum, area.name))
+    else:
+        self.echo("No areas found for keyword: {}".format(keyword))
+
+
+@inject("Areas", "Rooms")
+def area_create_command(self, args, Areas=None, Rooms=None):
+    if not args:
+        self.echo("Vnum required.")
+        self.echo("area create <vnum>")
+        return
+
+    vnum = args.pop(0)
+    area = Areas.get({"vnum": vnum})
+
+    if area:
+        self.echo("An area with vnum '{}' already exists.".format(vnum))
+        return
+
+    area = Areas.save({"vnum": vnum})
+    self.echo("Area '{}' created.".format(area.vnum))
+
+    room = Rooms.save({"area_id": area.id, "area_vnum": vnum})
+    self.echo(
+        "Room vnum '{}:{}' with id {} created.".format(
+            vnum, room.vnum, room.id
+        )
+    )
+    # TODO Load area editor
+
+
+@inject("Areas")
+def area_delete_command(self, args, Areas=None):
+    if not args:
+        self.echo("Vnum must be provided.")
+        self.echo("area delete <vnum> confirm")
+        return
+
+    vnum = args.pop(0)
+
+    if not args or args.pop(0) != "confirm":
+        self.echo("You must confirm the deletion.")
+        self.echo("area delete <vnum> confirm")
+        return
+
+    area = Areas.get({"vnum": vnum})
+    if not area:
+        self.echo("Area with vnum '{}' not found.".format(vnum))
+        return
+
+    area.delete()
+    self.echo("Area '{}' deleted.".format(vnum))
+
+
 @inject("Areas", "Rooms")
 def area_command(self, args, Areas, Rooms, **kwargs):
     args = list(map(lambda a: a.lower(), args))
@@ -88,78 +164,19 @@ def area_command(self, args, Areas, Rooms, **kwargs):
     command = args.pop(0)
 
     if "list" == command:
-        for area in Areas.query():
-            self.echo("{} - {} - {}".format(area.id, area.vnum, area.name))
+        area_list_command(self)
         return
 
     if "search" == command:
-        if not args:
-            self.echo("Keywords required.")
-            self.echo("area search <keyword>")
-
-        keyword = args.pop(0)
-
-        results = []
-        for area in Areas.query():
-            if keyword in area.name.lower() or keyword in area.vnum.lower():
-                results.append(area)
-
-        if results:
-            self.echo("Search results:")
-            for area in results:
-                self.echo("{} - {}".format(area.vnum, area.name))
-        else:
-            self.echo("No areas found for keyword: {}".format(keyword))
-
+        area_search_command(self, args=args)
         return
 
     elif "create" == command:
-        if not args:
-            self.echo("Vnum required.")
-            self.echo("area create <vnum>")
-            return
-
-        vnum = args.pop(0)
-        area = Areas.get({"vnum": vnum})
-
-        if area:
-            self.echo("An area with vnum '{}' already exists.".format(vnum))
-            return
-
-        area = Areas.save({"vnum": vnum})
-        self.echo("Area '{}' created.".format(area.vnum))
-
-        room = Rooms.save({"area_id": area.id, "area_vnum": vnum})
-        self.echo(
-            "Room vnum '{}:{}' with id {} created.".format(
-                vnum, room.vnum, room.id
-            )
-        )
-        # TODO Load area editor
-
+        area_create_command(self, args=args)
         return
 
     elif "delete" == command:
-        if not args:
-            self.echo("Vnum must be provided.")
-            self.echo("area delete <vnum> confirm")
-            return
-
-        vnum = args.pop(0)
-
-        if not args or args.pop(0) != "confirm":
-            self.echo("You must confirm the deletion.")
-            self.echo("area delete <vnum> confirm")
-            return
-
-        area = Areas.get({"vnum": vnum})
-        if not area:
-            self.echo("Area with vnum '{}' not found.".format(vnum))
-            return
-
-        area.delete()
-        self.echo("Area '{}' deleted.".format(vnum))
-
+        area_delete_command(self, args=args)
         return
 
     elif "edit" == command:

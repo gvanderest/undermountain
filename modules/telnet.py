@@ -15,7 +15,51 @@ import socket as raw_socket
 monkey.patch_all()
 
 badusernames = (
-    "about access account accounts activate add address adm admin administration administrator adult advertising affiliate affiliates ajax analytics android anon anonymous api app apple apps arabic archive archives atom auth authentication avatar awadhi azerbaijani backup banner banners bengali better bhojpuri billing bin blog blogs board bot bots burmese business cache cadastro calendar campaign cancel careers cart cgi changelog chat checkout chinese client cliente code codereview comercial compare compras config configuration connect contact contest create css cvs dashboard data delete demo design designer dev devel dir direct direct_messages directory doc docs documentation domain download downloads dutch ecommerce edit editor edits email employment english enterprise exchange facebook faq farsi favorite favorites feed feedback feeds file files fleet fleets flog follow followers following forum forums free french friend friends ftp gadget gadgets games gan german gist git github google group groups guest gujarati hakka hausa help hindi home homepage host hosting hostmaster hostname hpg html http httpd https idea ideas image images imap img index indice info information intranet invitations invite ipad iphone irc italian japanese java javanese javascript jinyu job jobs json kannada knowledgebase korean language languages list lists local localhost log login logout logs mail mail1 mail2 mail3 mail4 mail5 mailer mailing maithili malayalam manager mandarin map maps marathi marketing master media message messenger microblog microblogs min-nan mine mis mob mobile mobilemail movie movies mp3 msg msn music musicas mysql name named net network new news newsletter nick nickname notes noticias null none ns1 ns2 ns3 ns4 oauth oauth_clients offers old online openid operator order orders organizations oriya page pager pages panel panjabi password pda perl photo photoalbum photos php pic pics plans plugin plugins polish pop pop3 popular portuguese post postfix postmaster posts privacy profile project projects promo pub public put python random recruitment register registration remove replies repo romanian root rss ruby russian sale sales sample samples save script scripts search secure security send serbo-croatian service sessions setting settings setup sftp shop signin signup sindhi site sitemap sites smtp soporte spanish sql ssh ssl ssladmin ssladministrator sslwebmaster stage staging start stat static stats status store stores stories styleguide subdomain subscribe subscriptions sunda suporte support svn sysadmin sysadministrator system tablet tablets talk tamil task tasks tech telnet telugu terms test test1 test2 test3 teste tests thai theme themes tmp todo tools tour translations trends turkish twitter twittr ukrainian unfollow unsubscribe update upload urdu url usage user username usuario vendas video videos vietnamese visitor weather web webmail webmaster website websites webstats widget widgets wiki win workshop wws www www1 www2 www3 www4 www5 www6 www7 wwws wwww xfn xiang xml xmpp xmppSuggest xpg xxx yaml yml yoruba you yourdomain yourname yoursite yourusername"
+    "about access account accounts activate add address adm admin "
+    "administration administrator adult advertising affiliate affiliates "
+    "ajax analytics android anon anonymous api app apple apps arabic archive "
+    "archives atom auth authentication avatar awadhi azerbaijani backup "
+    "banner banners bengali better bhojpuri billing bin blog blogs board bot "
+    "bots burmese business cache cadastro calendar campaign cancel careers "
+    "cart cgi changelog chat checkout chinese client cliente code codereview "
+    "comercial compare compras config configuration connect contact contest "
+    "create css cvs dashboard data delete demo design designer dev devel dir "
+    "direct direct_messages directory doc docs documentation domain download "
+    "downloads dutch ecommerce edit editor edits email employment english "
+    "enterprise exchange facebook faq farsi favorite favorites feed feedback "
+    "feeds file files fleet fleets flog follow followers following forum "
+    "forums free french friend friends ftp gadget gadgets games gan german "
+    "gist git github google group groups guest gujarati hakka hausa help "
+    "hindi home homepage host hosting hostmaster hostname hpg html http "
+    "httpd https idea ideas image images imap img index indice info "
+    "information intranet invitations invite ipad iphone irc italian japanese "
+    "java javanese javascript jinyu job jobs json kannada knowledgebase "
+    "korean language languages list lists local localhost log login logout "
+    "logs mail mail1 mail2 mail3 mail4 mail5 mailer mailing maithili "
+    "malayalam manager mandarin map maps marathi marketing master media "
+    "message messenger microblog microblogs min-nan mine mis mob mobile "
+    "mobilemail movie movies mp3 msg msn music musicas mysql name named net "
+    "network new news newsletter nick nickname notes noticias null none ns1 "
+    "ns2 ns3 ns4 oauth oauth_clients offers old online openid operator order "
+    "orders organizations oriya page pager pages panel panjabi password pda "
+    "perl photo photoalbum photos php pic pics plans plugin plugins polish "
+    "pop pop3 popular portuguese post postfix postmaster posts privacy "
+    "profile project projects promo pub public put python random recruitment "
+    "register registration remove replies repo romanian root rss ruby russian "
+    "sale sales sample samples save script scripts search secure security "
+    "send serbo-croatian service sessions setting settings setup sftp shop "
+    "signin signup sindhi site sitemap sites smtp soporte spanish sql ssh "
+    "ssl ssladmin ssladministrator sslwebmaster stage staging start stat "
+    "static stats status store stores stories styleguide subdomain subscribe "
+    "subscriptions sunda suporte support svn sysadmin sysadministrator "
+    "system tablet tablets talk tamil task tasks tech telnet telugu terms "
+    "test test1 test2 test3 teste tests thai theme themes tmp todo tools tour "
+    "translations trends turkish twitter twittr ukrainian unfollow "
+    "unsubscribe update upload urdu url usage user username usuario vendas "
+    "video videos vietnamese visitor weather web webmail webmaster website "
+    "websites webstats widget widgets wiki win workshop wws www www1 www2 "
+    "www3 www4 www5 www6 www7 wwws wwww xfn xiang xml xmpp xmppSuggest xpg "
+    "xxx yaml yml yoruba you yourdomain yourname yoursite yourusername"
 )
 
 
@@ -314,7 +358,8 @@ Did I get that right, {} (Y/N)? """.format(
     def handle_select_password_input(self, message):
         if len(message) < 3:
             self.writeln(
-                "You password does not meet the length requirement. (Minimum 4)"
+                "You password does not meet the length requirement. "
+                "(Minimum 4)"
             )
             self.start_select_password()
         elif self.temporary_actor.name.lower() == message.lower():
@@ -339,7 +384,7 @@ Did I get that right, {} (Y/N)? """.format(
             self.start_select_race()
 
     @inject("Races")
-    def start_select_race(self, Races):
+    def start_select_race(self, Races=None):
         self.state = "select_race"
         output = """
 +---------------------------[ Pick your Race ]----------------------------+
@@ -375,7 +420,7 @@ Please choose a race, or HELP (Name of Race) for more info: """
         self.temporary_actor.race_ids = [race.id]
 
     @inject("Genders")
-    def start_select_gender(self, Genders):
+    def start_select_gender(self, Genders=None):
         self.state = "select_gender"
         output = """
 +--------------------------[ Pick your Gender ]---------------------------+
@@ -392,7 +437,7 @@ Please choose a gender for your character: """
         self.write(output)
 
     @inject("Genders")
-    def handle_select_gender_input(self, message, Genders):
+    def handle_select_gender_input(self, message, Genders=None):
 
         gender = Genders.fuzzy_get(message)
         if not gender:
@@ -403,7 +448,7 @@ Please choose a gender for your character: """
         self.start_select_class()
 
     @inject("Classes")
-    def start_select_class(self, Classes):
+    def start_select_class(self, Classes=None):
         self.state = "select_class"
         output = """
 +--------------------------[ Pick your Class ]---------------------------+
@@ -431,7 +476,7 @@ Select a class or type HELP (Class) for details: """
         self.write(output)
 
     @inject("Classes")
-    def handle_select_class_input(self, message, Classes):
+    def handle_select_class_input(self, message, Classes=None):
         message = message.strip().lower()
         cls = Classes.fuzzy_get(message)
         if cls:
@@ -560,7 +605,7 @@ Your choice? """
         self.start_motd()
 
     @inject("Characters")
-    def save_temporary_actor(self, Characters):
+    def save_temporary_actor(self, Characters=None):
         actor = Characters.save(self.temporary_actor)
         self.connection.actor_id = actor.id
 
@@ -705,7 +750,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
         self.write(self.format_prompt_template(template))
 
     @inject("Characters")
-    def handle_playing_input(self, message, Characters, allow_proxy=True):
+    def handle_playing_input(self, message, Characters=None, allow_proxy=True):
         actor = Characters.get(self.connection.actor_id)
         delay = None
 

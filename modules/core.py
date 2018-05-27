@@ -1,4 +1,7 @@
+from functools import partial
 from datetime import datetime
+from typing import List
+from utils.listify import listify
 from mud.module import Module
 from mud.collection import Collection, Entity, FileStorage
 from mud.inject import inject
@@ -16,40 +19,99 @@ EXIT_DOOR = "door"
 EXIT_CLOSED = "closed"
 EXIT_SECRET = "secret"
 
+VERTICAL_SYMBOL = "|"
+HORIZONTAL_SYMBOL = "--"
+
+DIRECTIONS = {
+    "north": (((VERTICAL_SYMBOL,),), -1, 0, -2, 0),
+    "east": (((HORIZONTAL_SYMBOL,),), 0, 1, 0, 3),
+    "south": (((VERTICAL_SYMBOL,),), 1, 0, 2, 0),
+    "west": (((HORIZONTAL_SYMBOL,),), 0, -2, 0, -3),
+}
+
+VALID_DIRECTIONS = set(["north", "east", "south", "west"])
+
+ORIGIN_COLOR = "{R"
+ROOM_COLOR = "{C"
+LINEAR_LINK_COLOR = "{x"
+NON_LINEAR_LINK_COLOR = "{r"
+EMPTY_SYMBOL = " "
+
 
 class Map(object):
+
+    @classmethod
+    def add_map_border(cls, grid: List[List[str]], width: int, height: int):
+        """Draw a border around the grid.
+
+        :param grid: the two-dimension list of symbols
+        :param width: how wide the map is
+        :param height: how tall the map is
+        :returns: grid
+        """
+
+        CORNER_SYMBOL = "{x+"
+        HORIZONTAL_SYMBOL = "{x-"
+        VERTICAL_SYMBOL = "{x|"
+
+        max_y = height - 1
+        max_x = width - 1
+
+        # Corner symbols
+        for y, x in ((0, 0), (0, max_x), (max_y, 0), (max_y, max_x)):
+            grid[y][x] = CORNER_SYMBOL
+
+        # Horizontals
+        for x in range(1, width - 1):
+            grid[max_y][x] = grid[0][x] = HORIZONTAL_SYMBOL
+
+        # Verticals
+        for y in range(1, height - 1):
+            grid[y][max_x] = grid[y][0] = VERTICAL_SYMBOL
+
+        return grid
+
+    @classmethod
+    def coords_are_valid(cls, width, height, x, y):
+        return y > 0 and y < height and x > 0 and x < width
+
+    @classmethod
+    def draw_linkages(
+        cls, grid, direction_id, width, height, base_x, base_y, linear
+    ):
+        symbols, symbol_y_start, symbol_x_start, y_mod, x_mod = DIRECTIONS[
+            direction_id
+        ]
+
+        for symbol_y, symbol_row in enumerate(symbols):
+            for symbol_x, symbols_in_row in enumerate(symbol_row):
+                for char_x, symbol in enumerate(symbols_in_row):
+                    y = base_y + symbol_y_start + symbol_y
+                    x = base_x + symbol_x_start + symbol_x + char_x
+
+                    if not cls.coords_are_valid(width, height, x, y):
+                        continue
+
+                    link_color = (
+                        LINEAR_LINK_COLOR if linear else NON_LINEAR_LINK_COLOR
+                    )
+                    grid[y][x] = link_color + symbol
+
+        next_y = base_y + y_mod
+        next_x = base_x + x_mod
+
+        return grid, next_x, next_y
 
     @classmethod
     def from_actor(cls, actor, width=45, height=23, border=False):
         # Note: All coordinates are (row, col) to make things easier later.
         Rooms = actor.game.get_injector("Rooms")
 
-        VERTICAL_SYMBOL = "|"
-        HORIZONTAL_SYMBOL = "--"
-
-        VALID_DIRECTIONS = set(["north", "east", "south", "west"])
-
-        DIRECTIONS = {
-            "north": (((VERTICAL_SYMBOL,),), -1, 0, -2, 0),
-            "east": (((HORIZONTAL_SYMBOL,),), 0, 1, 0, 3),
-            "south": (((VERTICAL_SYMBOL,),), 1, 0, 2, 0),
-            "west": (((HORIZONTAL_SYMBOL,),), 0, -2, 0, -3),
-        }
-
-        ORIGIN_COLOR = "{R"
-        ROOM_COLOR = "{C"
-        LINEAR_LINK_COLOR = "{x"
-        NON_LINEAR_LINK_COLOR = "{r"
-        EMPTY_SYMBOL = " "
-
         grid = [[EMPTY_SYMBOL for _ in range(width)] for _ in range(height)]
 
         start_room = actor.room
         used_room_vnums = set([start_room.vnum])
         stack = [(height // 2, width // 2, start_room)]
-
-        def coords_are_valid(y, x):
-            return y > 0 and y < height and x > 0 and x < width
 
         while stack:
             base_y, base_x, room = stack.pop()
@@ -70,31 +132,12 @@ class Map(object):
                 if direction_id not in VALID_DIRECTIONS:
                     continue
 
-                symbols, symbol_y_start, symbol_x_start, y_mod, x_mod = DIRECTIONS[
-                    direction_id
-                ]
-
                 # Linkages.
-                for symbol_y, symbol_row in enumerate(symbols):
-                    for symbol_x, symbols_in_row in enumerate(symbol_row):
-                        for char_x, symbol in enumerate(symbols_in_row):
-                            y = base_y + symbol_y_start + symbol_y
-                            x = base_x + symbol_x_start + symbol_x + char_x
+                grid, next_x, next_y = cls.draw_linkages(
+                    grid, direction_id, width, height, base_x, base_y, linear
+                )
 
-                            if not coords_are_valid(y, x):
-                                continue
-
-                            link_color = (
-                                LINEAR_LINK_COLOR
-                                if linear
-                                else NON_LINEAR_LINK_COLOR
-                            )
-                            grid[y][x] = link_color + symbol
-
-                next_y = base_y + y_mod
-                next_x = base_x + x_mod
-
-                if not coords_are_valid(next_y, next_x):
+                if not cls.coords_are_valid(width, height, next_x, next_y):
                     continue
 
                 next_room = Rooms.get({"vnum": entry["room_vnum"]})
@@ -104,24 +147,7 @@ class Map(object):
                     stack.append((next_y, next_x, next_room))
 
         if border:
-            CORNER_SYMBOL = "{x+"
-            HORIZONTAL_SYMBOL = "{x-"
-            VERTICAL_SYMBOL = "{x|"
-
-            max_y = height - 1
-            max_x = width - 1
-
-            # Corner symbols
-            for y, x in ((0, 0), (0, max_x), (max_y, 0), (max_y, max_x)):
-                grid[y][x] = CORNER_SYMBOL
-
-            # Horizontals
-            for x in range(1, width - 1):
-                grid[max_y][x] = grid[0][x] = HORIZONTAL_SYMBOL
-
-            # Verticals
-            for y in range(1, height - 1):
-                grid[y][max_x] = grid[y][0] = VERTICAL_SYMBOL
+            grid = cls.add_map_border(grid, width, height)
 
         return Map(grid)
 
@@ -333,8 +359,8 @@ def asave_command(self, args, Areas, **kwargs):
     self.echo("Area {} saved.".format(area.vnum))
 
 
-@inject("Scripts")
-def scripts_command(self, args, Scripts, **kwargs):
+@inject("Scripts", "Areas")
+def scripts_command(self, args, Scripts=None, Areas=None, **kwargs):
     """Display the list of Scripts for an Area."""
 
     if args:
@@ -641,27 +667,47 @@ def dig_command(self, args, Areas, Rooms, Directions, **kwargs):
     self.force(direction.id)
 
 
-@inject("Actors", "Characters", "Objects", "Directions")
-def look_command(self, args, Actors, Characters, Objects, Directions, **k):
-    room = self.room
+def add_minimap_to_lines(actor, lines: List[str]):
+    """Add minimap lines for the Actor to output.
 
-    lines = []
-    lines.append(
-        "{{B{} {{x[{{WLAW{{x] {{R[{{WSAFE{{R]{{x".format(room["name"])
+    :param actor: the actor to draw the minimap for
+    :param lines: the lines of output to apply the minimap to
+    :returns: the same lines, with minimap prefixed
+    """
+    MINIMAP_WIDTH = 16
+    MINIMAP_HEIGHT = 8
+    MINIMAP_BORDER = False
+    MINIMAP_JOIN_SYMBOLS = "  "
+
+    minimap = Map.from_actor(
+        actor,
+        width=MINIMAP_WIDTH,
+        height=MINIMAP_HEIGHT,
+        border=MINIMAP_BORDER,
     )
-    lines.append(
-        "(ID: {}) (VNUM: {}) (Area: {})".format(
-            room["id"], room["vnum"], room["area_vnum"]
+    map_lines = minimap.to_lines()
+
+    map_line_count = len(map_lines)
+    line_count = len(lines)
+
+    outputs = []
+
+    for index in range(max(map_line_count, line_count)):
+        map_line = (
+            map_lines[index] if index < map_line_count else " " * MINIMAP_WIDTH
         )
-    )
+        line = lines[index] if index < line_count else ""
 
-    for index, line in enumerate(room.description):
-        if index == 0:
-            line = "{x   " + line
-        lines.append(line)
+        outputs.append(map_line + MINIMAP_JOIN_SYMBOLS + line)
 
-    lines.append("")
+    return outputs
 
+
+@inject("Directions")
+def format_room_exits_line(room, Directions=None):
+    """Return a line to output to players for the 'exits' for a room.  This
+    includes room links, doors, and secret rooms for immortals.
+    """
     exit_names = []
     door_names = []
     secret_names = []
@@ -689,6 +735,32 @@ def look_command(self, args, Actors, Characters, Objects, Directions, **k):
     exits_line += "{{x[{{GSecrets{{g:{{x {}{{x]".format(
         " ".join(secret_names) if secret_names else "none"
     )
+
+    return exits_line
+
+
+@inject("Actors", "Characters", "Objects")
+def look_command(self, args, Actors=None, Characters=None, Objects=None, **k):
+    room = self.room
+
+    lines = []
+    lines.append(
+        "{{B{} {{x[{{WLAW{{x] {{R[{{WSAFE{{R]{{x".format(room["name"])
+    )
+    lines.append(
+        "(ID: {}) (VNUM: {}) (Area: {})".format(
+            room["id"], room["vnum"], room["area_vnum"]
+        )
+    )
+
+    for index, line in enumerate(room.description):
+        if index == 0:
+            line = "{x   " + line
+        lines.append(line)
+
+    lines.append("")
+
+    exits_line = format_room_exits_line(room)
     lines.append(exits_line)
 
     for actor in Characters.query({"room_id": room["id"], "online": True}):
@@ -706,36 +778,9 @@ def look_command(self, args, Actors, Characters, Objects, Directions, **k):
     lines = list(stop_color_bleed(lines))
 
     MINIMAP_ENABLED = True
-    MINIMAP_WIDTH = 16
-    MINIMAP_HEIGHT = 8
-    MINIMAP_BORDER = False
-    MINIMAP_JOIN_SYMBOLS = "  "
 
     if MINIMAP_ENABLED:
-        minimap = Map.from_actor(
-            self,
-            width=MINIMAP_WIDTH,
-            height=MINIMAP_HEIGHT,
-            border=MINIMAP_BORDER,
-        )
-        map_lines = minimap.to_lines()
-
-        map_line_count = len(map_lines)
-        line_count = len(lines)
-
-        outputs = []
-
-        for index in range(max(map_line_count, line_count)):
-            map_line = (
-                map_lines[index]
-                if index < map_line_count
-                else " " * MINIMAP_WIDTH
-            )
-            line = lines[index] if index < line_count else ""
-
-            outputs.append(map_line + MINIMAP_JOIN_SYMBOLS + line)
-
-        lines = outputs
+        lines = add_minimap_to_lines(self, lines)
 
     self.echo(lines)
 
@@ -1207,6 +1252,8 @@ class Actor(Entity):
         if exclude is None:
             exclude = [self]
 
+        exclude = listify(exclude)
+
         # Iterate over actors and act_to them
         for collection in (Characters, Actors):
             for actor in collection.query({"room_id": self.room_id}):
@@ -1437,70 +1484,85 @@ class Rooms(Collection):
                     return room
 
 
+def script_wait(self, event, duration):
+    gevent.sleep(duration)
+
+
+@inject("Scripts")
+def script_call(self, event, vnum, data=None, Scripts=None):
+    if data is None:
+        data = {}
+
+    event.data.update(data)
+
+    script = Scripts.get({"vnum": vnum})
+    script.execute(self, event)
+
+
+def script_say(self, event, message):
+    self.say(message)
+
+
+@inject("Battles")
+def script_kill(self, event, target, Battles=None):
+    print("TARGET", target)
+    Battles.initiate(self, target)
+
+
+def script_spawn(self, event, type, data):
+    collection = None
+    if type == "actor":
+        collection = self.game.get_injector("Actors")
+    elif type == "object":
+        collection = self.game.get_injector("Objects")
+
+    if not collection:
+        raise Exception("Invalid spawn type {}".format(type))
+
+    room = self.room
+    data["room_id"] = room.id
+    data["room_vnum"] = room.vnum
+
+    return collection.save(data)
+
+
+def script_echo(self, event, message):
+    self.echo(message)
+
+
+def script_act(self, event, message):
+    self.act(message)
+
+
 class Script(Entity):
 
     def execute(self, entity, event):
         try:
             compiled = compile(self.code, "script:{}".format(self.id), "exec")
 
-            def wait(duration):
-                gevent.sleep(duration)
-
-            def call(vnum, data=None):
-                Scripts = self.game.get_injector("Scripts")
-                if data is None:
-                    data = {}
-
-                event.data.update(data)
-
-                script = Scripts.get({"vnum": vnum})
-                script.execute(entity, event)
-
-            def say(message):
-                entity.say(message)
-
-            def kill(target):
-                Battles = self.game.get_injector("Battles")
-                Battles.initiate(entity, target)
-
-            def spawn(type, data):
-                collection = None
-                if type == "actor":
-                    collection = self.game.get_injector("Actors")
-                elif type == "object":
-                    collection = self.game.get_injector("Objects")
-
-                if not collection:
-                    raise Exception("Invalid spawn type {}".format(type))
-
-                room = entity.room
-                data["room_id"] = room.id
-                data["room_vnum"] = room.vnum
-
-                return collection.save(data)
-
-            def echo(message):
-                entity.echo(message)
-
-            def act(message):
-                entity.act(message)
-
             context = dict(event.data)
-            context.update(
-                {
-                    "target": event.source,
-                    "actor": event.source,
-                    "self": entity,
-                    "kill": kill,
-                    "act": act,
-                    "say": say,
-                    "echo": echo,
-                    "event": event,
-                    "wait": wait,
-                    "call": call,
-                    "spawn": spawn,
-                }
-            )
+
+            SCRIPT_FUNCTIONS = {
+                "act": script_act,
+                "call": script_call,
+                "echo": script_echo,
+                "kill": script_kill,
+                "say": script_say,
+                "spawn": script_spawn,
+                "wait": script_wait,
+            }
+
+            local_vars = {
+                "actor": event.source,
+                "event": event,
+                "self": entity,
+                "target": event.source,
+            }
+
+            for k, f in SCRIPT_FUNCTIONS.items():
+                local_vars[k] = partial(f, entity, event)
+
+            context.update(local_vars)
 
             exec(compiled, context, context)
         except Exception as e:
