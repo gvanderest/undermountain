@@ -1,0 +1,3 @@
+#!/bin/sh
+PATHS="modules mud settings.py um utils"
+black -l 79 $PATHS && pylama $PATHS
