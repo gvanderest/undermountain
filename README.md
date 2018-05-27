@@ -89,6 +89,20 @@ If a filename matching both a direct path and `backups` folder are found, the
 direct path will win.
 
 
+## Developing the Engine
+
+In addition to the basic installation steps, you'll want to also add
+
+```shell
+pip install -r dev-requirements.txt
+```
+
+And set up the pre-commit hooks for git.
+
+```shell
+pre-commit install
+```
+
 # Engine Concepts
 
 ### Modules
