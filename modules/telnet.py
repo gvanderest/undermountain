@@ -13,6 +13,9 @@ import gevent
 import settings
 import socket as raw_socket
 
+TELNET_GA = chr(249)
+TELNET_IAC = chr(255)
+
 monkey.patch_all()
 
 
@@ -176,6 +179,11 @@ class TelnetClient(Client):
         self.state = "login_username"
 
     def handle_login_username_input(self, message):
+
+        for x in message:
+            if x.isdigit():
+                self.echo("yup")
+
         Characters = self.game.get_injector("Characters")
         name = message.strip().lower().title()
 
@@ -273,10 +281,11 @@ Did I get that right, {} (Y/N)? """.format(self.temporary_actor.name))
 
     def start_select_password(self):
         self.state = "select_password"
+        self.hide_next_input()
         self.write(
             """Please choose a password (max 8 characters) for {}: """.format(
                 self.temporary_actor.name))
-        self.hide_next_input()
+
 
     def handle_select_password_input(self, message):
         self.temporary_actor.password = hash_password(message)
@@ -622,7 +631,7 @@ Welcome to Waterdeep 'City Of Splendors'!  Please obey the rules, (help rules).
             if targets:
                 target = targets[0]
 
-                current_hp = target.stats.hp.total
+                current_hp = target.stats.hp.base
                 total_hp = target.stats.hp.total
                 health_text = "now considers you a force to be reckoned with"
 

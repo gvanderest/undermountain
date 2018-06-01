@@ -64,8 +64,6 @@ class Client(object):
         if not self.parse_thread:
             self.parse_thread = gevent.spawn(self.start_parse_thread)
         for input in inputs:
-            logging.info("INPUT {}".format(input))
-
             if self.next_input_hidden:
                 self.show_next_input()
                 input = "**************** (Hidden)"

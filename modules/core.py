@@ -1672,6 +1672,58 @@ class Room(Entity):
         return {k: RoomExit(v, self) for k, v in exits.items()}
 
 
+class Mob(Entity):
+    DEFAULT_DATA = {
+        "name": "",
+        "title": "",
+        "vnum": "",
+        "bracket": "",
+        "experience": 0,
+        "experience_per_level": 3000,
+        "room_id": "",
+        "room_vnum": "",
+        "race_ids": ["human"],
+        "class_ids": ["adventurer"],
+        "stats": {},
+        "settings": {},
+        "gender_id": "male",
+    }
+
+    @property
+    @inject("Actors", "Characters")
+    def actors(self, Actors, Characters):
+        for collection in (Actors, Characters):
+            for entity in collection.query({"room_id": self.id}):
+                yield entity
+
+    @property
+    @inject("Actors", "Characters", "Objects")
+    def children(self, Actors, Characters, Objects):
+        # TODO Make this flexible, to define model relationships?
+        for collection in (Actors, Characters, Objects):
+            for entity in collection.query({"room_id": self.id}):
+                yield entity
+
+    def echo(self, message):
+        for child in self.children:
+            child.echo(message)
+
+    @property
+    @inject("Areas")
+    def area(self, Areas):
+        """Get the Room's Area."""
+        return Areas.get(self.area_id) or Areas.get({"vnum": self.area_vnum})
+
+    @property
+    def room(self):
+        return self
+
+    @property
+    def exits(self):
+        exits = self._data.get("exits", {})
+        return {k: RoomExit(v, self) for k, v in exits.items()}
+
+
 class Direction(Entity):
     pass
 
@@ -1710,6 +1762,42 @@ class Rooms(Collection):
             for room in self.query():
                 if room.vnum.startswith(room_vnum):
                     return room
+
+
+class Mobs(Collection):
+    ENTITY_CLASS = Mob
+
+    @inject("Areas")
+    def fuzzy_get(self, identifier, Areas):
+        """Try to find a Mob by its id, strict vnum, loose vnum."""
+        # Try ID
+        mob = self.get(identifier)
+        if mob:
+            return mob
+
+        # If area:vnum format, try that.
+        if settings.VNUM_AREA_SEPARATOR in identifier:
+            parts = identifier.split(settings.VNUM_AREA_SEPARATOR)
+            area_vnum = parts[0].lower()
+            mob_vnum = parts[1].lower()
+
+            area = Areas.get({"vnum": area_vnum})
+
+            # Area does not exist.
+            if not area:
+                return None
+
+            for mob in self.query({"area_vnum": area.vnum}):
+                if mob.vnum.startswith(mob_vnum):
+                    return mob
+
+        # Fuzzy scan the world.
+        else:
+            mob_vnum = identifier.lower()
+
+            for mob in self.query():
+                if mob.vnum.startswith(mob_vnum):
+                    return mob
 
 
 class Script(Entity):
@@ -1873,6 +1961,7 @@ class CoreModule(Module):
     def __init__(self, game):
         super(CoreModule, self).__init__(game)
         self.game.register_injector(Rooms)
+        self.game.register_injector(Mobs)
         self.game.register_injector(Actors)
         self.game.register_injector(Objects)
         self.game.register_injector(Characters)
