@@ -13,25 +13,23 @@ def overmaps_command(self, Areas, *args, **kwargs):
     count = 0
     self.echo("Available Overmaps.")
     self.echo("{R+-------------------------------------------")
-    self.echo("{w|Level   | Vis |  Name           |  Description")
+    self.echo("{w|Level    | Vis |  Name           |  Description")
     self.echo("{R+-------------------------------------------{w")
     for area in Areas.query():
         if not area.area_map:
             continue
         else:
-            self.echo(f"{{R|{{w{area.min_level} - {area.max_level} |  {area.visibility} | {area.name:>15} |{area.description}")
+            self.echo(f"{{R|{{w{area.min_level:>3} - {area.max_level:>3}| {area.visibility:>3} | {area.name:^15} | {area.description:<}")
             count += 1
     self.echo("{R+-------------------------------------------{x")
     self.echo(f"({count}) Overmap(s) found")
 
 @inject("Areas")
-def overmap_recall(self, Areas, *args, **kwargs):
-    for area in Areas.query():
-        if area.name == "Bitterwoods":
-            if not area.overmap_recall:
-                set_actor_location(self, area, 115, 92)
-            else:
-                set_actor_location(self, area, area.overmap_recall[0], area.overmap_recall[1])
+def o_recall(self, area, *args, **kwargs):
+    if not area.overmap_recall:
+        set_actor_location(self, area, 1, 1)
+    else:
+        set_actor_location(self, area, area.overmap_recall[0], area.overmap_recall[1])
 
 
 class OvermapModule(Module):
@@ -39,7 +37,7 @@ class OvermapModule(Module):
 
     def __init__(self, game):
         super(OvermapModule, self).__init__(game)
-        self.game.register_command("overmap_recall", overmap_recall)
+        self.game.register_command("overmap_recall", o_recall)
         self.game.register_command("overmaps", overmaps_command)
         self.game.register_injector(Overmap)
 
@@ -65,7 +63,7 @@ def set_actor_location(actor, area, new_x, new_y):
 def is_actor_at(x, y, area):
     if not area.overmap_actors:
         return False
-    for loc in area.overmap_actors.items():
+    for loc in area.overmap_actors:
         if loc[0] == x and loc[1] == y:
             print("Found You")
             return True
@@ -105,6 +103,8 @@ def draw_room(self, x, y, area):
 def draw_map(self, area):
 
     # Find slice indexes for horizontal
+    print(self.overmap_x)
+    print(area.visibility)
     start_x = max(0, self.overmap_x - area.visibility - 1)
     end_x = min(area.width - 1, self.overmap_x + area.visibility) + 1
 

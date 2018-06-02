@@ -7,7 +7,7 @@ from utils.tablefy import tablefy
 from utils.hash import get_random_hash
 from mud.timer_manager import TimerManager
 from random import randint, choice
-from modules.overmap import overmap_recall as om_recall
+from modules.overmap import o_recall
 from modules.overmap import overmap_walk as om_handle_walk
 
 import gevent
@@ -1138,13 +1138,29 @@ def title_command(self, message, **kwargs):
 
 
 @inject("Areas")
-def overmap_recall(self, Areas, **kwargs):
-    self.overmap_x = 0
-    self.overmap_y = 0
-    self.overmap = "Bitterwoods"
+def om_recall(self, args, Areas, **kwargs):
+    args = list(map(lambda a: a.lower(), args))
+    command = ""
+    if not args:
+        self.overmap_x = None
+        self.overmap_y = None
+        self.overmap = None
+        self.echo("You pray for transportation and Recall!")
+        goto_command(self, [settings.INITIAL_ROOM_VNUM])
+        return
+    else:
+        command = args.pop(0)
+
+    print(f"command:{command}")
     for area in Areas.query():
-        if area.name == self.overmap:
-            om_recall(self)
+        if area.name.lower() == command:
+            self.overmap = command
+            self.overmap_x = 0
+            self.overmap_y = 0
+            o_recall(self, area)
+            return
+
+    self.echo("Recall Area not found.")
 
 
 class ActorStat(object):
@@ -2008,7 +2024,7 @@ class CoreModule(Module):
         self.game.register_command("open", open_command)
         self.game.register_command("close", close_command)
         self.game.register_command("sockets", sockets_command)
-        self.game.register_command("recall", overmap_recall)
+        self.game.register_command("recall", om_recall)
         self.game.register_command("commands", commands_command)
 
         self.game.register_manager(TickManager)

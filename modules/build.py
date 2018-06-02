@@ -223,7 +223,6 @@ def in_mob_edit(self, args,  Mobs, Races, context=None, **kwargs):
             mob.stats.mana.base = 100 + mana_gain
             self.echo(f"HP {mob.stats.hp.base}")
             self.echo(f"Mana {mob.stats.mana.base}")
-            mob.save()
             display_medit_summary(mob)
             return
 

@@ -1,0 +1,42 @@
+{
+    "actors": [],
+    "area_map": [
+        "+---+---+---+",
+        "|   |       |",
+        "+   +   +   +",
+        "|       |   |",
+        "+---+---+   +",
+        "| O         |",
+        "+---+---+---+"
+    ],
+    "color_mapping": {
+        " ": "{2",
+        "+": "{B",
+        "-": "{B",
+        "O": "{Y",
+        "|": "{B"
+    },
+    "description": "A tinymap made with torogs zelda mapper",
+    "flags": [],
+    "height": 7,
+    "id": "729feccb071413918f8588c29a19b0c630bfbb0a",
+    "max_level": "10",
+    "min_level": "0",
+    "name": "tinymap",
+    "objects": [],
+    "overmap_actors": {
+        "Bochner": [
+            1,
+            1
+        ],
+        "Recall": [
+            1,
+            1
+        ]
+    },
+    "rooms": [],
+    "scripts": [],
+    "visibility": 1,
+    "vnum": "tinymap",
+    "width": 13
+}

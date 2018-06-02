@@ -5,12 +5,14 @@
     "objects": [],
     "rooms": [
         {
-            "description": [],
+            "description": [
+                "You are floating in nothingness."
+            ],
             "exits": {},
             "flags": [],
-            "id": "debd6cff16f109942fd7d11156d397c4c0f9aa12",
-            "name": "Unnamed Room",
-            "vnum": "ecc23c"
+            "id": "void",
+            "name": "The Void",
+            "vnum": "void"
         }
     ],
     "scripts": [],
