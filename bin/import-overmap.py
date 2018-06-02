@@ -38,7 +38,7 @@ def create_color_maping(area_map):
     return color_mapping
 
 
-class overmap:
+class Overmap:
     def __init__(self,
                  name,
                  min_level,
@@ -100,7 +100,7 @@ if filename:
         area_map.append(overmap[count].rstrip())
         count += 1
 
-    area = overmap(name, min_level, max_level, visibility, description, area_map)
+    area = Overmap(name, min_level, max_level, visibility, description, area_map)
 
     fname = area.name + ".json"
     sf = open(fname, "w")
