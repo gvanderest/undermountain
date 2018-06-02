@@ -1034,8 +1034,8 @@ def score_command(self, **kwargs):
 
 @inject("Characters")
 def who_command(self, Characters, **kwargs):
-    self.echo("{GThe Visible Mortals and Immortals of Waterdeep")
-    self.echo("{g" + ("-" * 79))
+    self.echo("{G       The Visible Mortals and Immortals of Waterdeep")
+    self.echo("{g" + ("-" * 60))
 
     count = 0
     for actor in Characters.query({"online": True}):
@@ -1044,7 +1044,7 @@ def who_command(self, Characters, **kwargs):
         self.echo("{{x{} {} {} {} {{x[.{{BN{{x......] {} {}".format(
             str(actor.stats.level.base).rjust(3),
             pad_right(actor.gender.colored_short_name, 1),
-            pad_right(actor.races[0].colored_name, 5),
+            pad_right(actor.races[0].colored_short_name, 5),
             pad_right(actor.classes[0].colored_short_name, 3),
             actor.name,
             actor.title if actor.title else "",
