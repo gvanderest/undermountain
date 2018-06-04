@@ -1040,24 +1040,12 @@ def who_command(self, Characters, **kwargs):
     count = 0
     for actor in Characters.query({"online": True}):
         count += 1
-
-        self.echo("{{x{} {} {} {} {{x[.{{BN{{x......] {} {}".format(
-            str(actor.stats.level.base).rjust(3),
-            pad_right(actor.gender.colored_short_name, 1),
-            pad_right(actor.races[0].colored_short_name, 5),
-            pad_right(actor.classes[0].colored_short_name, 3),
-            actor.name,
-            actor.title if actor.title else "",
-        ))
+        self.echo(f"{{x{actor.stats.level.base:>3} {actor.gender.colored_short_name:>1} {actor.races[0].colored_short_name:>5} {actor.classes[0].colored_short_name} {{x[.{{RP{{x......] {actor.name} {actor.title}")
     self.echo()
     self.echo(
-        "{{GPlayers found: {{x{}   "
-        "{{GTotal online: {{x{}   "
-        "{{GMost on today: {{x{}".format(
-            count,
-            count,
-            count,
-        ))
+        f"{{GPlayers found: {{x{count}   "
+        f"{{GTotal online: {{x{count}   "
+        f"{{GMost on today: {{x{count}")
 
 
 @inject("Characters")
