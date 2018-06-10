@@ -108,6 +108,8 @@ WEBSOCKET_PORTS = (
 
 INITIAL_ROOM_VNUM = "market_square"
 
+DEFAULT_OVERMAP_STEP_SIZE = 1
+
 VNUM_AREA_SEPARATOR = ":"
 
 # Conversation channels.

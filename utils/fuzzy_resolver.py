@@ -16,7 +16,9 @@ class FuzzyResolver(object):
             yield partial
 
     def add(self, name, entry):
-        """Add something to the Resolver by name to match entries."""
+        """Add something to the Resolver by name to match entries.
+        :rtype:
+        """
         for partial in self._query_partial_names(name):
 
             if partial not in self.commands:

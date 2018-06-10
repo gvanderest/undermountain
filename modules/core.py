@@ -770,7 +770,7 @@ def direction_command(self, name, Directions, Rooms, **kwargs):
         return
 
     if bool(self.overmap):
-        om_handle_walk(self, direction)
+        om_handle_walk(self, 1, direction)
         return
 
     if exit.has_flag(EXIT_DOOR) and exit.has_flag(EXIT_CLOSED):
