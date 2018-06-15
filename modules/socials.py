@@ -20,6 +20,47 @@ def socials_command(self, Socials, *args, **kwargs):
     else:
         self.echo("There are no social commands loaded.")
 
+@inject("Socials")
+def sedit_command(self, Socials, *args, **kwargs):
+    """
+    sedit helpfile from Waterdeep is below.
+    Social not found.
+    Usage: sedit <social>
+    Social sedit add <social> -- hold data in dict, then when 'done' create new social.JSON and register command?
+    Social sedit delete <social> -- delete the JSON file in /data and unregister command?
+    sedit add coocoo
+    Name:             coocoo
+    Target - Self
+     1)To Character:   (null)
+     2)To Others:      (null)
+    Target - Other Found
+     3)To Character:   (null)
+     4)To Victim:      (null)
+     5)To Others:      (null)
+    No Target
+     6)To Character:   (null)
+     7)To Others:      (null)
+    Target Not Found:
+     8)To Character: (null)
+
+    Usable Variables:
+    -----------------
+    $n - Name of Social User
+    $N - Name of Social Target
+    $e - he/she/it - User
+    $E - he/She/it - Target
+    $m - him/her/it - User
+    $M - him/her/it - Target
+    $s - his/her/its - User
+    $S - his/her/its - Target
+    $G - Belan/Thoth depending on Alignment of user
+        :param self:
+        :param Socials:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+    pass
 
 class SocialsModule(Module):
     DESCRIPTION = "Allow players to edit socials."
