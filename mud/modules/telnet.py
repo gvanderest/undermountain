@@ -66,15 +66,11 @@ async def who_command(self, **kwargs):
                {GThe Visible Mortals and Immortals of Waterdeep
 {g-----------------------------------------------------------------------------{x""")
 
-    self.echo("""\
-IMP Creator of Worlds [...PM....B] Kelemvor Lord of Death [Software Development]
-IMP M Death Act Doom  [...P.R....] Jergal the Supreme Deity [Scrivener of Doom]
-CRE M Dragn God       [WI.NMR....] Bahamut, God of Dragons. [The Platinum Dragon]
-DEI N Coded Bot Helpr [...NMR....] Ubtao 'tell ubtao help' [BOT]
-GOD M Human Brd       [...N.R....] Finder, Community Manager [Nameless Bard]
-HRO M Elf   Mer BlkCh   [.N.R...B] Brayden the Silent Crew
-HRO F Thken Prs         [.N......] Chezo The Useless Priest..... ha ha hardy har har
-HRO M Elf   Prs Order   [.P.R....] Heil the Rebuildable Atomizer""")
+    for conn in self.client.server.game.connections:
+        actor = conn.actor
+        line = f"{{x  1 {{BM {{CH{{cuman {{MN{{mov      {{w[.{{BN{{w......] {{x{actor.name}"
+        self.echo(line)
+
     self.echo()
     self.echo(f"{{GPlayers found{{g: {{w{count}   {{GTotal online{{g: {{W{count}   {{GMost on today{{g: {{w{count}{{x")
 
@@ -295,6 +291,4 @@ Email Address: {self.email}
             self.state = "playing"
 
         async def handle_playing_input(self, message):
-            self.writeln("You typed the following: " + message)
-
             await self.actor.handle_input(message)
