@@ -14,11 +14,9 @@ class Client(manager.Manager):
 
         while self.running:
             line = await self.readline()
-            print("LINE", line)
             await self.handle_input(line)
 
     async def handle_input(self, line):
         method_name = f"handle_{self.state}_input"
         method = getattr(self, method_name)
-        print("GOING TO RUN", method_name, "with", line)
         await method(line)
