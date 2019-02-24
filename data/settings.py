@@ -1,4 +1,5 @@
 import logging
+from .races import *
 
 NAME = "Waterdeep: City of Splendors"
 NAME_SHORT = "Waterdeep"

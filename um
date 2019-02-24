@@ -28,12 +28,14 @@ def main():
 
         loop = asyncio.get_event_loop()
         loop.set_debug(True)
+
         try:
             loop.run_until_complete(GAME.start())
         except KeyboardInterrupt:
             print("")
             print(GAME.t("SHUTDOWN_MESSAGE"))
             GAME.stop()
+
         loop.close()
 
 

@@ -11,7 +11,7 @@ class Game(object):
         self.event_handlers = {}
 
         self.modules = []
-        self.clients = []
+        self.connections = []
 
         self.language_strings = {
             "EN_US": {
@@ -24,12 +24,6 @@ class Game(object):
         self.setup()
 
         self.t = self.translate
-
-    def add_client(self, client):
-        self.clients.append(client)
-
-    def remove_client(self, client):
-        self.clients.remove(client)
 
     def setup(self):
         self.setup_modules()
