@@ -94,17 +94,17 @@ class Telnet(module.Module):
         def write(self, message=""):
             """Write to the writer."""
             # TODO: Disable colors if player has setting
-            if isinstance(message, bytes):
-                self.writer.write(message)
-            else:
-                try:
+            try:
+                if isinstance(message, bytes):
+                    self.writer.write(message)
+                else:
                     cleaned = message.replace(NEWLINE, TELNET_NEWLINE)
                     colorized = ansi.colorize(cleaned)
                     encoded = colorized.encode(TELNET_ENCODING)
                     self.writer.write(encoded)
-                except Exception as e:
-                    self.game.handle_exception(e)
-                    self.close()
+            except Exception as e:
+                self.game.handle_exception(e)
+                self.close()
 
         def writeln(self, message=""):
             """Write to the writer, with a newline on the end."""
@@ -201,11 +201,12 @@ Email Address: {self.email}
             self.state = "motd"
 
         async def handle_motd_input(self, message):
-            self.start_playing()
+            await self.start_playing()
 
-        def start_playing(self):
+        async def start_playing(self):
             self.writeln("Fading into the world..")
             self.state = "playing"
+            await self.actor.force("look")
 
         async def handle_playing_input(self, message):
             await self.actor.handle_input(message)

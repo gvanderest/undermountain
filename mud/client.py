@@ -1,12 +1,18 @@
 from mud import module
+from datetime import datetime
 import logging
 
 
 class Client(module.Module):
     INITIAL_STATE = "login_username"
+    UNIQUE_CLIENT_ID = 0
 
     def __init__(self, server):
         super().__init__(server.game)
+
+        self.UNIQUE_CLIENT_ID += 1
+        self.id = self.UNIQUE_CLIENT_ID
+        self.created_date = datetime.now()
 
         self.server = server
         self.state = self.INITIAL_STATE
@@ -14,6 +20,11 @@ class Client(module.Module):
 
         self.host = None
         self.port = None
+
+        self.dirty = False
+
+    def write(self, message=""):
+        self.dirty = True
 
     def stop_echo(self):
         self.allow_echo = False
