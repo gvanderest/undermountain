@@ -1,5 +1,5 @@
 from datetime import datetime
-from mud import logging, settings
+from mud import logging, settings, event
 from typing import Text
 
 import asyncio
@@ -7,11 +7,14 @@ import importlib
 
 
 class Game(object):
-    def __init__(self):
+    def __init__(self) -> None:
         self.event_handlers = {}
 
         self.modules = []
         self.connections = []
+        self.injectors = {}
+        self.entities = {}
+        self.data = {}
 
         self.language_strings = {
             "EN_US": {
@@ -25,10 +28,10 @@ class Game(object):
 
         self.t = self.translate
 
-    def setup(self):
+    def setup(self) -> None:
         self.setup_modules()
 
-    def setup_modules(self):
+    def setup_modules(self) -> None:
         module_names = settings.get("MODULES", ())
 
         for raw_module_name in module_names:
@@ -41,30 +44,35 @@ class Game(object):
             module = getattr(package, module_name)
 
             # Instantiate the module and store it.
-            self.add_module(module)
+            self.register_module(module)
 
-    def add_module(self, module):
+    def register_entity(self, name: str, entity_class):
+        self.entities[name] = entity_class
+
+    def register_injector(self, name: str, injector) -> None:
+        self.injectors[name] = injector(self)
+
+    def register_module(self, module) -> None:
         instance = module(self)
-        # TODO: Debug
         self.modules.append(instance)
         instance.setup()
 
-    async def start_modules(self):
+    async def start_modules(self) -> None:
         for module in self.modules:
             logging.info(f"Starting module {module}.")
             await module.start()
 
-    def stop_modules(self):
+    def stop_modules(self) -> None:
         for module in self.modules:
             logging.info(f"Stopping module {module}.")
             module.stop()
 
-    def add_event_handler(self, pattern, handler):
+    def register_event_handler(self, pattern: str, handler) -> None:
         handlers = self.event_handlers.get(pattern, [])
         handlers.append(handler)
         self.event_handlers[pattern] = handlers
 
-    def remove_event_handler(self, pattern, handler):
+    def unregister_event_handler(self, pattern: str, handler) -> None:
         handlers = self.event_handlers.get(pattern, [])
 
         if handler in handlers:
@@ -75,7 +83,7 @@ class Game(object):
         if not handlers:
             del self.event_handlers[pattern]
 
-    async def start(self):
+    async def start(self) -> None:
         self.running = True
 
         await self.start_modules()
@@ -88,7 +96,7 @@ class Game(object):
 
             self.emit("global:tick", {"timestamp": now.timestamp()})
 
-    def translate(self, reference, **values):
+    def translate(self, reference: str, **values) -> str:
         """Translate a string."""
         parts = reference.split(".")
 
@@ -103,16 +111,17 @@ class Game(object):
             node = node.get(part, {})
 
         interpolated = node
-        print(values)
+
         for (key, value) in values.items():
             interpolated = interpolated.replace(f"{{{{{key}}}}}", str(value))
 
         return interpolated
 
-    def emit(self, type: str, data: object=None) -> None:
-        """Emit an event."""
-        if data is None:
-            data = {}
+    def emit_event(self, event: event.Event) -> event.Event:
+        """Emit an event object."""
+
+        type = event.type
+        data = event.data
 
         logging.debug(self.t("EVENT_EMITTED_DEBUG_MESSAGE", type=type, data=data))
 
@@ -129,7 +138,17 @@ class Game(object):
             for handler in self.event_handlers.get(pattern, []):
                 handler(type, data)
 
-    def stop(self):
+                if event.blocked:
+                    return event
+
+            return event
+
+    def emit(self, type: str, data: object=None, blockable: bool=True) -> event.Event:
+        """Generate an Event object and emit it to the world."""
+        ev = event.Event(type, data, blockable=blockable)
+        return self.emit_event(ev)
+
+    def stop(self) -> None:
         self.stop_modules()
 
         self.running = False

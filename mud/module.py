@@ -3,7 +3,9 @@ class Module(object):
         self.game = game
         self.bind = self.bind_event_handler
         self.unbind = self.unbind_event_handler
-        self.add_module = self.game.add_module
+        self.register_module = self.game.register_module
+        self.register_injector = self.game.register_injector
+        self.register_entity = self.game.register_entity
         self.running = False
 
     def setup(self):
@@ -19,7 +21,7 @@ class Module(object):
         self.running = False
 
     def bind_event_handler(self, pattern, func):
-        self.game.add_event_handler(pattern, func)
+        self.game.register_event_handler(pattern, func)
 
     def unbind_event_handler(self, pattern, func):
         self.game.remove_event_handler(pattern, func)

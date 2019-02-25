@@ -67,6 +67,8 @@
     * Specialization?
 * IP address blocking
 * Swear word protection (optional)
+* Support entity overrides?
+    * Allows extension of functionality on Character, etc.
 * Email address verification
 * Text message
 * Forums

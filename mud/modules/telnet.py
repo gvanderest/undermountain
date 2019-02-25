@@ -1,4 +1,5 @@
-from mud import module, manager, server, client, settings
+from mud import module, manager, server, client, settings, inject
+import traceback
 from mud.utils import ansi
 
 import asyncio
@@ -24,128 +25,17 @@ def is_valid_username(value):
     # TODO: Check for illegal name prefixes
     return re.match(r"[A-Z][a-z]+", value) and len(value) > 5
 
-                # TODO: Move this to Core module
-
-# TODO: Move to Core
-async def quit_command(self, **kwargs):
-    self.echo("""\
-{RYou feel a hand grab you, you begin to fly upwards!
-{BYou pass through the clouds and out of the world!
-{GYou have rejoined Reality!
-
-{WFor {RNews{W, {CRoleplaying{W and {MInfo{W, Visit our website!
-{Ch{cttp://{Cw{cww.{Cw{caterdeep.{Co{crg{x""")
-    self.quit()
-
-async def tell_command(self, keyword, args, **kwargs):
-    # TODO: Convert to using params
-    # TODO: Convert to find Actors using clean method
-    # TODO: Fuzzy search
-    name = args.pop(0)
-
-    found = None
-    for conn in self.client.server.game.connections:
-        if conn.actor.name.lower() == name.lower():
-            found = conn.actor
-            break
-
-    if not found:
-        self.echo("They couldn't be found.")
-    else:
-        message = " ".join(args)
-        self.echo(f"{{gYou tell {found.name} '{{G{message}{{g'{{x")
-        if found != self:
-            found.echo(f"{{g{self.name} tells you '{{G{message}{{g'{{x")
-
-
-async def who_command(self, **kwargs):
-    # TODO: Add functionality to use filters
-    # TODO: Cleanly request online Characters
-    count = 0
-    self.echo("""\
-               {GThe Visible Mortals and Immortals of Waterdeep
-{g-----------------------------------------------------------------------------{x""")
-
-    for conn in self.client.server.game.connections:
-        actor = conn.actor
-        line = f"{{x  1 {{BM {{CH{{cuman {{MN{{mov      {{w[.{{BN{{w......] {{x{actor.name}"
-        self.echo(line)
-
-    self.echo()
-    self.echo(f"{{GPlayers found{{g: {{w{count}   {{GTotal online{{g: {{W{count}   {{GMost on today{{g: {{w{count}{{x")
-
-
-# TODO: Move this to Core
-class Character(object):
-    def __init__(self, data=None):
-        if data is None:
-            data = {}
-
-        super().__setattr__("_data", data)
-
-        self.client = None
-        # TODO: Improve this logic to take into account classes, skills, level, etc.
-        self.command_handlers = {
-            "who": who_command,
-            "tell": tell_command,
-            "quit": quit_command,
-        }
-
-    def __getattr__(self, name):
-        return self._data.get(name)
-
-    def set_client(self, client):
-        self.client = client
-
-    def quit(self):
-        self.client.close()
-
-    def echo(self, message=""):
-        self.client.writeln(message)
-
-    async def handle_input(self, line):
-        words = line.split(" ")
-        keyword = words[0] if words else ""
-
-        func = self.command_handlers.get(keyword)
-
-        args = words[1:] if words else []
-        remainder = " ".join(args)
-
-        params = [] # TODO: Parse indexes, counts, keywords, etc.
-
-        if not func:
-            self.echo("Huh?")
-        else:
-            await func(
-                self,
-                line=line,
-
-                keyword=keyword,
-                remainder=remainder,
-
-                words=words,
-
-                args=args,
-                params=params,
-            )
 
 
 class Telnet(module.Module):
     def setup(self):
-        self.add_module(self.TelnetServer)
+        self.register_module(self.TelnetServer)
 
     class TelnetServer(server.Server):
         def __init__(self, game):
             super().__init__(game)
 
             self.servers = []
-
-        async def handle_connection(self, reader, writer):
-            """Instantiate a connection and attach a client."""
-            client = self.generate_client(self, reader, writer)
-            self.game.connections.append(client)
-            await client.start()
 
         async def start(self):
             """Open ports."""
@@ -214,7 +104,8 @@ class Telnet(module.Module):
             self.state = "login_username"
             self.write("What is your character name or email address? ")
 
-        async def handle_login_username_input(self, message):
+        @inject("Characters")
+        async def handle_login_username_input(self, message, Characters):
             # TODO: Search for a pfile for this username
             # TODO: Search for an account with this email address
             # TODO: If one found, hold it temporarily in memory and prompt for password
@@ -230,7 +121,7 @@ class Telnet(module.Module):
                 self.writeln("You wrote: " + message)
 
                 # TODO: Only fetch information to check account exists
-                actor = Character({"name": message})
+                actor = Characters.save({"name": message})
                 actor.set_client(self)
                 self.actor = actor
 
@@ -243,7 +134,12 @@ class Telnet(module.Module):
 Account Menu
 
 Email Address: {self.email}
+""")
 
+            for x in range(1, 4):
+                self.writeln(f"({x}) 101 Human Mer | Character     | Westbridge")
+
+            self.writeln("""
 (N) Create a new character
 (E) Change email address
 (P) Change password""")
@@ -253,6 +149,8 @@ Email Address: {self.email}
         async def handle_account_menu_input(self, message):
             if message == "n":
                 self.start_new_character_name()
+            else:
+                self.writeln("Not yet supported.")
 
         def start_new_character_name(self):
             self.writeln("Creating a new character.")

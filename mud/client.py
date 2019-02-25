@@ -22,8 +22,6 @@ class Client(manager.Manager):
 
             await self.handle_input(line)
 
-        self.close()
-
     async def handle_input(self, line):
         method_name = f"handle_{self.state}_input"
         method = getattr(self, method_name)
