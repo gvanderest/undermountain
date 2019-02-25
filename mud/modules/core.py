@@ -58,10 +58,16 @@ async def who_command(self, Characters, **kwargs):
     self.echo()
     self.echo(f"{{GPlayers found{{g: {{w{count}   {{GTotal online{{g: {{W{count}   {{GMost on today{{g: {{w{count}{{x")
 
+
+async def exception_command(self, **kwargs):
+    raise Exception("Test.")
+
+
 COMMAND_HANDLERS = {
     "who": who_command,
     "tell": tell_command,
     "quit": quit_command,
+    "exception": exception_command,
 }
 
 class Character(entity.Entity):
@@ -96,18 +102,23 @@ class Character(entity.Entity):
         if not func:
             self.echo("Huh?")
         else:
-            await func(
-                self=self,
-                line=line,
+            try:
+                await func(
+                    self=self,
+                    line=line,
 
-                keyword=keyword,
-                remainder=remainder,
+                    keyword=keyword,
+                    remainder=remainder,
 
-                words=words,
+                    words=words,
 
-                args=args,
-                params=params,
-            )
+                    args=args,
+                    params=params,
+                )
+            except Exception as e:
+                self.game.handle_exception(e)
+                self.echo("Huh?!")
+
 
 
 
@@ -116,10 +127,23 @@ class Characters(collection.Collection):
     ENTITY_CLASS = Character
 
 
+class Wiznet(module.Module):
+    def setup(self):
+        self.bind("global:exception", self.handle_exception)
+
+    def wiznet(self, category, message):
+        for conn in self.game.connections:
+            conn.writeln(f"{{Y--> {{W{category}{{w: {message}{{x")
+
+    def handle_exception(self, event):
+        self.wiznet("exception", event.data["traceback"])
+
+
 class Core(module.Module):
     def setup(self):
         self.register_injector("Characters", self.inject_characters)
         self.register_injector("Character", self.inject_character)
+        self.register_module(Wiznet)
 
     @classmethod
     def inject_characters(cls, game):

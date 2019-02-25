@@ -9,6 +9,13 @@ class Client(manager.Manager):
 
         self.server = server
         self.state = self.INITIAL_STATE
+        self.allow_echo = True
+
+    def stop_echo(self):
+        self.allow_echo = False
+
+    def start_echo(self):
+        self.allow_echo = True
 
     async def start(self):
         await super().start()
@@ -23,6 +30,9 @@ class Client(manager.Manager):
             await self.handle_input(line)
 
     async def handle_input(self, line):
+        if not self.allow_echo and line.strip():
+            self.start_echo()
+
         method_name = f"handle_{self.state}_input"
         method = getattr(self, method_name)
         await method(line)

@@ -10,6 +10,9 @@ TELNET_HOST = settings.get("TELNET_HOST", "0.0.0.0")
 TELNET_NEWLINE = settings.get("TELNET_NEWLINE", "\r\n")
 TELNET_ENCODING = settings.get("TELNET_ENCODING", "utf-8")
 
+IAC_WILL_ECHO = b"\xff\xfb\x01"
+IAC_WONT_ECHO = b"\xff\xfc\x01"
+
 def is_valid_email(value):
     return re.match(r"[\w\.\+]+\@(\w+\.)+\w+", value)
 
@@ -24,7 +27,6 @@ def is_valid_username(value):
     # TODO: Check for bad words
     # TODO: Check for illegal name prefixes
     return re.match(r"[A-Z][a-z]+", value) and len(value) > 5
-
 
 
 class Telnet(module.Module):
@@ -69,6 +71,14 @@ class Telnet(module.Module):
 
             self.actor = None
 
+        def stop_echo(self):
+            super().stop_echo()
+            self.write(IAC_WILL_ECHO)
+
+        def start_echo(self):
+            super().start_echo()
+            self.write(IAC_WONT_ECHO)
+
         async def start(self):
             """Start with a login prompt."""
             self.start_login_username()
@@ -80,13 +90,17 @@ class Telnet(module.Module):
         def write(self, message=""):
             """Write to the writer."""
             # TODO: Disable colors if player has setting
-            try:
-                cleaned = message.replace(NEWLINE, TELNET_NEWLINE)
-                colorized = ansi.colorize(cleaned)
-                encoded = colorized.encode(TELNET_ENCODING)
-                self.writer.write(encoded)
-            except Exception:
-                self.close()
+            if isinstance(message, bytes):
+                self.writer.write(message)
+            else:
+                try:
+                    cleaned = message.replace(NEWLINE, TELNET_NEWLINE)
+                    colorized = ansi.colorize(cleaned)
+                    encoded = colorized.encode(TELNET_ENCODING)
+                    self.writer.write(encoded)
+                except Exception as e:
+                    self.game.handle_exception(e)
+                    self.close()
 
         def writeln(self, message=""):
             """Write to the writer, with a newline on the end."""
@@ -97,7 +111,7 @@ class Telnet(module.Module):
             raw_line = await self.reader.readline()
             if not raw_line:
                 return None
-            return raw_line.decode(TELNET_ENCODING).strip()
+            return raw_line.decode(encoding=TELNET_ENCODING, errors="ignore").strip()
 
         def start_login_username(self):
             """Display login username prompt."""
@@ -169,6 +183,7 @@ Email Address: {self.email}
 
         def start_login_password(self):
             self.write("Password: ")
+            self.stop_echo()
             self.state = "login_password"
             # TODO: Load Character here and attach
             # TODO: Prevent echo and logging

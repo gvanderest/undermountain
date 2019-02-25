@@ -4,6 +4,7 @@ from typing import Text
 
 import asyncio
 import importlib
+import traceback
 
 
 class Game(object):
@@ -62,12 +63,19 @@ class Game(object):
             logging.info(f"Starting module {module}.")
             await module.start()
 
+    def handle_exception(self, e):
+        output = traceback.format_exc().strip()
+        self.emit("global:exception", {
+            "traceback": output,
+        })
+
     def stop_modules(self) -> None:
         for module in self.modules:
             logging.info(f"Stopping module {module}.")
             module.stop()
 
     def register_event_handler(self, pattern: str, handler) -> None:
+        logging.debug(f"Registering event handler {pattern} to {handler}.")
         handlers = self.event_handlers.get(pattern, [])
         handlers.append(handler)
         self.event_handlers[pattern] = handlers
@@ -136,12 +144,12 @@ class Game(object):
                 pattern = ":".join(parts[:index+1] + ["*"])
 
             for handler in self.event_handlers.get(pattern, []):
-                handler(type, data)
+                handler(event)
 
                 if event.blocked:
                     return event
 
-            return event
+        return event
 
     def emit(self, type: str, data: object=None, blockable: bool=True) -> event.Event:
         """Generate an Event object and emit it to the world."""

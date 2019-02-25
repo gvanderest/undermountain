@@ -22,7 +22,7 @@ def parse_arguments():
 
 
 def execute():
-    print(settings.NAME)
+    logging.info(settings.NAME)
 
     args = parse_arguments()
     if args.action == ACTION_START:
@@ -34,8 +34,8 @@ def execute():
         try:
             loop.run_until_complete(GAME.start())
         except KeyboardInterrupt:
-            print("")
-            print(GAME.t("SHUTDOWN_MESSAGE"))
+            logging.info("")
+            logging.info(GAME.t("SHUTDOWN_MESSAGE"))
             GAME.stop()
 
         loop.close()
