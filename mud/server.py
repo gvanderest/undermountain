@@ -1,7 +1,6 @@
-from mud import manager
+from mud import module
 
-
-class Server(manager.Manager):
+class Server(module.Module):
     def __init__(self, game):
         super().__init__(game)
 

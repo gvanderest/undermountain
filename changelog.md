@@ -2,7 +2,9 @@
 
 ## v0.1.0 - YYYY-MM-DD - Annoying Artifact
 
+* Basic ANSI color codes
 * Event channels and listeners
+* Game and Module system
 * Telnet connectivity
 * Who list
 * Whispering
@@ -18,5 +20,3 @@
 * Simple mobprogs
 * Item pickup and dropping
 * Item equipping and removal
-* Game and Module system
-* Basic ANSI color codes

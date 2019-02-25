@@ -1,7 +1,7 @@
-from mud import manager
+from mud import module
 
 
-class Client(manager.Manager):
+class Client(module.Module):
     INITIAL_STATE = "login_username"
 
     def __init__(self, server):
