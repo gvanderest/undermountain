@@ -125,13 +125,13 @@ class Game(object):
 
         return interpolated
 
-    def emit_event(self, event: event.Event) -> event.Event:
+    def emit_event(self, event: event.Event, log_level: int=logging.DEBUG) -> event.Event:
         """Emit an event object."""
 
         type = event.type
         data = event.data
 
-        logging.debug(self.t("EVENT_EMITTED_DEBUG_MESSAGE", type=type, data=data))
+        logging.log(log_level, {"event": {"type": type, "data": data}})
 
         parts = type.split(":")
 
@@ -151,10 +151,10 @@ class Game(object):
 
         return event
 
-    def emit(self, type: str, data: object=None, blockable: bool=True) -> event.Event:
+    def emit(self, type: str, data: object=None, blockable: bool=True, **kwargs) -> event.Event:
         """Generate an Event object and emit it to the world."""
         ev = event.Event(type, data, blockable=blockable)
-        return self.emit_event(ev)
+        return self.emit_event(ev, **kwargs)
 
     def stop(self) -> None:
         self.stop_modules()

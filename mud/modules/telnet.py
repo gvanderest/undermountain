@@ -71,6 +71,10 @@ class Telnet(module.Module):
 
             self.actor = None
 
+            (host, port) = self.writer.get_extra_info("peername")
+            self.host = host
+            self.port = port
+
         def stop_echo(self):
             super().stop_echo()
             self.write(IAC_WILL_ECHO)

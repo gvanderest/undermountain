@@ -1,6 +1,7 @@
 class Module(object):
     def __init__(self, game):
         self.game = game
+        self.emit = self.game.emit
         self.bind = self.bind_event_handler
         self.unbind = self.unbind_event_handler
         self.register_module = self.game.register_module
