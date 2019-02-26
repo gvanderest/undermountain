@@ -16,6 +16,13 @@ SOCIALS = {
     },
 }
 
+CHANNELS = {
+    "ooc": {
+        "self_template": "{WYou OOC {8'{w{message}{8'{x",
+        "template": "{W[*OOC*]{c{actor.name} {8'{w{message}{8'{x",
+    },
+}
+
 
 @inject("Characters")
 async def sockets_command(self, Characters, **kwargs):
@@ -151,6 +158,19 @@ async def emote_command(self, remainder, **kwargs):
     self.act("{c{actor.name} " + remainder + "{x", replace_name=True)
 
 
+@inject("Characters")
+async def channel_command(self, keyword, remainder, Characters, **kwargs):
+    # TODO: Global echos
+    channel = CHANNELS[keyword]
+
+    if not remainder:
+        self.echo("Toggling channels is not yet available.")
+        return
+
+    self.act_to(self, channel["self_template"].replace("{message}", remainder))
+    self.act(channel["template"].replace("{message}", remainder))
+
+
 BASIC_COMMANDS = {
     "who": who_command,
     "tell": tell_command,
@@ -165,6 +185,7 @@ BASIC_COMMANDS = {
 COMMAND_HANDLERS = {}
 COMMAND_HANDLERS.update(BASIC_COMMANDS)
 COMMAND_HANDLERS.update({name: social_command for name in SOCIALS})
+COMMAND_HANDLERS.update({name: channel_command for name in CHANNELS})
 
 class Actor(entity.Entity):
     @property
