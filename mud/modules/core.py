@@ -1,4 +1,20 @@
 from mud import module, manager, entity, collection, inject
+from mud.utils import listify
+
+
+SOCIALS = {
+    "grin": {
+        "me_to_room": "You grin.",
+        "actor_to_room": "{actor.name} grins.",
+
+        "me_to_target": "You grin at {target.name}.",
+        "actor_to_me": "{actor.name} grins at you.",
+        "actor_to_target": "{actor.name} grins at {target.name}.",
+
+        "me_to_me": "You grin to yourself",
+        "actor_to_self": "{actor.name} grins to {actor.himself}.",
+    },
+}
 
 
 @inject("Characters")
@@ -104,16 +120,53 @@ async def exception_command(self, **kwargs):
     raise Exception("Test.")
 
 
-COMMAND_HANDLERS = {
+@inject("Characters")
+async def social_command(self, keyword, args, Characters, **kwargs):
+    # TODO: Only look for people in this room.
+    social = SOCIALS[keyword]
+
+    if not args:
+        self.act_to(self, social["me_to_room"])
+        self.act(social["actor_to_room"])
+        return
+
+    target_name = args.pop(0)
+    target = Characters.find({"name__istartswith": target_name})
+
+    if not target:
+        self.echo("You can't find them.")
+        return
+
+    if target == self:
+        self.act_to(self, social["me_to_me"])
+        self.act(social["actor_to_self"])
+    else:
+        self.act_to(self, social["me_to_target"])
+        self.act_to(target, social["actor_to_me"])
+        self.act(social["actor_to_target"], exclude=target)
+
+
+async def emote_command(self, remainder, **kwargs):
+    self.act_to(self, "{c{actor.name} " + remainder + "{x")
+    self.act("{c{actor.name} " + remainder + "{x", replace_name=True)
+
+
+BASIC_COMMANDS = {
     "who": who_command,
     "tell": tell_command,
     "quit": quit_command,
     "look": look_command,
     "sockets": sockets_command,
     "exception": exception_command,
+    "emote": emote_command,
+    "pmote": emote_command,
 }
 
-class Character(entity.Entity):
+COMMAND_HANDLERS = {}
+COMMAND_HANDLERS.update(BASIC_COMMANDS)
+COMMAND_HANDLERS.update({name: social_command for name in SOCIALS})
+
+class Actor(entity.Entity):
     @property
     def game(self):
         return self.client.server.game
@@ -122,14 +175,49 @@ class Character(entity.Entity):
     def emit(self, *args, **kwargs):
         return self.game.emit
 
+    def echo(self, message="", newline=True):
+        getattr(self.client, "writeln" if newline else "write")(message)
+
+    @inject("Characters")
+    def act(self, message, exclude=None, replace_name=False, Characters=None):
+        for actor in Characters.query():
+            if actor == self or actor == exclude:
+                continue
+
+            self.act_to(actor, message, replace_name=replace_name)
+
+    def act_to(self, target, message, replace_name=False):
+        # TODO: Make this use lambdas to improve performance.
+        replaces = {
+            "actor.name": self.name,
+            "actor.himself": "himself",
+            "actor.herself": "himself",
+            "actor.itself": "himself",
+
+            "target.name": target.name,
+            "target.himself": "himself",
+            "target.herself": "himself",
+            "target.itself": "himself",
+        }
+
+        output = message
+
+        for (key, value) in replaces.items():
+            output = output.replace(f"{{{key}}}", value)
+
+        # TODO: Capitalize the first letter if it's the start of the line
+        if replace_name:
+            output = output.replace(target.name, "you")
+
+        target.echo(output)
+
+
+class Character(Actor):
     def set_client(self, client):
         self.client = client
 
     def quit(self):
         self.client.close()
-
-    def echo(self, message="", newline=True):
-        getattr(self.client, "writeln" if newline else "write")(message)
 
     def echo_prompt(self):
         self.echo()
