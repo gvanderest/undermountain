@@ -295,7 +295,7 @@ class Wiznet(module.Module):
             conn.writeln(f"{{Y--> {{W{category}{{w: {message}{{x")
 
     def handle_exception(self, event):
-        self.wiznet("exception", event.data["traceback"])
+        self.wiznet("exception", event.data["traceback"].replace("{", "{{"))
 
     def handle_input(self, event):
         line = event.data["line"]
